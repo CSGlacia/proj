@@ -18,3 +18,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/create_listing', 'HomeController@listing_page');
+Route::post('/create_property', 'HomeController@create_property');

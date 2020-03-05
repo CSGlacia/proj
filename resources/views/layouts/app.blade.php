@@ -25,6 +25,12 @@
       background-color: #333;
       overflow: hidden;
     }
+    .card {
+        margin: 10px;
+    }
+    .row {
+        margin-bottom: 20px;
+    }
 </style>
 
 <body>
@@ -38,7 +44,7 @@
                     <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
                     </form>
-
+                    <a href="/create_listing">Create a property listing</a>
                 @else
                     <a href="{{ route('login') }}">Login</a>
 
