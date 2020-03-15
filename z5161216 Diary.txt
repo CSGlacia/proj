@@ -1,0 +1,8 @@
+Week 1 Diary 
+Organising project scope and setting up jira/confluence and github.
+Week 2 Diary
+Setting up environments and researching project and tech stack. Trying to figure out how to use aws for both database and web hosting.
+Week 3 Diary
+Finished up with the project plan, writing out a bunch of user stories. 
+Had some problems at the start of the week due to unathorised user deleting the database.
+Week 4 Diary
