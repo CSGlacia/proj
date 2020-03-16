@@ -1,0 +1,16 @@
+Week 1:
+
+Formed groups. Decided on project 3. Had some discussion about tech stack and architecture to use.
+Joined/Created github, jira and confluence groups. Made ER diagram of database structure.
+
+Week 2:
+Discussed epics, wrote down some epics. Agreed on tech stack. Started to configure tech stack for intial push to github.
+
+Week 3:
+Continue to configure app setup and text stack (alot of dev ops and app config). Eventually got app to a working point. 
+Wrote several epics and contributed to project proposal in several sections (background, refined most epics). Completed user creation of
+properties.
+
+Week 4:
+Helped add some stories to epics for sprints. Wrote docs about Laravel and the app framework to help teammates orient themselves and
+fastrack their learning.
