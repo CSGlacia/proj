@@ -21,3 +21,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/create_listing', 'HomeController@listing_page');
 Route::post('/create_property', 'HomeController@create_property');
+
+Route::get('/view_property', 'GeneralController@view_property');
