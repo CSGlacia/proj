@@ -14,6 +14,7 @@ class GeneralController extends Controller
      * @return void
      */
     public function view_property(Request $request) {
+        $query = $request->input('query');
         if(empty($request->query)){
             $results = DB::table('properties AS p')
                             ->select('p.*')
@@ -32,7 +33,7 @@ class GeneralController extends Controller
                             ->select('p.*')
                             ->where([
                                 ['property_inactive', '=', '0'],
-                                ['p.property_suburb', 'LIKE', "$request"]
+                                ['p.property_suburb', 'LIKE', 'sadasa']
                             ])
                             ->get();
 
