@@ -70,7 +70,7 @@ $(document).ready(function() {
                 var data = tryParseJSON(html);
 
                 if(data['status'] == "success") {
-                    alert("Property Created Successfully");
+                    alert("Success!");
                 } else if(data['status'] == 'bad_input') {
                     alert("Please double check all fields are filled!");
                 } else {
