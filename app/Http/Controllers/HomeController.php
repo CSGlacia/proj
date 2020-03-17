@@ -60,4 +60,75 @@ class HomeController extends Controller
 
         return json_encode(['status' => 'error']);
     }
+
+
+
+    public function book(Request $request) {
+        return view("book");
+    }
+
+    public function create_booking(Request $request) {
+        // Ennumerate variables. Check if the booking is valid.
+        // For speed only use relevant variables
+        $userID = Auth::id();
+        $propertyID = $request->input('propertyID');
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $persons = $request->input('persons');
+        $paid = $request->input('paid');
+        $status = $request->input('status');
+
+
+        // TODO: (?) User cannot book more than one property for themselves
+        // TODO: App crashes if unrecognised commands injected.
+
+        $s = date_create_from_format('Y-m-d', $startDate);
+        $e = date_create_from_format('Y-m-d', $endDate);
+        // If the end date is before $s, fail. (You can't book for 1 day)
+        if ($s >= $e) {
+            return json_encode(["status" => "Time failure!"]);
+        }
+
+
+        // Pull from the database.
+        $results = DB::table('bookings AS c')
+                    ->select('c.*')
+                    ->where([ ['propertyID', '=', $propertyID] ])
+                    ->get();
+
+        $resultArr = [];
+
+
+        // If for some propertys' bookings, the END time is STRICTLY GREATER
+        // than the start of the booking time.
+        foreach ($results as $r) {
+            $cStart = date_create_from_format('Y-m-d', $r->startDate);
+            $cEnd = date_create_from_format('Y-m-d', $r->endDate);
+
+            if ($cStart <= $s && $s < $cEnd) {
+                return json_encode(["status" => "Someone has already booked that time!"]);
+            }
+        }
+        // Ugly if tower. Did it this way for debugging, will clean up later (I have a reminder for this) :D
+
+        if(isset($userID) && is_numeric($userID)) {
+            if(isset($propertyID) && is_numeric($propertyID)) {
+                if(isset($startDate)) {
+                    if(isset($endDate)) {
+                        if(isset($persons) && is_numeric($persons)) {
+                            if(isset($paid) && is_numeric($paid)) {
+                                if(isset($status)){
+                                    $insert = ['userID' => $userID, 'propertyID' => $propertyID, 'startDate' => htmlspecialchars($startDate), 'endDate' => htmlspecialchars($endDate), 'persons' => $persons, 'paid' => $paid, 'status' => htmlspecialchars($status)];
+                                    DB::table('bookings')->insert($insert);
+                                    return json_encode(['status' => 'success']);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return json_encode(['status' => 'bad_input']);
+    }
 }
