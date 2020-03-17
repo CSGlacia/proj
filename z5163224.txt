@@ -1,0 +1,19 @@
+Week 1:
+- Formed a group
+- Decided on accommodation rental system as project
+- Decided on basic requirements, discussed architecture
+- Joined Github, Jira, Confluence groups
+
+Week 2:
+- Further discussed specifications, epics, possible stories
+- Wrote user stories
+
+Week 3:
+- Discussed more specifications
+- Allocated some tasks
+- Created UI storyboard
+- Added/editted epic stories
+- Worked on Laravel and PHP tutorials, got familiar with new language
+
+Week 4:
+- Added more user stories, worked on search issue during sprint 1
