@@ -14,19 +14,33 @@ class GeneralController extends Controller
      * @return void
      */
     public function view_property(Request $request) {
+        if(empty($request->query)){
+            $results = DB::table('properties AS p')
+                            ->select('p.*')
+                            ->where([
+                                ['property_inactive', '=', '0']
+                            ])
+                            ->get();
 
-        $results = DB::table('properties AS p')
-                        ->select('p.*')
-                        ->where([
-                            ['property_inactive', '=', '0']
-                        ])
-                        ->get(); 
-        
-        //dd($results);
+            //dd($results);
 
-        return view('view_properties',
-                    ['properties' => $results]
-    );
+            return view('view_properties',
+                        ['properties' => $results]
+            );
+        } else{
+            $results = DB::table('properties AS p')
+                            ->select('p.*')
+                            ->where([
+                                ['property_inactive', '=', '0'],
+                                ['p.property_suburb', 'LIKE', "$request"]
+                            ])
+                            ->get();
+
+            //dd($results);
+
+            return view('view_properties',
+                        ['properties' => $results]
+            );
+        }
     }
-   
 }
