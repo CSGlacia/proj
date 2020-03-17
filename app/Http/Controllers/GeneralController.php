@@ -16,7 +16,7 @@ class GeneralController extends Controller
     public function view_property(Request $request) {
         $query = $request->input('query');
         $address_checkbox = $request->input('address_checkbox');
-        $suburb_checkbox = $request->input('$suburb_checkbox');
+        $suburb_checkbox = $request->input('suburb_checkbox');
         $postcode_checkbox = $request->input('postcode_checkbox');
         if(empty($query)){
             $results = DB::table('properties AS p')
@@ -39,13 +39,13 @@ class GeneralController extends Controller
 
             $searchCritera = [];
             if($address_checkbox == 1){
-                array_push($searchCritera, ['p.property_address', 'LIKE', $query, 'OR']);
+                array_push($searchCritera, ['p.property_address', 'LIKE', '%'.$query.'%', 'OR']);
             }
             if($suburb_checkbox == 1){
-                array_push($searchCritera, ['p.property_suburb', 'LIKE', $query, 'OR']);
+                array_push($searchCritera, ['p.property_suburb', 'LIKE', '%'.$query.'%', 'OR']);
             }
             if($postcode_checkbox == 1){
-                array_push($searchCritera, ['p.property_postcode', 'LIKE', $query, 'OR']);
+                array_push($searchCritera, ['p.property_postcode', 'LIKE', '%'.$query.'%', 'OR']);
             }
             $results = DB::table('properties AS p')
                             ->select('p.*')
