@@ -8,6 +8,13 @@
           <input type="text" placeholder="Search by name..." name="query" size="100">
           <input type="submit" value="Search" />
         </form>
+        <input type="checkbox" name="address_checkbox" value="1" checked>
+        <label for="address_checkbox"> Address </label><br>
+        <input type="checkbox" name="suburb_checkbox" value="1" checked>
+        <label for="suburb_checkbox"> Suburb </label><br>
+        <input type="checkbox" name="postcode_checkbox" value="1" checked>
+        <label for="postcode_checkbox"> Postcode </label><br>
+
       </div>
 
       @foreach ($properties as $p)
