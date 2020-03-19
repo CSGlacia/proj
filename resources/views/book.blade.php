@@ -67,7 +67,7 @@ $(document).ready(function() {
             method: 'POST',
             data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons+'&paid='+paid+'&status='+status,
             success: function(html) {
-                var data = tryParseJSON(html);
+                var data = JSON.parse(html);
 
                 if(data['status'] == "success") {
                     alert("Success!");

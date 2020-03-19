@@ -159,4 +159,13 @@ class HomeController extends Controller
 
         return view('user_not_found');
     }
+
+    public function get_user_id(Request $request) {
+        $id = Auth::id();
+
+        if(isset($id) && !empty($id) && !is_null($id)) {
+            return json_encode(['status' => 'success', 'id' => $id]);
+        }
+        return json_encode(['status' => 'error']);
+    }
 }
