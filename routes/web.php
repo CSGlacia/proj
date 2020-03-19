@@ -24,3 +24,6 @@ Route::post('/create_property', 'HomeController@create_property');
 
 Route::get('/book', 'HomeController@book');
 Route::post('/create_booking', 'HomeController@create_booking');
+
+//WILL NEED TO BE MOVED TO GENERAL CONTROLLER AFTER MERGE
+Route::get('/user_profile/{id?}', 'HomeController@view_user');
