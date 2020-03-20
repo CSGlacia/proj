@@ -15,7 +15,11 @@
                     @endif
 
                     You are logged in!
+                    <br>
+                    <a href="{{ url('/') }}">Click here to be redirected to the property listing page</a>
                 </div>
+
+                
             </div>
         </div>
     </div>
