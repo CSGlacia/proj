@@ -1,0 +1,12 @@
+Week 1:
+
+Formed groups and did chose to do project 3.
+
+Week 2:
+Finalised Epics, wrote some of the group report.
+
+Week 3:
+Did a few experiments to familiarise myself with PHP/Laravel.
+
+Week 4/5:
+Working on account and booking procedures

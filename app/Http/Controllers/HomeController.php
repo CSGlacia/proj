@@ -60,4 +60,112 @@ class HomeController extends Controller
 
         return json_encode(['status' => 'error']);
     }
+
+
+
+    public function book(Request $request) {
+        return view("book");
+    }
+
+    public function create_booking(Request $request) {
+        // Ennumerate variables. Check if the booking is valid.
+        // For speed only use relevant variables
+        $userID = Auth::id();
+        $propertyID = $request->input('propertyID');
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $persons = $request->input('persons');
+        $paid = $request->input('paid');
+        $status = $request->input('status');
+
+
+        // TODO: (?) User cannot book more than one property for themselves
+        // TODO: App crashes if unrecognised commands injected.
+
+        $s = date_create_from_format('Y-m-d', $startDate);
+        $e = date_create_from_format('Y-m-d', $endDate);
+        // If the end date is before $s, fail. (You can't book for 1 day)
+        if ($s >= $e) {
+            return json_encode(["status" => "Time failure!"]);
+        }
+
+
+        // Pull from the database.
+        $results = DB::table('bookings AS c')
+                    ->select('c.*')
+                    ->where([ ['propertyID', '=', $propertyID] ])
+                    ->get();
+
+        $resultArr = [];
+
+
+        // If for some propertys' bookings, the END time is STRICTLY GREATER
+        // than the start of the booking time.
+        foreach ($results as $r) {
+            $cStart = date_create_from_format('Y-m-d', $r->startDate);
+            $cEnd = date_create_from_format('Y-m-d', $r->endDate);
+
+            if ($cStart <= $s && $s < $cEnd) {
+                return json_encode(["status" => "Someone has already booked that time!"]);
+            }
+        }
+        // Ugly if tower. Did it this way for debugging, will clean up later (I have a reminder for this) :D
+
+        if(isset($userID) && is_numeric($userID)) {
+            if(isset($propertyID) && is_numeric($propertyID)) {
+                if(isset($startDate)) {
+                    if(isset($endDate)) {
+                        if(isset($persons) && is_numeric($persons)) {
+                            if(isset($paid) && is_numeric($paid)) {
+                                if(isset($status)){
+                                    $insert = ['userID' => $userID, 'propertyID' => $propertyID, 'startDate' => htmlspecialchars($startDate), 'endDate' => htmlspecialchars($endDate), 'persons' => $persons, 'paid' => $paid, 'status' => htmlspecialchars($status)];
+                                    DB::table('bookings')->insert($insert);
+                                    return json_encode(['status' => 'success']);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return json_encode(['status' => 'bad_input']);
+    }
+
+    public function view_user(Request $request, $id) {
+        if(isset($id) && !is_null($id) && !empty($id) && is_numeric($id)) {
+            $user = DB::table('users AS u')
+                        ->select('u.name', 'u.email',
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.id, ",", b.propertyID, ",", p.property_address) SEPARATOR "~") FROM bookings AS b LEFT JOIN properties AS p ON p.property_id=b.propertyID WHERE b.userID = u.id) AS `bookings`'),
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(props.property_address, ",", props.property_desc) SEPARATOR "~") FROM properties AS props WHERE props.property_user_id = u.id) AS `properties`')
+                        )
+                        ->where([
+                            ['u.id', $id],
+                            ['u.inactive', 0]
+                        ])
+                        ->first();
+            
+            if(isset($user) && !empty($user) && !is_null($user)) {
+                $bookings = explode("~", $user->bookings);
+                $properties = explode("~", $user->properties);
+                
+                return view('view_user', 
+                    ['user' => $user,
+                    'bookings' => $bookings,
+                    'properties' => $properties]
+                );
+            }
+        }
+
+        return view('user_not_found');
+    }
+
+    public function get_user_id(Request $request) {
+        $id = Auth::id();
+
+        if(isset($id) && !empty($id) && !is_null($id)) {
+            return json_encode(['status' => 'success', 'id' => $id]);
+        }
+        return json_encode(['status' => 'error']);
+    }
 }
