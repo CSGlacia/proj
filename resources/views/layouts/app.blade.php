@@ -39,7 +39,7 @@
             <div class="top-right links">
                     <a href="/">Homepage</a>
                 @auth
-                    <a href="{{ url('/home') }}">User Profile</a>
+                    <a id="user_profile" href="">User Profile</a>
                     <a href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
                     <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
@@ -65,6 +65,31 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+
+
+            function set_profile_button() {
+                $.ajax({
+                    url: '/get_user_id',
+                    method: 'GET',
+                    success: function(html) {
+                        var data = JSON.parse(html);
+                        if(data['status'] == "success") {
+                            var id = data['id'];
+                            $('#user_profile').attr('href', '/user_profile/'+id);
+                        } else {
+                            alert("There was an error, please try again!");
+                        }
+                    },
+                    error: function ( xhr, errorType, exception ) {
+                        var errorMessage = exception || xhr.statusText;
+                        alert("There was a connectivity problem. Please try again.");
+                    }
+                });
+            }
+        $(document).ready(function() {
+
+            set_profile_button();
         });
     </script>
     @yield('scripts')
