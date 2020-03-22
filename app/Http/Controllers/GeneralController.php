@@ -87,8 +87,10 @@ class GeneralController extends Controller
     }
     public function get_user_id(Request $request) {
         $id = Auth::id();
-
-        if(isset($id) && !empty($id) && !is_null($id)) {
+        if(is_null($id)){
+            return json_encode(['status' => 'not_logged_in']);
+        }
+        if(isset($id) && !empty($id)) {
             return json_encode(['status' => 'success', 'id' => $id]);
         }
         return json_encode(['status' => 'error']);

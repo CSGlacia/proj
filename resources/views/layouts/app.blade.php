@@ -77,7 +77,10 @@
                         if(data['status'] == "success") {
                             var id = data['id'];
                             $('#user_profile').attr('href', '/user_profile/'+id);
-                        } else {
+                        } else if (data['status'] == "not_logged_in"){
+                            //if the user is not logged in, tells it to not do anything
+                        }
+                        else {
                             alert("There was an error, please try again!");
                         }
                     },
