@@ -15,7 +15,7 @@ Route::get('/', 'GeneralController@view_property');
 
 Auth::routes();
 
-Route::get('/get_user_id', 'HomeController@get_user_id');
+Route::get('/get_user_id', 'GeneralController@get_user_id');
 
 Route::get('/home', 'HomeController@index')->name('home');
 
