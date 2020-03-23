@@ -19,7 +19,7 @@ Route::get('/get_user_id', 'GeneralController@get_user_id');
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/create_listing', 'HomeController@listing_page');
+Route::get('/create_property_page', 'HomeController@listing_page');
 Route::post('/create_property', 'HomeController@create_property');
 
 Route::get('/view_property', 'GeneralController@view_property');

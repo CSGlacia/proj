@@ -29,7 +29,7 @@ class HomeController extends Controller
     }
 
     public function listing_page(Request $request) {
-        return view('create_listing_page');
+        return view('create_property_page');
     }
 
     public function create_property(Request $request) {
