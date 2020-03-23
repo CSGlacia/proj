@@ -1,0 +1,78 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="card col-sm-12 col-md-12 col-lg-12">
+        <br>
+        <b><h3 style="text-align:center;">Create a New Property Listing</h3></b>
+        <hr>
+        <div id="listing_form" class="form-group">
+            <div class="row">
+                <div class="col-sm-6 col-md-6 col-lg-6" >
+                    <label for="form_select_property">Choose the property you want to list:</label>
+                        <select class="form-control" id="form_select_property">
+                        @foreach($properties as $p) 
+                        <option>{{$p->property_address . ", " . $p->property_suburb . ", " . $p->property_postcode}}</option>
+                        @endforeach
+                        </select>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <input id="price" class="form-control" type="number" placeholder="0" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                <label for="form_property_list_start_date">Start Date:</label>
+                    <input id="form_property_list_start_date" class="form-control" type="date" required>
+                </div>
+                <div class="col-auto">
+                <label for="form_property_list_end_date">End Date:</label>
+                    <input id="form_property_list_end_date" class="form-control" type="date" required>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <a id="property_list_submit" class="btn btn-primary">Submit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $(document).on('click', '#property_submit', function(e) {
+        e.preventDefault();
+
+        var address = $('#address').val();
+
+        $.ajax({
+            url: '/create_property',
+            method: 'POST',
+            data: 'address='+address+'&suburb='+suburb+'&postcode='+postcode+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc,
+            success: function(html) {
+                var data = tryParseJSON(html);
+
+                if(data['status'] == "success") {
+                    alert("Property Created Successfully");
+                } else if(data['status'] == 'bad_input') {
+                    alert("Please double check all fields are filled!");
+                } else {
+                    alert("There was an error, please try again!");
+                }
+            },
+            error: function ( xhr, errorType, exception ) {
+                var errorMessage = exception || xhr.statusText;
+                alert("There was a connectivity problem. Please try again.");
+            }
+        });
+    });
+});
+</script>
+@endsection

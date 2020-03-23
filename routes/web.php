@@ -28,3 +28,5 @@ Route::get('/book', 'HomeController@book');
 Route::post('/create_booking', 'HomeController@create_booking');
 
 Route::get('/user_profile/{id?}', 'GeneralController@view_user');
+
+Route::get('create_property_listing','HomeController@create_property_listing');

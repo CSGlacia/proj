@@ -20,6 +20,7 @@
                 {{$p}}
             @endforeach
         </div>
+        <a href="/create_property_listing" class="btn btn-primary">Create a property listing</a>
     </div>
 </div>
 @endsection

@@ -140,4 +140,13 @@ class HomeController extends Controller
         }
         return json_encode(['status' => 'error']);
     }
+    public function create_property_listing(Request $request){
+        $id = Auth::id();
+        $user_properties = DB::table('properties AS p')
+        ->select('p.*')
+        ->where([ ['property_user_id', '=', $id] ])
+        ->get();
+
+        return view('create_property_listing',['properties' => $user_properties]);
+    }
 }
