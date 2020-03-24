@@ -61,9 +61,16 @@ $(document).ready(function() {
                 var data = JSON.parse(html);
                 if(data['status'] == "success") {
                     alert("Property Listing created successfully");
-                } else if(data['status'] == 'bad_input') {
-                    alert("Bad Input");
-                } else {
+                } else if(data['status'] == 'bad_input'){
+                    alert("Please check all fields are filled.");
+                } else if(data['status'] == 'price_low') {
+                    alert("You must enter a price which is positive. You cannot charge negative amounts.");
+                } else if(data['status'] == 'price_high'){
+                    alert("There's a price limit of $999999.99 . Please enter a lower price per night.");
+                } else if(data['status'] == 'date_invalid'){
+                    alert("Your start date must be before your end date. It cannot be after or the same.")
+                }
+                else {
                     alert("There was an error, please try again!");
                 }
             },
