@@ -34,8 +34,8 @@
                     <input id="paid" class="form-control" type="number" value="0" required>
                 </div>
                 <div class="col-sm-3 col-md-3 col-lg-3">
-                    <span>Status? OK / INACTIVE / (?):&nbsp;</span>
-                    <input id="status" class="form-control" type="text" value="OK" required>
+                    <span>Status? INACTIVE = 1 ACTIVE = 0:&nbsp;</span>
+                    <input id="status" class="form-control" type="text" value="0" required>
                 </div>
             </div>
             <hr>
@@ -65,6 +65,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/create_booking',
             method: 'POST',
+            dataType: 'JSON',
             data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons+'&paid='+paid+'&status='+status,
             success: function(html) {
                 var data = JSON.parse(html);

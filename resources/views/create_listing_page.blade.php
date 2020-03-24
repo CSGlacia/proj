@@ -27,6 +27,12 @@
             <hr>
             <h5>Property Details:&nbsp;</h5>
             <div class="row">
+                <div class="col-sm-8 col-md-8 col-lg-8">
+                    <span>Listing Name:&nbsp;</span>
+                    <input id="l_name" class="form-control" type="text" placeholder="E.g. Grand Beachouse" required>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-4 col-md-4 col-lg-4">
                     <span># of Bedrooms:&nbsp;</span>
                     <input id="beds" class="form-control" type="number" placeholder="0" required>
@@ -69,13 +75,14 @@ $(document).ready(function() {
         var baths = $('#baths').val();
         var cars = $('#cars').val();
         var desc = $('#property_desc').val();
-
+        var l_name = $('#l_name').val();
         $.ajax({
             url: '/create_property',
             method: 'POST',
-            data: 'address='+address+'&suburb='+suburb+'&postcode='+postcode+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc,
+            dataType: 'JSON',
+            data: 'address='+address+'&suburb='+suburb+'&postcode='+postcode+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc+'&l_name='+l_name,
             success: function(html) {
-                var data = tryParseJSON(html);
+                var data = JSON.parse(html);
 
                 if(data['status'] == "success") {
                     alert("Property Created Successfully");

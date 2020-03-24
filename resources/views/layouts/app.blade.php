@@ -31,25 +31,28 @@
     .row {
         margin-bottom: 20px;
     }
+
 </style>
 
 <body>
     <div class="topnav">
         @if (Route::has('login'))
-            <div class="top-right links">
-                    <a href="/">Homepage</a>
+            <div class="top-right links" style="padding:15px;">
+                    <a class="btn btn-xs btn-primary" href="/">Homepage</a>
                 @auth
-                    <a id="user_profile" href="">User Profile</a>
-                    <a href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
-                    <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                    <a class="btn btn-xs btn-primary" id="user_profile" href="">User Profile</a>
+                    <a class="btn btn-xs btn-primary" href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
+                    <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
                     </form>
-                    <a href="/create_listing">Create a property listing</a>
+                    <a class="btn btn-xs btn-warning" href="/create_listing">Create a property listing</a>
+                    <a class="btn btn-xs btn-success" href="/property_reviews">Review past properties</a>
+                    <a class="btn btn-xs btn-success"href="/tennant_reviews">Review past tennants</a>
                 @else
-                    <a href="{{ route('login') }}">Login</a>
+                    <a class="btn btn-xs btn-primary" href="{{ route('login') }}">Login</a>
 
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}">Register</a>
+                        <a class="btn btn-xs btn-primary" href="{{ route('register') }}">Register</a>
                     @endif
                 @endauth
             </div>

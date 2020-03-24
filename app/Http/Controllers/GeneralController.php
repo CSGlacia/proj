@@ -62,9 +62,9 @@ class GeneralController extends Controller
     public function view_user(Request $request, $id) {
         if(isset($id) && !is_null($id) && !empty($id) && is_numeric($id)) {
             $user = DB::table('users AS u')
-                        ->select('u.name', 'u.email',
-                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.id, ",", b.propertyID, ",", p.property_address) SEPARATOR "~") FROM bookings AS b LEFT JOIN properties AS p ON p.property_id=b.propertyID WHERE b.userID = u.id) AS `bookings`'),
-                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(props.property_address, ",", props.property_desc) SEPARATOR "~") FROM properties AS props WHERE props.property_user_id = u.id) AS `properties`')
+                        ->select('u.name', 'u.id', 'u.email',
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.id) SEPARATOR ",") FROM bookings AS b LEFT JOIN properties AS p ON p.property_id=b.propertyID WHERE b.userID = u.id AND b.inactive = 0) AS `bookings`'),
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(props.property_id) SEPARATOR ",") FROM properties AS props WHERE props.property_user_id = u.id) AS `properties`')
                         )
                         ->where([
                             ['u.id', $id],
@@ -73,13 +73,40 @@ class GeneralController extends Controller
                         ->first();
             
             if(isset($user) && !empty($user) && !is_null($user)) {
-                $bookings = explode("~", $user->bookings);
-                $properties = explode("~", $user->properties);
-                
+
+                $bookings = DB::table('bookings AS b')
+                                ->select('b.*', 'p.*')
+                                ->where('b.inactive', 0)
+                                ->whereIn('b.id', explode(',', $user->bookings))
+                                ->leftJoin('properties AS p', 'p.property_id', '=', 'b.propertyID')
+                                ->get();
+
+                foreach($bookings as $b) {
+                    $b->startDate = date('d/m/Y', $b->startDate);
+                    $b->endDate = date('d/m/Y', $b->endDate);
+                }
+
+                $properties = DB::table('properties AS p')
+                                ->where('p.property_inactive', 0)
+                                ->whereIn('p.property_id', explode(',', $user->properties))
+                                ->get();
+
+                $page_owner = false;
+
+                $id = Auth::id();
+
+                if(is_null($id) || !isset($id) || empty($id)) {
+                    $page_owner = false;
+                } else if($id == $user->id) {
+                    $page_owner = true;
+                }
+
                 return view('view_user', 
                     ['user' => $user,
                     'bookings' => $bookings,
-                    'properties' => $properties]
+                    'properties' => $properties,
+                    'page_owner' => $page_owner
+                    ]
                 );
             }
         }
@@ -100,26 +127,31 @@ class GeneralController extends Controller
 
     public function view_one_property(Request $request, $id) {
         $prop = DB::table('properties AS p')
-        ->select('p.*'
-        )
-        ->where([
-            ['p.property_id', $id],
-            ['p.property_inactive', 0]
-        ])
-        ->get();
+                    ->select('p.*')
+                    ->where([
+                        ['p.property_id', $id],
+                        ['p.property_inactive', 0]
+                    ])
+                    ->first();
 
-        $avail = DB::table('bookings AS b')
-        ->select('b.*'
-        )
-        ->where([
-            ['b.propertyID', $id],
-        ])
-        ->get();
+        if(isset($prop) && !empty($prop) && !is_null($prop)) {
 
-    return view('property',
-                    ['property' => $prop,
-                    'avail' => $avail]
-        );
-        
+            $avail = DB::table('bookings AS b')
+                        ->select('b.*')
+                        ->where([
+                            ['b.propertyID', $id],
+                        ])
+                        ->get();
+
+            foreach($avail as $a) {
+                $a->startDate = date('d/m/Y', $a->startDate);
+                $a->endDate = date('d/m/Y', $a->endDate);
+            }
+
+            return view('property',
+                            ['p' => $prop,
+                            'avail' => $avail]
+                );
+        }
     }
 }

@@ -41,12 +41,12 @@ class HomeController extends Controller
         $baths = $request->input('baths');
         $cars = $request->input('cars');
         $desc = $request->input('desc');
-
+        $l_name = $request->input('l_name');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc)) {
+            if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
 
-                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_suburb' => htmlspecialchars($suburb), 'property_postcode' => $postcode, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc)];
+                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_suburb' => htmlspecialchars($suburb), 'property_postcode' => $postcode, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name];
 
                 DB::table('properties')
                     ->insert($insert);
@@ -82,8 +82,8 @@ class HomeController extends Controller
         // TODO: (?) User cannot book more than one property for themselves
         // TODO: App crashes if unrecognised commands injected.
 
-        $s = date_create_from_format('Y-m-d', $startDate);
-        $e = date_create_from_format('Y-m-d', $endDate);
+        $s = strtotime($startDate);
+        $e = strtotime($endDate);
         // If the end date is before $s, fail. (You can't book for 1 day)
         if ($s >= $e) {
             return json_encode(["status" => "Time failure!"]);
@@ -102,31 +102,18 @@ class HomeController extends Controller
         // If for some propertys' bookings, the END time is STRICTLY GREATER
         // than the start of the booking time.
         foreach ($results as $r) {
-            $cStart = date_create_from_format('Y-m-d', $r->startDate);
-            $cEnd = date_create_from_format('Y-m-d', $r->endDate);
-
-            if ($cStart <= $s && $s < $cEnd) {
+            if ($r->startDate <= $s && $s < $r->endDate) {
                 return json_encode(["status" => "Someone has already booked that time!"]);
             }
         }
-        // Ugly if tower. Did it this way for debugging, will clean up later (I have a reminder for this) :D
 
-        if(isset($userID) && is_numeric($userID)) {
-            if(isset($propertyID) && is_numeric($propertyID)) {
-                if(isset($startDate)) {
-                    if(isset($endDate)) {
-                        if(isset($persons) && is_numeric($persons)) {
-                            if(isset($paid) && is_numeric($paid)) {
-                                if(isset($status)){
-                                    $insert = ['userID' => $userID, 'propertyID' => $propertyID, 'startDate' => htmlspecialchars($startDate), 'endDate' => htmlspecialchars($endDate), 'persons' => $persons, 'paid' => $paid, 'status' => htmlspecialchars($status)];
-                                    DB::table('bookings')->insert($insert);
-                                    return json_encode(['status' => 'success']);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        if(isset($userID) && is_numeric($userID) && isset($propertyID) && is_numeric($propertyID) && isset($startDate) && isset($endDate) && isset($persons) && is_numeric($persons) && isset($paid) && is_numeric($paid) && isset($status) && ($status == 1 || $status == 0) ) {
+            
+            $insert = ['userID' => $userID, 'propertyID' => $propertyID, 'startDate' => $s, 'endDate' => $e, 'persons' => $persons, 'paid' => $paid, 'inactive' => $status];
+            
+            DB::table('bookings')->insert($insert);
+            
+            return json_encode(['status' => 'success']);
         }
 
         return json_encode(['status' => 'bad_input']);
@@ -139,5 +126,61 @@ class HomeController extends Controller
             return json_encode(['status' => 'success', 'id' => $id]);
         }
         return json_encode(['status' => 'error']);
+    }
+
+    public function property_reviews(Request $request) {
+        $id = Auth::id();
+
+        if(isset($id) && !empty($id) && !is_null($id)) {
+            $bookings = DB::table('bookings AS b')
+                            ->where([
+                                ['b.userID', $id],
+                                ['b.inactive', 0],
+                                ['b.startDate', '<', time()],
+                                ['b.endDate', '<', time()]
+                            ])
+                            ->join('properties AS p', 'p.property_id', '=', 'b.propertyID')
+                            ->get();
+
+            foreach($bookings as $b) {
+                $b->startDate = date('d/m/Y', $b->startDate);
+                $b->endDate = date('d/m/Y', $b->endDate);
+            }
+
+            return view('property_review',
+                    [
+                        'bookings' => $bookings
+                    ]);
+        }
+        return view('error_page');
+    }
+
+    public function tennant_reviews(Request $request) {
+        $id = Auth::id();
+
+        if(isset($id) && !empty($id) && !is_null($id)) {
+            $bookings = DB::table('bookings AS b')
+                            ->where([
+                                ['b.inactive', 0],
+                                ['b.startDate', '<', time()],
+                                ['b.endDate', '<', time()],
+                                ['p.property_user_id', $id]
+                            ])
+                            ->join('properties AS p', 'p.property_id', '=', 'b.propertyID')
+                            ->join('users AS u', 'u.id', '=', 'b.userID')
+                            ->get();
+        
+            foreach($bookings as $b) {
+                $b->startDate = date('d/m/Y', $b->startDate);
+                $b->endDate = date('d/m/Y', $b->endDate);
+            }
+
+            return view('tennant_review',
+                    [
+                        'bookings' => $bookings
+                    ]);
+        }
+
+        return view('error_page');
     }
 }
