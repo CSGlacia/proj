@@ -68,7 +68,7 @@ $(document).ready(function() {
                 } else if(data['status'] == 'price_high'){
                     alert("There's a price limit of $999999.99 . Please enter a lower price per night.");
                 } else if(data['status'] == 'date_invalid'){
-                    alert("Your start date must be before your end date. It cannot be after or the same.")
+                    alert("Your start date must be before your end date and today or after.")
                 }
                 else {
                     alert("There was an error, please try again!");

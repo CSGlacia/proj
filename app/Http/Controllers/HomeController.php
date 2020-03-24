@@ -168,7 +168,8 @@ class HomeController extends Controller
             }
             $start = date_create_from_format('Y-m-d', $start_date);
             $end = date_create_from_format('Y-m-d', $end_date);
-            if ($start >= $end) {
+            $curr = date_create_from_format('Y-m-d', date('Y-m-d'));
+            if ($start >= $end || $start <= $curr) {
                 return json_encode(['status' => 'date_invalid']);
             }
             $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property];
