@@ -14,9 +14,13 @@
 
 
     <h2> Current Availabilities</h2>
-    @foreach ($avail as $a)
-         <h4> {{ $a->startDate }} - {{$a->endDate}} </h4> 
-    @endforeach
+    @if(count($avail) > 0)
+        @foreach ($avail as $a)
+            <h4> {{ $a->startDate }} - {{$a->endDate}} </h4> 
+        @endforeach
+    @else
+        <h4> Everything is available!</h4>
+    @endif
 
 
     <a class="btn btn-success" name="book_property" data-id="{{$p->property_id}}"> Book property </a>
