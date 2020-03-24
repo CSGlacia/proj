@@ -75,7 +75,7 @@ $(document).ready(function() {
             method: 'POST',
             data: 'address='+address+'&suburb='+suburb+'&postcode='+postcode+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc,
             success: function(html) {
-                var data = tryParseJSON(html);
+                var data = JSON.parse(html);
 
                 if(data['status'] == "success") {
                     alert("Property Created Successfully");

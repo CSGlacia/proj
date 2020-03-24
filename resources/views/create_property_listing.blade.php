@@ -12,7 +12,7 @@
                     <label for="form_select_property">Choose the property you want to list:</label>
                         <select class="form-control" id="form_select_property">
                         @foreach($properties as $p) 
-                        <option>{{$p->property_address . ", " . $p->property_suburb . ", " . $p->property_postcode}}</option>
+                        <option value={{$p->property_id}}>{{$p->property_address . ", " . $p->property_suburb . ", " . $p->property_postcode}}</option>
                         @endforeach
                         </select>
                 </div>
@@ -47,22 +47,22 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-    $(document).on('click', '#property_submit', function(e) {
+    $(document).on('click', '#property_list_submit', function(e) {
         e.preventDefault();
-
-        var address = $('#address').val();
-
+        var property = $('#form_select_property').val();
+        var price = $('#price').val();
+        var start_date = $('#form_property_list_start_date').val();
+        var end_date = $('#form_property_list_end_date').val();
         $.ajax({
-            url: '/create_property',
+            url: '/create_property_listing',
             method: 'POST',
-            data: 'address='+address+'&suburb='+suburb+'&postcode='+postcode+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc,
+            data: 'property='+property+'&price='+price+'&start_date='+start_date+'&end_date='+end_date,
             success: function(html) {
-                var data = tryParseJSON(html);
-
+                var data = JSON.parse(html);
                 if(data['status'] == "success") {
-                    alert("Property Created Successfully");
+                    alert("Property Listing created successfully");
                 } else if(data['status'] == 'bad_input') {
-                    alert("Please double check all fields are filled!");
+                    alert("Bad Input");
                 } else {
                     alert("There was an error, please try again!");
                 }
