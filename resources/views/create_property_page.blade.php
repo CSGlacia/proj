@@ -4,7 +4,7 @@
 <div class="container">
     <div class="card col-sm-12 col-md-12 col-lg-12">
         <br>
-        <b><h3 style="text-align:center;">Create a New Property Listing</h3></b>
+        <b><h3 style="text-align:center;">Add a new property to your account</h3></b>
         <hr>
         <div id="listing_form" class="form-group">
             <h5>Location Details:&nbsp;</h5>

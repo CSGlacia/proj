@@ -48,6 +48,7 @@
             <hr>
           @endforeach
         </div>
+        <a href="/create_property_listing" class="btn btn-primary">Create a property listing</a>
     </div>
     <div class="row">
         <b><h2>User Reviews</h2></b>

@@ -45,9 +45,10 @@
                     <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
                     </form>
-                    <a class="btn btn-xs btn-warning" href="/create_listing">Create a property listing</a>
+                    <a class="btn btn-xs btn-warning" href="/create_property_listing">Create a property listing</a>
                     <a class="btn btn-xs btn-success" href="/property_reviews">Review past properties</a>
                     <a class="btn btn-xs btn-success"href="/tennant_reviews">Review past tennants</a>
+                    <a class="btn btn-xs btn-danger" href="/create_property_page">Add a new property to your account</a>
                 @else
                     <a class="btn btn-xs btn-primary" href="{{ route('login') }}">Login</a>
 
