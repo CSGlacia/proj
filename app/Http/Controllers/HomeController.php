@@ -29,7 +29,7 @@ class HomeController extends Controller
     }
 
     public function listing_page(Request $request) {
-        return view('create_listing_page');
+        return view('create_property_page');
     }
 
     public function create_property(Request $request) {
@@ -139,5 +139,42 @@ class HomeController extends Controller
             return json_encode(['status' => 'success', 'id' => $id]);
         }
         return json_encode(['status' => 'error']);
+    }
+    public function create_property_listing(Request $request){
+        if($request->isMethod('GET')){
+            $id = Auth::id();
+            $user_properties = DB::table('properties AS p')
+            ->select('p.*')
+            ->where([ ['property_user_id', '=', $id] ])
+            ->get();
+    
+            return view('create_property_listing',['properties' => $user_properties]);
+        }
+        else if($request->isMethod('POST')){
+            $user = Auth::id();
+            $property = $request->input('property'); //this is property id
+            $price = $request->input('price');
+            $start_date = $request->input('start_date');
+            $end_date = $request->input('end_date');
+
+            if(!isset($price) || !isset($property) || !isset($start_date) || !isset($end_date)){
+                return json_encode(['status' => 'bad_input']);
+            }
+            if($price <=  0){
+                return json_encode(['status' => 'price_low']);
+            }
+            else if($price >= 1000000){
+                return json_encode(['status' => 'price_high']);
+            }
+            $start = date_create_from_format('Y-m-d', $start_date);
+            $end = date_create_from_format('Y-m-d', $end_date);
+            $curr = date_create_from_format('Y-m-d', date('Y-m-d'));
+            if ($start >= $end || $start <= $curr) {
+                return json_encode(['status' => 'date_invalid']);
+            }
+            $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property];
+            DB::table('property_listing')->insert($data);            
+            return json_encode(['status' => 'success']);
+        }
     }
 }

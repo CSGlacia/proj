@@ -44,7 +44,7 @@
                     <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
                     </form>
-                    <a href="/create_listing">Create a property listing</a>
+                    <a href="/create_property_page">Add a new property to your account</a>
                 @else
                     <a href="{{ route('login') }}">Login</a>
 
