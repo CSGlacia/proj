@@ -4,7 +4,7 @@
 <div class="container">
     <div class="search-container">
       <div class="search-container">
-        <form action="/view_property" method="GET"> <!--CHANGE TO SEARCH LOGIC-->
+        <form action="/view_properties" method="GET"> <!--CHANGE TO SEARCH LOGIC-->
           <input type="text" placeholder="Search by name..." name="query" size="100">
           <input type="submit" value="Search" /><br>
           <input type="checkbox" name="address_checkbox" value="1">
@@ -39,7 +39,7 @@ $(document).ready(function() {
     $(document).on('click', '[name ="view_property"]', function(e) {
         e.preventDefault();
         var id = $(this).data('id');
-        console.log(id);
+        window.location = '/view_property/'+id;
     });
 });
 </script>

@@ -18,6 +18,7 @@ class GeneralController extends Controller
         $address_checkbox = $request->input('address_checkbox');
         $suburb_checkbox = $request->input('suburb_checkbox');
         $postcode_checkbox = $request->input('postcode_checkbox');
+
         if(empty($query)){
             $results = DB::table('properties AS p')
                             ->select('p.*')
@@ -85,6 +86,7 @@ class GeneralController extends Controller
 
         return view('user_not_found');
     }
+
     public function get_user_id(Request $request) {
         $id = Auth::id();
         if(is_null($id)){
@@ -94,5 +96,30 @@ class GeneralController extends Controller
             return json_encode(['status' => 'success', 'id' => $id]);
         }
         return json_encode(['status' => 'error']);
+    }
+
+    public function view_one_property(Request $request, $id) {
+        $prop = DB::table('properties AS p')
+        ->select('p.*'
+        )
+        ->where([
+            ['p.property_id', $id],
+            ['p.property_inactive', 0]
+        ])
+        ->get();
+
+        $avail = DB::table('bookings AS b')
+        ->select('b.*'
+        )
+        ->where([
+            ['b.propertyID', $id],
+        ])
+        ->get();
+
+    return view('property',
+                    ['property' => $prop,
+                    'avail' => $avail]
+        );
+        
     }
 }
