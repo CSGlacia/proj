@@ -21,7 +21,7 @@
             <hr>
             @if(count($avail) > 0)
                 @foreach ($avail as $a)
-                    <h4> {{ $a->startDate }} - {{$a->endDate}} </h4> 
+                    <h4> {{ $a->booking_startDate }} - {{$a->booking_endDate}} </h4> 
                 @endforeach
             @else
                 <h4> Everything is available!</h4>

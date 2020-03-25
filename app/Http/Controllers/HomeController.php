@@ -102,14 +102,14 @@ class HomeController extends Controller
         // If for some propertys' bookings, the END time is STRICTLY GREATER
         // than the start of the booking time.
         foreach ($results as $r) {
-            if ($r->startDate <= $s && $s < $r->endDate) {
+            if ($r->booking_startDate <= $s && $s < $r->booking_endDate) {
                 return json_encode(["status" => "Someone has already booked that time!"]);
             }
         }
 
         if(isset($userID) && is_numeric($userID) && isset($propertyID) && is_numeric($propertyID) && isset($startDate) && isset($endDate) && isset($persons) && is_numeric($persons) && isset($paid) && is_numeric($paid) && isset($status) && ($status == 1 || $status == 0) ) {
             
-            $insert = ['userID' => $userID, 'propertyID' => $propertyID, 'startDate' => $s, 'endDate' => $e, 'persons' => $persons, 'paid' => $paid, 'inactive' => $status];
+            $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => $paid, 'booking_inactive' => $status];
             
             DB::table('bookings')->insert($insert);
             
@@ -134,17 +134,18 @@ class HomeController extends Controller
         if(isset($id) && !empty($id) && !is_null($id)) {
             $bookings = DB::table('bookings AS b')
                             ->where([
-                                ['b.userID', $id],
-                                ['b.inactive', 0],
-                                ['b.startDate', '<', time()],
-                                ['b.endDate', '<', time()]
+                                ['b.booking_userID', $id],
+                                ['b.booking_inactive', 0],
+                                ['b.booking_startDate', '<', time()],
+                                ['b.booking_endDate', '<', time()]
                             ])
-                            ->join('properties AS p', 'p.property_id', '=', 'b.propertyID')
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                             ->get();
 
+
             foreach($bookings as $b) {
-                $b->startDate = date('d/m/Y', $b->startDate);
-                $b->endDate = date('d/m/Y', $b->endDate);
+                $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
             }
 
             return view('property_review',
@@ -159,20 +160,20 @@ class HomeController extends Controller
         $id = Auth::id();
 
         if(isset($id) && !empty($id) && !is_null($id)) {
-            $bookings = DB::table('bookings AS b')
+            $bookings = DB::table('properties as p')
                             ->where([
-                                ['b.inactive', 0],
-                                ['b.startDate', '<', time()],
-                                ['b.endDate', '<', time()],
-                                ['p.property_user_id', $id]
+                                ['p.property_user_id', $id],
+                                ['p.property_inactive', 0],
+                                ['b.booking_startDate', '<', time()],
+                                ['b.booking_endDate', '<', time()]
                             ])
-                            ->join('properties AS p', 'p.property_id', '=', 'b.propertyID')
-                            ->join('users AS u', 'u.id', '=', 'b.userID')
+                            ->join('bookings AS b', 'b.booking_propertyID', '=', 'p.property_id')
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID')
                             ->get();
-        
+
             foreach($bookings as $b) {
-                $b->startDate = date('d/m/Y', $b->startDate);
-                $b->endDate = date('d/m/Y', $b->endDate);
+                $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
             }
 
             return view('tennant_review',
@@ -224,6 +225,80 @@ class HomeController extends Controller
             DB::table('property_listing')->insert($data);            
             
             return json_encode(['status' => 'success']);
+        }
+    }
+
+    public function review_property(Request $request) {
+        $booking_id = $request->input('booking_id');
+        $property_id = $request->input('prop_id');
+
+        if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id) && is_numeric($booking_id) && isset($property_id) && !empty($property_id) && !is_null($property_id) && is_numeric($property_id)) {
+
+            $property = DB::table('properties AS p')
+                            ->where([
+                                ['p.property_id', $property_id],
+                                ['p.property_inactive', 0]
+                            ])
+                            ->join('users AS u', 'u.id', '=', 'p.property_user_id')
+                            ->first();
+
+            $booking = DB::table('bookings AS b')
+                            ->where([
+                                ['b.booking_id', $booking_id],
+                                ['b.booking_inactive', 0]
+                            ])
+                            ->first();
+
+            $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
+            $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+
+            return view('review_property', 
+                [
+                    'booking_id' => $booking_id,
+                    'property_id' => $property_id,
+                    'p' => $property,
+                    'b' => $booking
+                ]
+            );
+        } else {
+            return view('error_page');
+        }
+    }
+
+    public function review_tennant(Request $request) {
+        $booking_id = $request->input('booking_id');
+        $property_id = $request->input('prop_id');
+
+        if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id) && is_numeric($booking_id) && isset($property_id) && !empty($property_id) && !is_null($property_id) && is_numeric($property_id)) {
+
+            $property = DB::table('properties AS p')
+                            ->where([
+                                ['p.property_id', $property_id],
+                                ['p.property_inactive', 0]
+                            ])
+                            ->first();
+
+            $booking = DB::table('bookings AS b')
+                            ->where([
+                                ['b.booking_id', $booking_id],
+                                ['b.booking_inactive', 0]
+                            ])
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+                            ->first();
+
+            $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
+            $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+
+            return view('review_tennant', 
+                [
+                    'booking_id' => $booking_id,
+                    'property_id' => $property_id,
+                    'p' => $property,
+                    'b' => $booking
+                ]
+            );
+        } else {
+            return view('error_page');
         }
     }
 }

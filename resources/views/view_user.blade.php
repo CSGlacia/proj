@@ -16,11 +16,11 @@
                             <div>Property Name: {{$b->property_title}}</div>
                             <div>Address: {{$b->property_address}}</div>
                             <div>Suburb: {{$b->property_suburb}}</div>
-                            <div>Persons: {{$b->persons}}</div>
+                            <div>Persons: {{$b->booking_persons}}</div>
                         </div>
-                        <span>Start Date: {{$b->startDate}}</span>
-                        <span>End Date: {{$b->endDate}}</span>
-                        <a class="btn btn-primary" name="view_booking" data-id="{{$b->id}}"> View booking</a>
+                        <span>Start Date: {{$b->booking_startDate}}</span>
+                        <span>End Date: {{$b->booking_endDate}}</span>
+                        <a class="btn btn-primary" name="view_booking" data-id="{{$b->booking_id}}"> View booking</a>
                     </div>
                     <hr>
                 </div>

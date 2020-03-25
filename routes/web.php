@@ -32,10 +32,11 @@ Route::get('/book', 'HomeController@book');
 Route::post('/create_booking', 'HomeController@create_booking');
 
 //user profile functions
-Route::get('/user_profile/{id?}', 'GeneralController@view_user');
+Route::get('/user_profile/{id?}', 'GeneralController@view_user')->where('id', '[0-9]+');
 
 //review functions
 Route::get('/property_reviews', 'HomeController@property_reviews');
 Route::get('/tennant_reviews', 'HomeController@tennant_reviews');
-
+Route::get('/review_tennant', 'HomeController@review_tennant');
+Route::get('/review_property', 'HomeController@review_property');
 

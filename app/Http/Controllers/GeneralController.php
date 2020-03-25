@@ -63,7 +63,7 @@ class GeneralController extends Controller
         if(isset($id) && !is_null($id) && !empty($id) && is_numeric($id)) {
             $user = DB::table('users AS u')
                         ->select('u.name', 'u.id', 'u.email',
-                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.id) SEPARATOR ",") FROM bookings AS b LEFT JOIN properties AS p ON p.property_id=b.propertyID WHERE b.userID = u.id AND b.inactive = 0) AS `bookings`'),
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.booking_id) SEPARATOR ",") FROM bookings AS b LEFT JOIN properties AS p ON p.property_id=b.booking_propertyID WHERE b.booking_userID = u.id AND b.booking_inactive = 0) AS `bookings`'),
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(props.property_id) SEPARATOR ",") FROM properties AS props WHERE props.property_user_id = u.id) AS `properties`')
                         )
                         ->where([
@@ -76,14 +76,14 @@ class GeneralController extends Controller
 
                 $bookings = DB::table('bookings AS b')
                                 ->select('b.*', 'p.*')
-                                ->where('b.inactive', 0)
-                                ->whereIn('b.id', explode(',', $user->bookings))
-                                ->leftJoin('properties AS p', 'p.property_id', '=', 'b.propertyID')
+                                ->where('b.booking_inactive', 0)
+                                ->whereIn('b.booking_id', explode(',', $user->bookings))
+                                ->leftJoin('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                                 ->get();
 
                 foreach($bookings as $b) {
-                    $b->startDate = date('d/m/Y', $b->startDate);
-                    $b->endDate = date('d/m/Y', $b->endDate);
+                    $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                    $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
                 }
 
                 $properties = DB::table('properties AS p')
@@ -139,13 +139,14 @@ class GeneralController extends Controller
             $avail = DB::table('bookings AS b')
                         ->select('b.*')
                         ->where([
-                            ['b.propertyID', $id],
+                            ['b.booking_propertyID', $id],
+                            ['b.booking_inactive', 0]
                         ])
                         ->get();
 
             foreach($avail as $a) {
-                $a->startDate = date('d/m/Y', $a->startDate);
-                $a->endDate = date('d/m/Y', $a->endDate);
+                $a->booking_startDate = date('d/m/Y', $a->booking_startDate);
+                $a->booking_endDate = date('d/m/Y', $a->booking_endDate);
             }
 
             return view('property',
