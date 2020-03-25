@@ -91,6 +91,18 @@ class GeneralController extends Controller
                                 ->whereIn('p.property_id', explode(',', $user->properties))
                                 ->get();
 
+                $reviews = DB::table('tennant_reviews AS t')
+                                ->where([
+                                    ['trs_tennant_id', $id],
+                                    ['trs_inactive', 0]
+                                ])
+                                ->join('users AS u', 'u.id', '=', 'trs_reviewer_id')
+                                ->get();
+
+                foreach($reviews as $r) {
+                    $r->trs_submitted_at = date('d/m/Y', $r->trs_submitted_at);
+                }
+
                 $page_owner = false;
 
                 $id = Auth::id();
@@ -105,7 +117,8 @@ class GeneralController extends Controller
                     ['user' => $user,
                     'bookings' => $bookings,
                     'properties' => $properties,
-                    'page_owner' => $page_owner
+                    'page_owner' => $page_owner,
+                    'reviews' => $reviews
                     ]
                 );
             }
@@ -149,9 +162,22 @@ class GeneralController extends Controller
                 $a->booking_endDate = date('d/m/Y', $a->booking_endDate);
             }
 
+            $reviews = DB::table('property_reviews AS p')
+                        ->where([
+                            ['prs_property_id', $id],
+                            ['prs_inactive', 0]
+                        ])
+                        ->join('users AS u', 'u.id', '=', 'prs_reviewer_id')
+                        ->get();
+
+            foreach($reviews as $r) {
+                $r->prs_submitted_at = date('d/m/Y', $r->prs_submitted_at);
+            }
+
             return view('property',
                             ['p' => $prop,
-                            'avail' => $avail]
+                            'avail' => $avail,
+                            'reviews' => $reviews]
                 );
         }
     }

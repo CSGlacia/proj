@@ -60,11 +60,32 @@ $(document).ready(function() {
         $('#rating').val(input);
     });
 
-    $(document).on('click', 'submit_review', function(e){
+    $(document).on('click', '#submit_review', function(e){
         var score = $('#rating').val();
         var review = $('#review_desc').val();
-
         
+        $.ajax({
+            url: '/create_tennant_review',
+            method: 'POST',
+            dataType: 'JSON',
+            data: 'score='+score+'&review='+review+'&booking_id='+{{$b->booking_id}}+'&tennant_id='+{{$b->booking_userID}},
+            success: function(html) {
+                var data = JSON.parse(html);
+
+                if(data['status'] == "success") {
+                    alert("Review Submitted Successfully");
+                } else if(data['status'] == 'bad_input') {
+                    alert("Please double check all fields are filled!");
+                } else {
+                    alert("There was an error, please try again!");
+                }
+            },
+            error: function ( xhr, errorType, exception ) {
+                var errorMessage = exception || xhr.statusText;
+                alert("There was a connectivity problem. Please try again.");
+            }
+        });
+
     });
 });
 </script>

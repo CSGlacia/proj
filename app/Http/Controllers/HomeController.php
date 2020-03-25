@@ -93,7 +93,7 @@ class HomeController extends Controller
         // Pull from the database.
         $results = DB::table('bookings AS c')
                     ->select('c.*')
-                    ->where([ ['propertyID', '=', $propertyID] ])
+                    ->where([ ['booking_propertyID', '=', $propertyID] ])
                     ->get();
 
         $resultArr = [];
@@ -137,7 +137,8 @@ class HomeController extends Controller
                                 ['b.booking_userID', $id],
                                 ['b.booking_inactive', 0],
                                 ['b.booking_startDate', '<', time()],
-                                ['b.booking_endDate', '<', time()]
+                                ['b.booking_endDate', '<', time()],
+                                ['b.booking_property_reviewed', 0]
                             ])
                             ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                             ->get();
@@ -165,7 +166,8 @@ class HomeController extends Controller
                                 ['p.property_user_id', $id],
                                 ['p.property_inactive', 0],
                                 ['b.booking_startDate', '<', time()],
-                                ['b.booking_endDate', '<', time()]
+                                ['b.booking_endDate', '<', time()],
+                                ['b.booking_tennant_reviewed', 0]
                             ])
                             ->join('bookings AS b', 'b.booking_propertyID', '=', 'p.property_id')
                             ->join('users AS u', 'u.id', '=', 'b.booking_userID')
@@ -300,5 +302,88 @@ class HomeController extends Controller
         } else {
             return view('error_page');
         }
+    }
+
+    public function create_property_review(Request $request) {
+        $id = Auth::id();
+        $score = $request->input('score');
+        $review =$request->input('review');
+        $booking_id = $request->input('booking_id');
+        $property_id = $request->input('property_id');
+
+        if(isset($id) && !empty($id) && !is_null($id)) {
+            if(isset($score) && !empty($score) && !is_null($score) && is_numeric($score) && isset($review) && !is_null($review) && isset($booking_id) && !empty($booking_id) && !is_null($booking_id) && isset($property_id) && !empty($property_id) && !is_null($property_id)) {
+
+                //confirm that the booking exists with the property and user details
+                $booking = DB::table('bookings AS b')
+                                ->where([
+                                    ['b.booking_id', $booking_id],
+                                    ['b.booking_propertyID', $property_id],
+                                    ['b.booking_userID', $id],
+                                    ['b.booking_property_reviewed', 0]
+                                ])
+                                ->first();
+
+                if(isset($booking) && !empty($booking) && !is_null($booking)) {
+                    $insert = ['prs_booking_id' => $booking_id, 'prs_property_id' => $property_id, 'prs_reviewer_id' => $id, 'prs_score' => $score, 'prs_review' => $review, 'prs_submitted_at' => time()];
+
+                    $inserted = DB::table('property_reviews')
+                                    ->insertGetId($insert);
+
+                    if(isset($inserted) && !empty($inserted) && !is_null($inserted)) {
+                        DB::table('bookings AS b')
+                                ->where('b.booking_id', $booking_id)
+                                ->update(['b.booking_property_reviewed' => 1]);
+
+                        return json_encode(['status' => 'success']);
+                    }
+                }
+            }
+
+            return json_encode(['status' => 'bad_input']);
+        }
+        return json_encode(['status' => 'error']);
+    }
+
+    public function create_tennant_review(Request $request) {
+        $id = Auth::id();
+        $score = $request->input('score');
+        $review =$request->input('review');
+        $booking_id = $request->input('booking_id');
+        $tennant_id = $request->input('tennant_id');
+
+        if(isset($id) && !empty($id) && !is_null($id)) {
+            if(isset($score) && !empty($score) && !is_null($score) && is_numeric($score) && isset($review) && !is_null($review) && isset($booking_id) && !empty($booking_id) && !is_null($booking_id) && isset($tennant_id) && !empty($tennant_id) && !is_null($tennant_id)) {
+
+                //confirm that the booking exists with the property and user details
+                $booking = DB::table('bookings AS b')
+                                ->where([
+                                    ['b.booking_id', $booking_id],
+                                    ['b.booking_userID', $tennant_id],
+                                    ['b.booking_tennant_reviewed', 0],
+                                    ['p.property_user_id', '=', $id]
+                                ])
+                                ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                                ->first();
+
+                if(isset($booking) && !empty($booking) && !is_null($booking)) {
+                    $insert = ['trs_booking_id' => $booking_id, 'trs_tennant_id' => $tennant_id, 'trs_reviewer_id' => $id, 'trs_score' => $score, 'trs_review' => $review, 'trs_submitted_at' => time()];
+
+                    $inserted = DB::table('tennant_reviews')
+                                    ->insertGetId($insert);
+
+                    if(isset($inserted) && !empty($inserted) && !is_null($inserted)) {
+                        DB::table('bookings AS b')
+                                ->where('b.booking_id', $booking_id)
+                                ->update(['b.booking_tennant_reviewed' => 1]);
+
+                        return json_encode(['status' => 'success']);
+                    }
+                }
+            }
+
+            return json_encode(['status' => 'bad_input']);
+        }
+        return json_encode(['status' => 'error']);
     }
 }

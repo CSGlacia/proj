@@ -34,6 +34,21 @@
         <div class="col-sm-12 col-md-12 col-lg-12">
             <h2><b>Reviews:</b></h2>
             <hr>
+            @if(count($reviews) > 0)
+                @foreach($reviews as $r)
+                <div class="row">
+                    <div class="col-sm-6 col-md-6 col-lg-6">
+                        <div>Score: {{$r->prs_score}}</div>
+                        <div>Review: {{$r->prs_review}}</div>
+                        <div>Submitted At: {{$r->prs_submitted_at}}</div>
+                        <div>Submitted by <a href="/user_profile/{{$r->id}}">{{$r->name}}</a></div>
+                    </div>
+                </div>
+                <hr>
+                @endforeach
+            @else
+                <div>No reviews submitted for this property</div>
+            @endif
         </div>
     </div>
 

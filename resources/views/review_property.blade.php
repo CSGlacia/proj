@@ -33,7 +33,7 @@
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
             <span>Please add any additional comments about your property or your stay</span>
-            <textarea id="property_desc" class="form-control" rows="5" placeholder="Additional comments" required></textarea>
+            <textarea id="review_desc" class="form-control" rows="5" placeholder="Additional comments" required></textarea>
         </div>
     </div>
     <div class="row">
@@ -58,6 +58,34 @@ $(document).ready(function() {
         }
 
         $('#rating').val(input);
+    });
+
+    $(document).on('click', '#submit_review', function(e){
+        var score = $('#rating').val();
+        var review = $('#review_desc').val();
+        
+        $.ajax({
+            url: '/create_property_review',
+            method: 'POST',
+            dataType: 'JSON',
+            data: 'score='+score+'&review='+review+'&booking_id='+{{$b->booking_id}}+'&property_id='+{{$p->property_id}},
+            success: function(html) {
+                var data = JSON.parse(html);
+
+                if(data['status'] == "success") {
+                    alert("Review Submitted Successfully");
+                } else if(data['status'] == 'bad_input') {
+                    alert("Please double check all fields are filled!");
+                } else {
+                    alert("There was an error, please try again!");
+                }
+            },
+            error: function ( xhr, errorType, exception ) {
+                var errorMessage = exception || xhr.statusText;
+                alert("There was a connectivity problem. Please try again.");
+            }
+        });
+
     });
 });
 </script>

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1><b>NOT COMPLETE YET</b></h1>
+    <h1><b>Tennant Reviews</b></h1>
     <div class="col-sm-12 col-md-12 col-lg-12">
     @if(count($bookings) > 0)
         @foreach($bookings as $b)

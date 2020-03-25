@@ -39,4 +39,6 @@ Route::get('/property_reviews', 'HomeController@property_reviews');
 Route::get('/tennant_reviews', 'HomeController@tennant_reviews');
 Route::get('/review_tennant', 'HomeController@review_tennant');
 Route::get('/review_property', 'HomeController@review_property');
+Route::post('/create_property_review', 'HomeController@create_property_review');
+Route::post('/create_tennant_review', 'HomeController@create_tennant_review');
 

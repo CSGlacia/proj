@@ -48,10 +48,29 @@
             <hr>
           @endforeach
         </div>
+    @if($page_owner)
         <a href="/create_property_listing" class="btn btn-primary">Create a property listing</a>
+    @endif
     </div>
     <div class="row">
         <b><h2>User Reviews</h2></b>
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            @if(count($reviews) > 0)
+                @foreach($reviews as $r)
+                <div class="row">
+                    <div class="col-sm-6 col-md-6 col-lg-6">
+                        <div>Score: {{$r->trs_score}}</div>
+                        <div>Review: {{$r->trs_review}}</div>
+                        <div>Submitted At: {{$r->trs_submitted_at}}</div>
+                        <div>Submitted by <a href="/user_profile/{{$r->id}}">{{$r->name}}</a></div>
+                    </div>
+                </div>
+                <hr>
+                @endforeach
+            @else
+                <div>No reviews submitted for this user</div>
+            @endif
+        </div>
     </div>
 </div>
 @endsection
