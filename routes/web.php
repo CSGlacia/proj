@@ -28,7 +28,6 @@ Route::get('/create_property_listing','HomeController@create_property_listing');
 Route::post('/create_property_listing','HomeController@create_property_listing');
 
 //booking functions
-Route::get('/book', 'HomeController@book');
 Route::post('/create_booking', 'HomeController@create_booking');
 
 //user profile functions

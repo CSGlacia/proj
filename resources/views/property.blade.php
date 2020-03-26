@@ -26,8 +26,46 @@
             @else
                 <h4> Everything is available!</h4>
             @endif
-            <a class="btn btn-success" name="book_property" data-id="{{$p->property_id}}"> Book property </a>
         </div>
+    </div>
+
+        @auth
+        <div id="user_logged" data-logged="1" hidden></div>
+        @else
+        <div id="user_logged" data-logged="0" hidden></div>
+        @endif
+
+    <div class="row">
+        <!--CODE TO CHECK FOR LOGIN, IF USER ISNT LOGGED IN WE ALERT USER AND DONT SEND REQUEST TO BOOK -->
+
+        <div class="card col-sm-12 col-md-12 col-lg-12">
+        <br>
+        <b><h3 style="text-align:center;">Make a Booking</h3></b>
+        <hr>
+        <div id="listing_form" class="form-group">
+            <h5>Booking Details:&nbsp;</h5>
+            <div class="row">
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                    <span>Start Date:&nbsp;</span>
+                    <input id="startDate" class="form-control" type="date" placeholder="(dateTime)" required>
+                </div>
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                    <span>End Date:&nbsp;</span>
+                    <input id="endDate" class="form-control" type="date" placeholder="(dateTime)" required>
+                </div>
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                    <span>(!) Number of People:&nbsp;</span>
+                    <input id="persons" class="form-control" type="number" placeholder="(int)" required>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <a id="book_submit" class="btn btn-primary">Book</a>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div class="row">
@@ -57,5 +95,45 @@
 
 @section('scripts')
 <script>
+$(document).ready(function() {
+    $(document).on('click', '#book_submit', function(e) {
+        var logged = $('#user_logged').data('logged');
+
+        if(logged == 1) {
+            e.preventDefault();
+
+            var propertyID = {{$p->property_id}}
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var persons = $('#persons').val();
+
+            $.ajax({
+                url: '/create_booking',
+                method: 'POST',
+                dataType: 'JSON',
+                data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons,
+                success: function(html) {
+                    var data = JSON.parse(html);
+
+                    if(data['status'] == "success") {
+                        alert("Success!");
+                    } else if(data['status'] == 'bad_input') {
+                        alert("Please double check all fields are filled!");
+                    } else {
+                        alert("There was an error, please try again!");
+                    }
+                },
+                error: function ( xhr, errorType, exception ) {
+                    var errorMessage = exception || xhr.statusText;
+                    alert("There was a connectivity problem. Please try again.");
+                }
+            });
+        } else {
+            alert("Please log in before making a booking");
+        }
+    });
+
+});
+
 </script>
 @endsection

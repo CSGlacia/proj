@@ -75,8 +75,6 @@ class HomeController extends Controller
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
         $persons = $request->input('persons');
-        $paid = $request->input('paid');
-        $status = $request->input('status');
 
 
         // TODO: (?) User cannot book more than one property for themselves
@@ -88,7 +86,6 @@ class HomeController extends Controller
         if ($s >= $e) {
             return json_encode(["status" => "Time failure!"]);
         }
-
 
         // Pull from the database.
         $results = DB::table('bookings AS c')
@@ -107,9 +104,9 @@ class HomeController extends Controller
             }
         }
 
-        if(isset($userID) && is_numeric($userID) && isset($propertyID) && is_numeric($propertyID) && isset($startDate) && isset($endDate) && isset($persons) && is_numeric($persons) && isset($paid) && is_numeric($paid) && isset($status) && ($status == 1 || $status == 0) ) {
+        if(isset($userID) && is_numeric($userID) && isset($propertyID) && is_numeric($propertyID) && isset($startDate) && isset($endDate) && isset($persons) && is_numeric($persons)) {
             
-            $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => $paid, 'booking_inactive' => $status];
+            $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
             
             DB::table('bookings')->insert($insert);
             
