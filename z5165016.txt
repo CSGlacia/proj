@@ -14,3 +14,9 @@ properties.
 Week 4:
 Helped add some stories to epics for sprints. Wrote docs about Laravel and the app framework to help teammates orient themselves and
 fastrack their learning.
+
+Week 5: 
+Had to help some teammates with their tasks (as their tasks blocked my tasks). Helped nathan over discord to code a property display and gave suggestions as to how we would provide individual pages to the properties. Did some testing of other teammates work and begun some work on my assigned tasks.
+
+Week 6:
+After Andy merged the others work into a single branch i checked everyones work. Also helped solve some merge conflicts with my own work. Built review pages for tennants and owners. Built a place where users can submit reviews. Built database structures to hold reviews. Built places where reviews would be displayed on user and property pages. Tidied up the UI abit. Integrated booking into the property page.
