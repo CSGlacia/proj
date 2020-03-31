@@ -1,14 +1,15 @@
 <?php
-
 namespace App\Http\Controllers;
+
 // Include the SDK using the Composer autoloader
 require '../vendor/autoload.php';
+use \Aws\S3\S3Client;
+use \Aws\S3\Exception\S3Exception;
+
 use Illuminate\Http\Request;
 use Auth;
 use DB;
-
-use Aws\S3\S3Client;
-use Aws\S3\Exception\S3Exception;
+use App;
 class HomeController extends Controller
 {
     /**
@@ -36,7 +37,7 @@ class HomeController extends Controller
         $bucket = 'turtle-database';
         $keyname = 'test.txt';
 
-        $s3 = new Aws\S3\S3Client([
+        $s3 = new \Aws\S3\S3Client([
         'version' => 'latest',
         'region'  => 'ap-southeast-2'
         ]);
@@ -47,7 +48,6 @@ class HomeController extends Controller
                 'Bucket' => $bucket,
                 'Key'    => $keyname,
                 'Body'   => 'Hello, world!',
-                'ACL'    => 'public-read'
             ));
         
             // Print the URL to the object.
