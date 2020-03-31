@@ -16,12 +16,12 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12">        
+        <div class="col-sm-12 col-md-12 col-lg-12">
             <h2><b>Current Availabilities</b></h2>
             <hr>
             @if(count($avail) > 0)
                 @foreach ($avail as $a)
-                    <h4> {{ $a->booking_startDate }} - {{$a->booking_endDate}} </h4> 
+                    <h4> {{ $a->booking_startDate }} - {{$a->booking_endDate}} </h4>
                 @endforeach
             @else
                 <h4> Everything is available!</h4>
@@ -90,6 +90,9 @@
         </div>
     </div>
 
+    <!-- Check for the correct user to be logged on -->
+    <a id="delete_property" class="btn btn-primary">✖ Delete Property</a>
+
 </div>
 @endsection
 
@@ -98,15 +101,12 @@
 $(document).ready(function() {
     $(document).on('click', '#book_submit', function(e) {
         var logged = $('#user_logged').data('logged');
-
         if(logged == 1) {
             e.preventDefault();
-
             var propertyID = {{$p->property_id}}
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
             var persons = $('#persons').val();
-
             $.ajax({
                 url: '/create_booking',
                 method: 'POST',
@@ -114,7 +114,6 @@ $(document).ready(function() {
                 data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons,
                 success: function(html) {
                     var data = JSON.parse(html);
-
                     if(data['status'] == "success") {
                         alert("Success!");
                     } else if(data['status'] == 'bad_input') {
@@ -132,8 +131,40 @@ $(document).ready(function() {
             alert("Please log in before making a booking");
         }
     });
-
 });
+</script>
 
+<script>
+$(document).ready(function() {
+    $(document).on('click', '#delete_property', function(e) {
+
+        var logged = $('#user_logged').data('logged');
+        if(logged == 1) {
+            e.preventDefault();
+            var propertyID = {{$p->property_id}};
+
+            $.ajax({
+                url: '/delete_property',
+                method: 'POST',
+                dataType: 'JSON',
+                data: 'propertyID='+propertyID,
+                success: function(html) {
+                    var data = JSON.parse(html);
+                    if(data['status'] == "success") {
+                        alert("Success!");
+                    } else {
+                        alert("There was an error, please try again!");
+                    }
+                },
+                error: function ( xhr, errorType, exception ) {
+                    var errorMessage = exception || xhr.statusText;
+                    alert("There was a connectivity problem. Please try again.");
+                }
+            });
+        } else {
+            alert("An error occurred! (You shouldn't see this)");
+        }
+    });
+});
 </script>
 @endsection

@@ -11,7 +11,7 @@
                 <div class="col-sm-6 col-md-6 col-lg-6" >
                     <label for="form_select_property">Choose the property you want to list:</label>
                         <select class="form-control" id="form_select_property">
-                        @foreach($properties as $p) 
+                        @foreach($properties as $p)
                         <option value={{$p->property_id}}>{{$p->property_title}}</option>
                         @endforeach
                         </select>

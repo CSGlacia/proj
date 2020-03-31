@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">    
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -49,6 +49,7 @@
                     <a class="btn btn-xs btn-success" href="/property_reviews">Review past properties</a>
                     <a class="btn btn-xs btn-success"href="/tennant_reviews">Review past tennants</a>
                     <a class="btn btn-xs btn-danger" href="/create_property_page">Add a new property to your account</a>
+                    <a class="btn btn-xs btn-success" href="/view_wishlist">★</a>
                 @else
                     <a class="btn btn-xs btn-primary" href="{{ route('login') }}">Login</a>
 

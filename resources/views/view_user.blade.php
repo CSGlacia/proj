@@ -9,7 +9,7 @@
     <div class="row">
         <b><h2>Bookings:</h2></b>
         <div class="col-sm-12 col-md-12 col-lg-12">
-            @foreach($bookings as $b) 
+            @foreach($bookings as $b)
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12">
                         <div>
@@ -78,6 +78,7 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+
 
 });
 </script>
