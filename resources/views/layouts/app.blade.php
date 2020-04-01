@@ -18,6 +18,7 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/06f34836f7.js" crossorigin="anonymous"></script>
 </head>
 
 <style>
@@ -30,6 +31,24 @@
     }
     .row {
         margin-bottom: 20px;
+    }
+    .item-card:hover {
+        background-color: #f6f6f6;
+        box-shadow: inset 0 0 0 5px #c9c9c9;
+        transition: all 1s ease;  
+    }
+    .item-card {
+        background-color: #ffffff;
+        width:75%;
+    }
+    .cursor-pointer:hover{
+        cursor: pointer;
+    }
+    .gold-star {
+        color:gold;
+    }
+    .gold-star-temp {
+        color:gold;
     }
 
 </style>
