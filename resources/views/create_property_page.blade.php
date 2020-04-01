@@ -1,12 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+<? require('\vendor\enyo\dropzone\dist\min\dropzone.min.css'); ?>
+<script src="{{asset('vendor\enyo\dropzone\dist\min\dropzone.min.css')}}" type="text/javascript"></script>
 <div class="container">
     <div class="card col-sm-12 col-md-12 col-lg-12">
         <br>
         <b><h3 style="text-align:center;">Add a new property to your account</h3></b>
         <hr>
-        <div id="listing_form" class="form-group">
+        <div id="listing_form" class="dropzone">
             <h5>Location Details:&nbsp;</h5>
             <div class="row">
                 <div class="col-sm-6 col-md-6 col-lg-6">
@@ -51,6 +53,11 @@
                     <textarea id="property_desc" class="form-control" rows="5" placeholder="Please enter a brief description of the property." required></textarea>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <input type="file" id="property_images" name='property_images[]' multiple>
+                </div>
+            </div>            
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">

@@ -33,33 +33,17 @@ class HomeController extends Controller
     }
 
     public function listing_page(Request $request) {
+        return view('create_property_page');
+    }
 
+    public function create_property(Request $request) {
         $bucket = 'turtle-database';
-        $keyname = 'test.txt';
 
         $s3 = new \Aws\S3\S3Client([
         'version' => 'latest',
         'region'  => 'ap-southeast-2'
         ]);
 
-        try {
-            // Upload data.
-            $result = $s3->putObject(array(
-                'Bucket' => $bucket,
-                'Key'    => $keyname,
-                'Body'   => 'Hello, world!',
-            ));
-        
-            // Print the URL to the object.
-            echo $result['ObjectURL'] . "\n";
-        } 
-        catch (S3Exception $e) {
-            echo $e->getMessage() . "\n";
-        }
-        return view('create_property_page');
-    }
-
-    public function create_property(Request $request) {
         $user = Auth::id();
         $address = $request->input('address');
         $suburb = $request->input('suburb');
@@ -70,8 +54,25 @@ class HomeController extends Controller
         $desc = $request->input('desc');
         $l_name = $request->input('l_name');
 
+        $keyname = 'test.txt'; //logic to grab next key name from database
+
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
+            if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) 
+            && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) 
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) 
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
+                try {
+                    // Upload data.
+                    $result = $s3->putObject(array(
+                        'Bucket' => $bucket,
+                        'Key'    => $keyname,
+                        'Body'   => 'Hello, world!',
+                    ));
+                    Log::alert('Object created successfully');
+                } 
+                catch (S3Exception $e) {
+                    return json_encode(['status' => 'bad_input']);
+                }
 
                 $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_suburb' => htmlspecialchars($suburb), 'property_postcode' => $postcode, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name];
 
