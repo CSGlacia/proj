@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<? require('\vendor\enyo\dropzone\dist\min\dropzone.min.css'); ?>
-<script src="{{asset('vendor\enyo\dropzone\dist\min\dropzone.min.css')}}" type="text/javascript"></script>
+<!-- <script src="js/dropzone.min.js"></script>
+<link rel="stylesheet" src="css/dropzone.min.css"> 
+https://jsfiddle.net/45qyakg9/-->
 <div class="container">
     <div class="card col-sm-12 col-md-12 col-lg-12">
         <br>
         <b><h3 style="text-align:center;">Add a new property to your account</h3></b>
         <hr>
-        <div id="listing_form" class="dropzone">
+        <div id="listing_form" class="form-group">
             <h5>Location Details:&nbsp;</h5>
             <div class="row">
                 <div class="col-sm-6 col-md-6 col-lg-6">
@@ -54,9 +55,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <input type="file" id="property_images" name='property_images[]' multiple>
-                </div>
+                <input id="property_images" type="file" multiple required>
             </div>            
             <hr>
             <div class="row">
@@ -83,6 +82,8 @@ $(document).ready(function() {
         var cars = $('#cars').val();
         var desc = $('#property_desc').val();
         var l_name = $('#l_name').val();
+        var images = $('#property_images');
+
         $.ajax({
             url: '/create_property',
             method: 'POST',
