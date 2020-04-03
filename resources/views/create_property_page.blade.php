@@ -74,7 +74,7 @@ $(document).ready(function() {
     $(document).on('click', '#property_submit', function(e) {
         e.preventDefault();
 
-        var address = $('#address').val();
+        //var address = ;
         var suburb = $('#suburb').val();
         var postcode = $('#postcode').val();
         var beds  = $('#beds').val();
@@ -82,13 +82,19 @@ $(document).ready(function() {
         var cars = $('#cars').val();
         var desc = $('#property_desc').val();
         var l_name = $('#l_name').val();
-        var images = $('#property_images');
+        var images = $('#property_images').prop('files')[0];
+        //var num = $('#property_images').files.length;
+        var form_data = new FormData();
+        form_data.append('files',images,'photo');
 
         $.ajax({
             url: '/create_property',
             method: 'POST',
             dataType: 'JSON',
-            data: 'address='+address+'&suburb='+suburb+'&postcode='+postcode+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc+'&l_name='+l_name,
+            data: form_data,
+            processData: false,
+            contentType: false,
+            cache: false,
             success: function(html) {
                 var data = JSON.parse(html);
 
