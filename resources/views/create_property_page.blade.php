@@ -83,10 +83,17 @@ $(document).ready(function() {
         var desc = $('#property_desc').val();
         var l_name = $('#l_name').val();
         var images = $('#property_images').prop('files')[0];
-        //var num = $('#property_images').files.length;
-        var form_data = new FormData();
-        form_data.append('files',images,'photo');
 
+        var form_data = new FormData();
+        
+        form_data.append('files',images,'photo');
+        form_data.append('suburb',suburb);
+        form_data.append('postcode',postcode);
+        form_data.append('beds',beds);
+        form_data.append('baths',baths);
+        form_data.append('cars',cars);
+        form_data.append('desc',desc);
+        form_data.append('l_name',l_name);
         $.ajax({
             url: '/create_property',
             method: 'POST',
