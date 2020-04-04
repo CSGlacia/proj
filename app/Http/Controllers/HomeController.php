@@ -1,11 +1,15 @@
 <?php
-
 namespace App\Http\Controllers;
+
+// Include the SDK using the Composer autoloader
+require '../vendor/autoload.php';
+use \Aws\S3\S3Client;
+use \Aws\S3\Exception\S3Exception;
 
 use Illuminate\Http\Request;
 use Auth;
 use DB;
-
+use App;
 class HomeController extends Controller
 {
     /**
@@ -33,6 +37,13 @@ class HomeController extends Controller
     }
 
     public function create_property(Request $request) {
+        $bucket = 'turtle-database';
+
+        $s3 = new \Aws\S3\S3Client([
+        'version' => 'latest',
+        'region'  => 'ap-southeast-2'
+        ]);
+
         $user = Auth::id();
         $address = $request->input('address');
         $suburb = $request->input('suburb');
@@ -42,15 +53,47 @@ class HomeController extends Controller
         $cars = $request->input('cars');
         $desc = $request->input('desc');
         $l_name = $request->input('l_name');
-
+        $images = $request->file('files');
+        $directory = "images/";
+         //logic to grab next key name from database
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
-
+            if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) 
+            && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) 
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) 
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
                 $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_suburb' => htmlspecialchars($suburb), 'property_postcode' => $postcode, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name];
-
+                
                 DB::table('properties')
                     ->insert($insert);
+                
+                $property_id = DB::table('properties')
+                ->select('property_id')
+                ->where([
+                    ['property_user_id', $user],
+                    ['property_address', htmlspecialchars($address)],
+                    ['property_suburb', htmlspecialchars($suburb)],
+                ])
+                ->first();
+                foreach ($images as $key => $value) {
+                    try {
+                        // Upload data.
+                        $path = $directory.$property_id->property_id.'/'.$key.'.'.$value->extension();
+                        $insert = ['property_id' => $property_id->property_id,'property_image_name'=> $path];
+                
+                        DB::table('property_images')
+                            ->insert($insert);
 
+                        $result = $s3->putObject(array(
+                            'Bucket' => $bucket,
+                            'Key'    => $path,
+                            'Body'   => $value->get(),
+                        ));
+                    } 
+                    catch (S3Exception $e) {
+                        return json_encode(['status' => 'bad_input']);
+                    }
+                }
+                
                 return json_encode(['status' => 'success']);
 
             } else {

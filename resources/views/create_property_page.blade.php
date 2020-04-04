@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- <script src="js/dropzone.min.js"></script>
+<link rel="stylesheet" src="css/dropzone.min.css"> 
+https://jsfiddle.net/45qyakg9/-->
 <div class="container">
     <div class="card col-sm-12 col-md-12 col-lg-12">
         <br>
@@ -51,6 +54,9 @@
                     <textarea id="property_desc" class="form-control" rows="5" placeholder="Please enter a brief description of the property." required></textarea>
                 </div>
             </div>
+            <div class="row">
+                <input id="property_images" type="file" multiple required>
+            </div>            
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
@@ -76,17 +82,36 @@ $(document).ready(function() {
         var cars = $('#cars').val();
         var desc = $('#property_desc').val();
         var l_name = $('#l_name').val();
+
+        var image_name = "image";
+        var form_data = new FormData();
+        
+        var no_images = $('#property_images')[0].files.length;
+        for (var i = 0; i < no_images; i++){
+            var images = $('#property_images').prop('files')[i];
+            form_data.append('files[]',images,image_name.concat(i.toString(10)));
+        }
+        
+        form_data.append('address',address);
+        form_data.append('suburb',suburb);
+        form_data.append('postcode',postcode);
+        form_data.append('beds',beds);
+        form_data.append('baths',baths);
+        form_data.append('cars',cars);
+        form_data.append('desc',desc);
+        form_data.append('l_name',l_name);
         $.ajax({
             url: '/create_property',
             method: 'POST',
             dataType: 'JSON',
-            data: 'address='+address+'&suburb='+suburb+'&postcode='+postcode+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc+'&l_name='+l_name,
+            data: form_data,
+            processData: false,
+            contentType: false,
+            cache: false,
             success: function(html) {
-                var data = JSON.parse(html);
-
-                if(data['status'] == "success") {
+                if(html['status'] == "success") {
                     alert("Property Created Successfully");
-                } else if(data['status'] == 'bad_input') {
+                } else if(html['status'] == 'bad_input') {
                     alert("Please double check all fields are filled!");
                 } else {
                     alert("There was an error, please try again!");
