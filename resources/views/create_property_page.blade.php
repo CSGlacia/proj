@@ -74,7 +74,7 @@ $(document).ready(function() {
     $(document).on('click', '#property_submit', function(e) {
         e.preventDefault();
 
-        //var address = ;
+        var address = $('#address').val();
         var suburb = $('#suburb').val();
         var postcode = $('#postcode').val();
         var beds  = $('#beds').val();
@@ -87,6 +87,7 @@ $(document).ready(function() {
         var form_data = new FormData();
         
         form_data.append('files',images,'photo');
+        form_data.append('address',address);
         form_data.append('suburb',suburb);
         form_data.append('postcode',postcode);
         form_data.append('beds',beds);

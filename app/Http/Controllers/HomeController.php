@@ -53,10 +53,10 @@ class HomeController extends Controller
         $cars = $request->input('cars');
         $desc = $request->input('desc');
         $l_name = $request->input('l_name');
-        $image = $request->file('files')->get();
+        $image = $request->file('files');
         
-        $keyname = 'test.jpg'; //logic to grab next key name from database
-
+        $keyname = 'images/test.jpg'; //logic to grab next key name from database
+ 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) 
             && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) 
@@ -67,14 +67,13 @@ class HomeController extends Controller
                     $result = $s3->putObject(array(
                         'Bucket' => $bucket,
                         'Key'    => $keyname,
-                        'Body'   => $image,
+                        'Body'   => $image->get(),
                     ));
                     //Log::alert('Object created successfully');
                 } 
                 catch (S3Exception $e) {
                     return json_encode(['status' => 'bad_input']);
                 }
-
                 $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_suburb' => htmlspecialchars($suburb), 'property_postcode' => $postcode, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name];
 
                 DB::table('properties')
