@@ -82,11 +82,16 @@ $(document).ready(function() {
         var cars = $('#cars').val();
         var desc = $('#property_desc').val();
         var l_name = $('#l_name').val();
-        var images = $('#property_images').prop('files')[0];
 
+        var image_name = "image";
         var form_data = new FormData();
         
-        form_data.append('files',images,'photo');
+        var no_images = $('#property_images')[0].files.length;
+        for (var i = 0; i < no_images; i++){
+            var images = $('#property_images').prop('files')[i];
+            form_data.append('files[]',images,image_name.concat(i.toString(10)));
+        }
+        
         form_data.append('address',address);
         form_data.append('suburb',suburb);
         form_data.append('postcode',postcode);
@@ -104,11 +109,9 @@ $(document).ready(function() {
             contentType: false,
             cache: false,
             success: function(html) {
-                var data = JSON.parse(html);
-
-                if(data['status'] == "success") {
+                if(html['status'] == "success") {
                     alert("Property Created Successfully");
-                } else if(data['status'] == 'bad_input') {
+                } else if(html['status'] == 'bad_input') {
                     alert("Please double check all fields are filled!");
                 } else {
                     alert("There was an error, please try again!");
