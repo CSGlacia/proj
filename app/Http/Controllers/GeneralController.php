@@ -1,6 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+// Include the SDK using the Composer autoloader
+require '../vendor/autoload.php';
+use \Aws\S3\S3Client;
+use \Aws\S3\Exception\S3Exception;
 
 use Illuminate\Http\Request;
 use Auth;
@@ -139,6 +143,13 @@ class GeneralController extends Controller
     }
 
     public function view_one_property(Request $request, $id) {
+        $bucket = 'turtle-database';
+
+        $s3 = new \Aws\S3\S3Client([
+        'version' => 'latest',
+        'region'  => 'ap-southeast-2'
+        ]);
+
         $prop = DB::table('properties AS p')
                     ->select('p.*')
                     ->where([
@@ -146,6 +157,27 @@ class GeneralController extends Controller
                         ['p.property_inactive', 0]
                     ])
                     ->first();
+        
+        $prop_images = DB::table('property_images AS p')
+                        ->select('p.property_image_name')
+                        ->where(['p.property_id',$id])
+                        ->get();
+        $image_array = array();
+
+        foreach ($prop_images as $path) {
+            try{
+                $image = $s3->getObject(array(
+                    'Bucket' => $bucket,
+                    'Key'    => $path,
+                ));
+                array_push($image_array,$image);
+            }
+            catch (S3Exception $e) {
+                return json_encode(['status' => 'image_fail']);
+            }
+
+        }
+
 
         if(isset($prop) && !empty($prop) && !is_null($prop)) {
 
@@ -177,7 +209,8 @@ class GeneralController extends Controller
             return view('property',
                             ['p' => $prop,
                             'avail' => $avail,
-                            'reviews' => $reviews]
+                            'reviews' => $reviews,
+                            'images' => $image_array]
                 );
         }
     }
