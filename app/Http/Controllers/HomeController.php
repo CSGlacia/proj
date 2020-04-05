@@ -66,24 +66,28 @@ class HomeController extends Controller
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
 
-                foreach ($images as $key => $value) {
-                    try {
-                        // Upload data.
-                        $path = $directory.$property_id->property_id.'/'.$key.'.'.$value->extension();
-                        $insert = ['property_id' => $property_id->property_id,'property_image_name'=> $path];
-                
-                        DB::table('property_images')
-                            ->insert($insert);
+                if(isset($property_id) && !is_null($property_id) && !empty($property_id)) {
+                    foreach ($images as $key => $value) {
+                        try {
+                            // Upload data.
+                            $path = $directory.$property_id.'/'.$key.'.'.$value->extension();
+                            $insert = ['property_id' => $property_id,'property_image_name'=> $path];
+                    
+                            DB::table('property_images')
+                                ->insert($insert);
 
-                        $result = $s3->putObject(array(
-                            'Bucket' => $bucket,
-                            'Key'    => $path,
-                            'Body'   => $value->get(),
-                        ));
-                    } 
-                    catch (S3Exception $e) {
-                        return json_encode(['status' => 'bad_input']);
+                            $result = $s3->putObject(array(
+                                'Bucket' => $bucket,
+                                'Key'    => $path,
+                                'Body'   => $value->get(),
+                            ));
+                        } 
+                        catch (S3Exception $e) {
+                            return json_encode(['status' => 'bad_input']);
+                        }
                     }
+                } else {
+                    return json_encode(['status' => 'error']);
                 }
                 
                 return json_encode(['status' => 'success']);
