@@ -89,6 +89,19 @@
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
+                    <h2>Location</h2>
+                </div>
+                <hr>
+                <!--The div element for the map -->
+                <div id="map" style="height: 300px; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">  
+        <div class="row card">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
                     <h2>Reviews:</h2>
                 </div>
                 <hr>
@@ -122,7 +135,24 @@
 @endsection
 
 @section('scripts')
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPDGVcOB-lSlE4tKgMpQwUbz_2d55B6xE&callback=initMap">
+</script>
+
 <script>
+// Initialize and add the map
+function initMap() {
+  var prop_location = {lat: {{$p->property_lat}}, lng: {{$p->property_lng}}};
+
+  var map = new google.maps.Map(
+      document.getElementById('map'), {zoom: 13, center: prop_location,
+        mapTypeControl: false,
+        streetViewControl: false});
+
+  var marker = new google.maps.Marker({position: prop_location, map: map});
+  
+}
+
 $(document).ready(function() {
     $(document).on('click', '#book_submit', function(e) {
         var logged = $('#user_logged').data('logged');
