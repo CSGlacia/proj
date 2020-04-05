@@ -60,7 +60,7 @@
             <hr>
             <h5>Property Images:&nbsp;</h5>
             <div class="row">
-                <div id="image_drop" class="dropzone" style="text-align:center;"><i class="fas fa-file-upload fa-7x"></i></div>
+                <div id="image_drop" class="dropzone"></div>
             </div>
             <hr>
             <div class="row">
@@ -149,7 +149,7 @@ $(document).ready(function() {
         },
         addRemoveLinks: true,
         previewTemplate: $('#preview-template').html(),
-        dictDefaultMessage: "Click here or drag and drop photos of your property to upload them"
+        dictDefaultMessage: '<div style="text-align:center;margin:10px;"><i class="fas fa-file-upload fa-7x"></i></div><div>Click here or drag and drop photos of your property to upload them</div>'
     });
 
     $(document).on('click', '#property_submit', function(e) {
