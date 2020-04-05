@@ -46,34 +46,26 @@ class HomeController extends Controller
 
         $user = Auth::id();
         $address = $request->input('address');
-        $suburb = $request->input('suburb');
-        $postcode = $request->input('postcode');
         $beds = $request->input('beds');
         $baths = $request->input('baths');
         $cars = $request->input('cars');
         $desc = $request->input('desc');
         $l_name = $request->input('l_name');
         $images = $request->file('files');
+        $lat = $request->input('lat');
+        $lng = $request->input('lng');
         $directory = "images/";
          //logic to grab next key name from database
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) 
-            && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) 
+            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds) 
             && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) 
             && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
-                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_suburb' => htmlspecialchars($suburb), 'property_postcode' => $postcode, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name];
-                
-                DB::table('properties')
-                    ->insert($insert);
-                
+                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name];
+
                 $property_id = DB::table('properties')
-                ->select('property_id')
-                ->where([
-                    ['property_user_id', $user],
-                    ['property_address', htmlspecialchars($address)],
-                    ['property_suburb', htmlspecialchars($suburb)],
-                ])
-                ->first();
+                    ->insertGetId($insert);
+
                 foreach ($images as $key => $value) {
                     try {
                         // Upload data.

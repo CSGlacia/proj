@@ -51,7 +51,10 @@
         color:gold;
     }
 
+    @yield('style');
 </style>
+
+
 
 <body>
     <div class="topnav">
