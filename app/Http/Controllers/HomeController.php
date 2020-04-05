@@ -428,4 +428,23 @@ class HomeController extends Controller
         }
         return json_encode(['status' => 'error']);
     }
+
+    public function cancel_booking(Request $request) {
+        $id = Auth::id();
+        $booking_id = $request->input('booking_id');
+        $changed = DB::table('bookings AS b')
+                        ->where([
+                            ['b.booking_id', $booking_id],
+                            ['b.booking_inactive', 0]
+                        ])
+                        ->update(['b.booking_inactive' => 1]);
+
+        if(!empty($changed)) {
+            return json_encode(['status' => 'success']);
+        } 
+
+        return json_encode(['status' => 'error']);
+
+        
+    }
 }

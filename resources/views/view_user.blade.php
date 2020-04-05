@@ -21,6 +21,7 @@
                         <span>Start Date: {{$b->booking_startDate}}</span>
                         <span>End Date: {{$b->booking_endDate}}</span>
                         <a class="btn btn-primary" name="view_booking" data-id="{{$b->booking_id}}"> View booking</a>
+                        <a class="btn btn-warning" name="delete_booking" data-id="{{$b->booking_id}}"> Cancel booking</a>
                     </div>
                     <hr>
                 </div>
@@ -78,7 +79,30 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+        var booking_id;
 
+        $(document).on('click', '[name="delete_booking"]', function(){
+
+            booking_id = $(this).data('id');
+            console.log(booking_id);
+
+            $.ajax({ 
+            url: '/cancel_booking', 
+            method: 'POST', 
+            data: 'booking_id='+booking_id,
+            success: function(html) { 
+                var data = JSON.parse(html);
+                if(data['status'] == "success") {                                                    
+                    alert("Booking Cancelled");                
+                } else if(data['status'] == 'bad_input') {
+                    //alerts user to bad input
+                    alert("Please double check all fields are filled!");
+                } else {
+                    alert("There was an error, please try again!");
+                }
+            },
+        });
+    });
 });
 </script>
 @endsection

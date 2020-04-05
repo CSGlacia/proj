@@ -33,6 +33,8 @@ Route::post('/create_booking', 'HomeController@create_booking');
 
 //user profile functions
 Route::get('/user_profile/{id?}', 'GeneralController@view_user')->where('id', '[0-9]+');
+Route::post('/cancel_booking', 'HomeController@cancel_booking');
+
 
 //review functions
 Route::get('/property_reviews', 'HomeController@property_reviews');
