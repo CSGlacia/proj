@@ -51,8 +51,8 @@
         color:gold;
     }
 
-    @yield('style');
 </style>
+@yield('style')
 
 
 

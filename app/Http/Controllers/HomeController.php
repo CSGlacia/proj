@@ -37,13 +37,6 @@ class HomeController extends Controller
     }
 
     public function create_property(Request $request) {
-        $bucket = 'turtle-database';
-
-        $s3 = new \Aws\S3\S3Client([
-        'version' => 'latest',
-        'region'  => 'ap-southeast-2'
-        ]);
-
         $user = Auth::id();
         $address = $request->input('address');
         $beds = $request->input('beds');
@@ -54,8 +47,7 @@ class HomeController extends Controller
         $images = $request->file('files');
         $lat = $request->input('lat');
         $lng = $request->input('lng');
-        $directory = "images/";
-         //logic to grab next key name from database
+
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
             && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds) 
@@ -71,33 +63,7 @@ class HomeController extends Controller
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
 
-                if(isset($property_id) && !is_null($property_id) && !empty($property_id)) {
-                    if(!is_null($images)) {
-                        foreach ($images as $key => $value) {
-                            try {
-                                // Upload data.
-                                $path = $directory.$property_id.'/'.$key.'.'.$value->extension();
-                                $insert = ['property_id' => $property_id,'property_image_name'=> $path];
-                        
-                                DB::table('property_images')
-                                    ->insert($insert);
-
-                                $result = $s3->putObject(array(
-                                    'Bucket' => $bucket,
-                                    'Key'    => $path,
-                                    'Body'   => $value->get(),
-                                ));
-                            } 
-                            catch (S3Exception $e) {
-                                return json_encode(['status' => 'bad_input']);
-                            }
-                        }
-                    }
-                } else {
-                    return json_encode(['status' => 'error']);
-                }
-                
-                return json_encode(['status' => 'success']);
+                return json_encode(['status' => 'success', 'id' => $property_id]);
 
             } else {
                 return json_encode(['status' => 'bad_input']);
@@ -108,6 +74,39 @@ class HomeController extends Controller
     }
 
 
+    public function upload_property_images(Request $request, $property_id) {
+        $images = $request->file();
+        $bucket = 'turtle-database';
+        $directory = "images/";
+
+        $s3 = new \Aws\S3\S3Client([
+        'version' => 'latest',
+        'region'  => 'ap-southeast-2'
+        ]);
+
+        if(isset($property_id) && !is_null($property_id) && !empty($property_id) && is_numeric($property_id) && isset($images) && !empty($images) && !is_null($images)) {
+            foreach ($images['file'] as $key => $value) {
+                try {
+                    // Upload data.
+                    $path = $directory.$property_id.'/'.$key.'.'.$value->extension();
+                    $insert = ['property_id' => $property_id,'property_image_name'=> $path];
+            
+                    DB::table('property_images')
+                        ->insert($insert);
+
+                    $result = $s3->putObject(array(
+                        'Bucket' => $bucket,
+                        'Key'    => $path,
+                        'Body'   => $value->get(),
+                    ));
+                } catch (S3Exception $e) {
+                    return json_encode(['status' => 'bad_input']);
+                }
+            }
+            return json_encode(['status' => 'success']);
+        }
+        return json_encode(['status' => 'error']);
+    }
 
     public function book(Request $request) {
         return view("book");
