@@ -160,15 +160,16 @@ class GeneralController extends Controller
         
         $prop_images = DB::table('property_images AS p')
                         ->select('p.property_image_name')
-                        ->where(['p.property_id',$id])
+                        ->where([['p.property_id',$id]])
                         ->get();
-        $image_array = array();
 
-        foreach ($prop_images as $path) {
+        /*foreach ($prop_images as $path) {
             try{
+                $extension = preg_match('/\./',$path->property_image_name) ? preg_replace('/^.*\./','',$path->property_image_name): '';
                 $image = $s3->getObject(array(
                     'Bucket' => $bucket,
-                    'Key'    => $path,
+                    'Key'    => $path->property_image_name,
+                    'ResponseContentType' => 'image/'.$extension,
                 ));
                 array_push($image_array,$image);
             }
@@ -176,7 +177,7 @@ class GeneralController extends Controller
                 return json_encode(['status' => 'image_fail']);
             }
 
-        }
+        }*/
 
 
         if(isset($prop) && !empty($prop) && !is_null($prop)) {
@@ -210,7 +211,7 @@ class GeneralController extends Controller
                             ['p' => $prop,
                             'avail' => $avail,
                             'reviews' => $reviews,
-                            'images' => $image_array]
+                            'images' => $prop_images]
                 );
         }
     }
