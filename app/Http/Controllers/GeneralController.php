@@ -95,6 +95,11 @@ class GeneralController extends Controller
                                 ->whereIn('p.property_id', explode(',', $user->properties))
                                 ->get();
 
+                $listings = DB::table('property_listing AS l')
+                                ->join('project.properties AS p', 'l.property_id', '=', 'p.property_id')
+                                ->where('p.property_user_id', '=', $id)
+                                ->get();
+
                 $reviews = DB::table('tennant_reviews AS t')
                                 ->where([
                                     ['trs_tennant_id', $id],
@@ -120,6 +125,7 @@ class GeneralController extends Controller
                 return view('view_user',
                     ['user' => $user,
                     'bookings' => $bookings,
+                    'listings' => $listings,
                     'properties' => $properties,
                     'page_owner' => $page_owner,
                     'reviews' => $reviews
