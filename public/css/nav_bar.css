@@ -37,8 +37,8 @@
    color:#fff;
     border-bottom: 1px solid transparent
 }
-.nav-header .navbar-default .navbar-nav .navbar-brand>:hover a{
-    color: #333;
+.nav-header .navbar-default .navbar-brand:hover{
+    color: turquoise;
      border-bottom: 1px solid #FFF
 }
 

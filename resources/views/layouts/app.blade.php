@@ -23,7 +23,7 @@
 </head>
 
 <style>
-    .topnav 
+    .topnav {
       background-color: #333;
       overflow: hidden;
     }
