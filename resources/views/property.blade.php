@@ -122,7 +122,7 @@
         </div>
     </div>
 
-    @if(!$page_owner)
+    @if($page_owner == true)
     <div class="col-sm-4 col-md-4 col-lg-4 pull-right">  
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
