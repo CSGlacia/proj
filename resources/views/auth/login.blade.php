@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<link href="{{ asset('css/login.css') }}" rel="stylesheet">
+<div class="container login-form">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
