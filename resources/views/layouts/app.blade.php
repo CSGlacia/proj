@@ -57,72 +57,74 @@
 
 
 <body>
-    <div class="topnav">
-        @if (Route::has('login'))
-            <div class="top-right links" style="padding:15px;">
-                    <a class="btn btn-xs btn-primary" href="/">Homepage</a>
-                @auth
-                    <a class="btn btn-xs btn-primary" id="user_profile" href="">User Profile</a>
-                    <a class="btn btn-xs btn-primary" href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
-                    <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
-                        {{ csrf_field() }}
-                    </form>
-                    <a class="btn btn-xs btn-warning" href="/create_property_listing">Create a property listing</a>
-                    <a class="btn btn-xs btn-success" href="/property_reviews">Review past properties</a>
-                    <a class="btn btn-xs btn-success"href="/tennant_reviews">Review past tennants</a>
-                    <a class="btn btn-xs btn-danger" href="/create_property_page">Add a new property to your account</a>
-                @else
-                    @if (Route::has('register'))
-                        <a class="navbar-brand collapsed float-right" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false" href="{{ route('register') }}" style="margin-left:15px">Register</a>
-                    @endif
-                    <a class="btn btn-xs btn-primary float-right" href="{{ route('login') }}" >Login</a>
+    <section class="bg-header overlay">
+        <div class="navbar-default">
+            @if (Route::has('login'))
+                <div class="top-right links" style="padding:15px;">
+                        <a class="btn btn-xs btn-primary" href="/">Homepage</a>
+                    @auth
+                        <a class="btn btn-xs btn-primary" id="user_profile" href="">User Profile</a>
+                        <a class="btn btn-xs btn-primary" href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
+                        <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                            {{ csrf_field() }}
+                        </form>
+                        <a class="btn btn-xs btn-warning" href="/create_property_listing">Create a property listing</a>
+                        <a class="btn btn-xs btn-success" href="/property_reviews">Review past properties</a>
+                        <a class="btn btn-xs btn-success"href="/tennant_reviews">Review past tennants</a>
+                        <a class="btn btn-xs btn-danger" href="/create_property_page">Add a new property to your account</a>
+                    @else
+                        @if (Route::has('register'))
+                            <a class="navbar-brand collapsed float-right" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false" href="{{ route('register') }}" style="margin-left:15px">Register</a>
+                        @endif
+                        <a class="btn btn-xs btn-primary float-right" href="{{ route('login') }}" >Login</a>
 
 
-                @endauth
-            </div>
-        @endif
-    </div>
+                    @endauth
+                </div>
+            @endif
+        </div>
 
-    <main class="py-4">
-        @yield('content')
-    </main>
+        <main class="py-4">
+            @yield('content')
+        </main>
 
-    <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
+        <script>
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
 
 
-            function set_profile_button() {
-                $.ajax({
-                    url: '/get_user_id',
-                    method: 'GET',
-                    success: function(html) {
-                        var data = JSON.parse(html);
-                        if(data['status'] == "success") {
-                            var id = data['id'];
-                            $('#user_profile').attr('href', '/user_profile/'+id);
-                        } else if (data['status'] == "not_logged_in"){
-                            //if the user is not logged in, tells it to not do anything
+                function set_profile_button() {
+                    $.ajax({
+                        url: '/get_user_id',
+                        method: 'GET',
+                        success: function(html) {
+                            var data = JSON.parse(html);
+                            if(data['status'] == "success") {
+                                var id = data['id'];
+                                $('#user_profile').attr('href', '/user_profile/'+id);
+                            } else if (data['status'] == "not_logged_in"){
+                                //if the user is not logged in, tells it to not do anything
+                            }
+                            else {
+                                alert("There was an error, please try again!");
+                            }
+                        },
+                        error: function ( xhr, errorType, exception ) {
+                            var errorMessage = exception || xhr.statusText;
+                            alert("There was a connectivity problem. Please try again.");
                         }
-                        else {
-                            alert("There was an error, please try again!");
-                        }
-                    },
-                    error: function ( xhr, errorType, exception ) {
-                        var errorMessage = exception || xhr.statusText;
-                        alert("There was a connectivity problem. Please try again.");
-                    }
-                });
-            }
-        $(document).ready(function() {
+                    });
+                }
+            $(document).ready(function() {
 
-            set_profile_button();
-        });
-    </script>
-    @yield('scripts')
+                set_profile_button();
+            });
+        </script>
+        @yield('scripts')
+    </section>
 </body>
 
 
