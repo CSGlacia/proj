@@ -80,7 +80,10 @@ class GeneralController extends Controller
 
                 $bookings = DB::table('bookings AS b')
                                 ->select('b.*', 'p.*')
-                                ->where('b.booking_inactive', 0)
+                                ->where([
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_startDate', '>', time()]
+                                ])
                                 ->whereIn('b.booking_id', explode(',', $user->bookings))
                                 ->leftJoin('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                                 ->get();
@@ -193,36 +196,26 @@ class GeneralController extends Controller
 
         if(isset($prop) && !empty($prop) && !is_null($prop)) {
 
-            $bookings = DB::table('properties as p')
+            $bookings = DB::table('bookings as b')
+                            ->select('b.*', 'u.*', 
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
+                            )
                             ->where([
-                                ['p.property_id', $id],
-                                ['p.property_inactive', 0],
+                                ['b.booking_propertyID', $id],
                                 ['b.booking_inactive', 0],
                                 ['b.booking_startDate', '>', time()],
                             ])
-                            ->join('bookings AS b', 'b.booking_propertyID', '=', 'p.property_id') // gets bookings for this prop
                             ->join('users AS u', 'u.id', '=', 'b.booking_userID') // gets user info for each of the people booking
                             ->get();
 
             foreach($bookings as $b) {
-                $booking_ids[] = $b->id;
                 $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
                 $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
-            }
 
-            // CURRENTLY NOT BEING USED ---- NEED TO INVESTIGATE MORE INTO HOW TO JOIN
-            $tenn_reviews = DB::table('tennant_reviews AS t')
-                                ->select('u.id', DB::raw('AVG(t.trs_score) as guest_score'))
-                                ->where([
-                                    ['trs_inactive', 0],
-                                ])
-                                ->wherein('t.trs_tennant_id', $booking_ids)
-                                ->join('users AS u', 'u.id', '=', 'trs_reviewer_id')
-                                ->groupby('u.id')
-                                ->get();
-
-            
-            
+                $scores = explode(',', $b->scores);
+                $scores = array_sum($scores)/count($scores);
+                $b->scores = $scores;
+            }            
 
             $reviews = DB::table('property_reviews AS p')
                         ->where([

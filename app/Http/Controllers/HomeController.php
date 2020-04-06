@@ -443,7 +443,7 @@ class HomeController extends Controller
                                     ['b.booking_property_reviewed', 0]
                                 ])
                                 ->first();
-                                
+
         $time = strtotime('-14 days', $booking->booking_startDate);
 
         

@@ -122,7 +122,7 @@
         </div>
     </div>
 
-    @if($page_owner)
+    @if(!$page_owner)
     <div class="col-sm-4 col-md-4 col-lg-4 pull-right">  
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
@@ -136,7 +136,13 @@
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a></div>
+                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}} 
+                                                @if($b->scores > 2.5)
+                                                    <i class="fas fa-star gold-star"></i>
+                                                @else
+                                                    <i class="fas fa-star"></i>
+                                                @endif
+                                            </div>
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
