@@ -1,9 +1,10 @@
 
 .nav-header{
     background: url("https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg") center center fixed;
-    height: 100vh;
     position: relative;
     background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -35,11 +36,11 @@
 .nav-header .navbar-default .navbar-nav>li>a {
    font-size:20px;
    color:#fff;
-    border-bottom: 1px solid transparent
+   border-bottom: 1px solid transparent
 }
-.nav-header .navbar-default .navbar-nav .navbar-brand>:hover a{
-    color: #333;
-     border-bottom: 1px solid #FFF
+.nav-header .navbar-default .navbar-brand:hover{
+    color: turquoise;
+    border-bottom: 1px solid #FFF
 }
 
 
