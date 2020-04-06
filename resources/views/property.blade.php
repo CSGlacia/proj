@@ -193,12 +193,11 @@ $(document).ready(function() {
                 dataType: 'JSON',
                 data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons,
                 success: function(html) {
-                    var data = JSON.parse(html);
-                    if(data['status'] == "success") {
+                    if(html['status'] == "success") {
                         alert("Success!");
-                    } else if(data['status'] == 'bad_input') {
+                    } else if(html['status'] == 'bad_input') {
                         alert("Please double check all fields are filled!");
-                    } else if (data['status'] == 'time_booked'){
+                    } else if (html['status'] == 'time_booked'){
                         alert("This booking date has already been taken!");
                     }
                     else {

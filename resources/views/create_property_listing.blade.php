@@ -59,16 +59,15 @@ $(document).ready(function() {
             dataType: 'JSON',
             data: 'property='+property+'&price='+price+'&start_date='+start_date+'&end_date='+end_date,
             success: function(html) {
-                var data = JSON.parse(html);
-                if(data['status'] == "success") {
+                if(html['status'] == "success") {
                     alert("Property Listing created successfully");
-                } else if(data['status'] == 'bad_input'){
+                } else if(html['status'] == 'bad_input'){
                     alert("Please check all fields are filled.");
-                } else if(data['status'] == 'price_low') {
+                } else if(html['status'] == 'price_low') {
                     alert("You must enter a price which is positive. You cannot charge negative amounts.");
-                } else if(data['status'] == 'price_high'){
+                } else if(html['status'] == 'price_high'){
                     alert("There's a price limit of $999999.99 . Please enter a lower price per night.");
-                } else if(data['status'] == 'date_invalid'){
+                } else if(html['status'] == 'date_invalid'){
                     alert("Your start date must be before your end date and today or after.")
                 }
                 else {

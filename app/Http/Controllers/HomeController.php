@@ -98,6 +98,8 @@ class HomeController extends Controller
                         'Bucket' => $bucket,
                         'Key'    => $path,
                         'Body'   => $value->get(),
+                        'ACL'    => 'public-read',
+
                     ));
                 } catch (S3Exception $e) {
                     return json_encode(['status' => 'bad_input']);
