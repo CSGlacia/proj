@@ -14,6 +14,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/nav_bar.css') }}" rel="stylesheet">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -57,7 +58,7 @@
 
 
 <body>
-    <section class="bg-header overlay">
+    <section class="header overlay">
         <div class="navbar-default">
             @if (Route::has('login'))
                 <div class="top-right links" style="padding:15px;">
