@@ -58,11 +58,11 @@
 
 
 <body>
-    <section class="header overlay">
+    <section class="nav-header overlay">
         <div class="navbar-default">
             @if (Route::has('login'))
                 <div class="top-right links" style="padding:15px;">
-                        <a class="btn btn-xs btn-primary" href="/">Homepage</a>
+                        <a class="navbar-brand" href="/" style="margin-left:30px">Turtle</a>
                     @auth
                         <a class="btn btn-xs btn-primary" id="user_profile" href="">User Profile</a>
                         <a class="btn btn-xs btn-primary" href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
@@ -75,9 +75,9 @@
                         <a class="btn btn-xs btn-danger" href="/create_property_page">Add a new property to your account</a>
                     @else
                         @if (Route::has('register'))
-                            <a class="navbar-brand collapsed float-right" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false" href="{{ route('register') }}" style="margin-left:15px">Register</a>
+                            <a class="navbar-brand float-right" href="{{ route('register') }}" style="margin-left:15px">Register</a>
                         @endif
-                        <a class="btn btn-xs btn-primary float-right" href="{{ route('login') }}" >Login</a>
+                        <a class="navbar-brand float-right" href="{{ route('login') }}">Login</a>
 
 
                     @endauth
