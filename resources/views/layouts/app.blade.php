@@ -58,7 +58,7 @@
 
 
 <body>
-    <section class="nav-header overlay">
+    <section class="nav-header overlay background">
         <div class="navbar-default">
             @if (Route::has('login'))
                 <div class="top-right links" style="padding:15px;">
