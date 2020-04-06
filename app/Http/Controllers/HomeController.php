@@ -247,6 +247,7 @@ class HomeController extends Controller
             $price = $request->input('price');
             $start_date = $request->input('start_date');
             $end_date = $request->input('end_date');
+            $reccurring = $request->input('recurr');
 
             if(!isset($price) || !isset($property) || !isset($start_date) || !isset($end_date)){
                 return json_encode(['status' => 'bad_input']);
@@ -258,6 +259,18 @@ class HomeController extends Controller
                 return json_encode(['status' => 'price_high']);
             }
 
+            if($reccurring != "false" && $reccurring != "true") {
+                return json_encode(['status' => 'error']);
+            }
+
+            if($reccurring == "false") {
+                $reccurring = 0;
+            }
+
+            if($reccurring == "true") {
+                $reccurring = 1;
+            }
+
             $start = strtotime($start_date);
             $end = strtotime($end_date);
             $curr = time();
@@ -266,7 +279,7 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
 
-            $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property];
+            $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
             
             DB::table('property_listing')->insert($data);            
             
