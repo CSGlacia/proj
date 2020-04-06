@@ -36,19 +36,19 @@ class GeneralController extends Controller
             );
         } else{
 
-            $address = true;
-            $suburb = true;
-            $postcode = true;
-
             $searchCritera = [];
-            if($address_checkbox == 1){
-                array_push($searchCritera, ['p.property_address', 'LIKE', '%'.$query.'%', 'OR']);
-            }
-            if($suburb_checkbox == 1){
-                array_push($searchCritera, ['p.property_suburb', 'LIKE', '%'.$query.'%', 'OR']);
-            }
-            if($postcode_checkbox == 1){
-                array_push($searchCritera, ['p.property_postcode', 'LIKE', '%'.$query.'%', 'OR']);
+            if($address_checkbox == 0 && $suburb_checkbox == 0 && $postcode_checkbox == 0){
+                array_push($searchCritera, ['p.property_title', 'LIKE', '%'.$query.'%', 'OR']);
+            } else{
+                if($address_checkbox == 1){
+                    array_push($searchCritera, ['p.property_address', 'LIKE', '%'.$query.'%', 'OR']);
+                }
+                if($suburb_checkbox == 1){
+                    array_push($searchCritera, ['p.property_suburb', 'LIKE', '%'.$query.'%', 'OR']);
+                }
+                if($postcode_checkbox == 1){
+                    array_push($searchCritera, ['p.property_postcode', 'LIKE', '%'.$query.'%', 'OR']);
+                }
             }
             $results = DB::table('properties AS p')
                             ->select('p.*')
@@ -75,7 +75,7 @@ class GeneralController extends Controller
                             ['u.inactive', 0]
                         ])
                         ->first();
-            
+
             if(isset($user) && !empty($user) && !is_null($user)) {
 
                 $bookings = DB::table('bookings AS b')
@@ -117,7 +117,7 @@ class GeneralController extends Controller
                     $page_owner = true;
                 }
 
-                return view('view_user', 
+                return view('view_user',
                     ['user' => $user,
                     'bookings' => $bookings,
                     'properties' => $properties,
@@ -157,7 +157,7 @@ class GeneralController extends Controller
                         ['p.property_inactive', 0]
                     ])
                     ->first();
-        
+
         $prop_images = DB::table('property_images AS p')
                         ->select('p.property_image_name')
                         ->where([['p.property_id',$id]])

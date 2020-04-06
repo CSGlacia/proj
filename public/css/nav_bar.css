@@ -1,9 +1,6 @@
-.background{
-    background: url("https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg") center center fixed;
-}
 
 .nav-header{
-    height: 10vh;
+    background: url("https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg") center fixed;
     position: relative;
     background-size: cover;
     -webkit-background-size: cover;
