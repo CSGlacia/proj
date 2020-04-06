@@ -136,7 +136,7 @@
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: {{$b->name}}</div>
+                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a></div>
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
@@ -182,7 +182,7 @@ $(document).ready(function() {
         if(logged == 1) {
             e.preventDefault();
 
-            var propertyID = {{$p->property_id}}
+            var propertyID = {{$p->property_id}};
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
             var persons = $('#persons').val();
