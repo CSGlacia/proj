@@ -135,7 +135,7 @@ class HomeController extends Controller
         // Pull from the database.
         $results = DB::table('bookings AS c')
                     ->select('c.*')
-                    ->where([ ['booking_propertyID', '=', $propertyID] ])
+                    ->where([ ['c.booking_propertyID', '=', $propertyID] ])
                     ->get();
 
         $resultArr = [];
@@ -145,7 +145,7 @@ class HomeController extends Controller
         // than the start of the booking time.
         foreach ($results as $r) {
             if ($r->booking_startDate <= $s && $s < $r->booking_endDate) {
-                return json_encode(["status" => "Someone has already booked that time!"]);
+                return json_encode(["status" => "time_booked"]);
             }
         }
 
@@ -432,19 +432,34 @@ class HomeController extends Controller
     public function cancel_booking(Request $request) {
         $id = Auth::id();
         $booking_id = $request->input('booking_id');
-        $changed = DB::table('bookings AS b')
-                        ->where([
-                            ['b.booking_id', $booking_id],
-                            ['b.booking_inactive', 0]
-                        ])
-                        ->update(['b.booking_inactive' => 1]);
+        $curr = time();
 
-        if(!empty($changed)) {
-            return json_encode(['status' => 'success']);
-        } 
-
-        return json_encode(['status' => 'error']);
+        $booking = DB::table('bookings AS b')
+                                ->where([
+                                    ['b.booking_id', $booking_id],
+                                    ['b.booking_userID', $id],
+                                    ['b.booking_property_reviewed', 0]
+                                ])
+                                ->first();
+                                
+        $time = strtotime('-14 days', $booking->booking_startDate);
 
         
+        if ($curr <= $time) {
+            $changed = DB::table('bookings AS b')
+                        ->where([
+                            ['b.booking_id', $booking_id],
+                            ['b.booking_inactive', 0],
+
+                        ])
+                        ->update(['b.booking_inactive' => 1]);
+            
+            if(!empty($changed)) {
+                return json_encode(['status' => 'success']);
+            } 
+        } else if ($curr > $time) {
+            return json_encode(['status' => 'date error']);
+        }
+        return json_encode(['status' => 'error']);
     }
 }

@@ -11,9 +11,11 @@
         <div class="col-sm-12 col-md-12 col-lg-12">
             @foreach($bookings as $b) 
                 <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                        <div class="card-title">
+                            <h3>{{ $b->property_title }}</h3>
+                        </div>
                         <div>
-                            <div>Property Name: {{$b->property_title}}</div>
                             <div>Address: {{$b->property_address}}</div>
                             <div>Suburb: {{$b->property_suburb}}</div>
                             <div>Persons: {{$b->booking_persons}}</div>
@@ -80,29 +82,28 @@
 <script>
 $(document).ready(function() {
         var booking_id;
+        var start_date;
 
         $(document).on('click', '[name="delete_booking"]', function(){
 
             booking_id = $(this).data('id');
-            console.log(booking_id);
-
             $.ajax({ 
-            url: '/cancel_booking', 
-            method: 'POST', 
-            data: 'booking_id='+booking_id,
-            success: function(html) { 
-                var data = JSON.parse(html);
-                if(data['status'] == "success") {                                                    
-                    alert("Booking Cancelled");                
-                } else if(data['status'] == 'bad_input') {
-                    //alerts user to bad input
-                    alert("Please double check all fields are filled!");
-                } else {
-                    alert("There was an error, please try again!");
-                }
-            },
+                url: '/cancel_booking', 
+                method: 'POST', 
+                data: 'booking_id='+booking_id,
+                success: function(html) { 
+                    var data = JSON.parse(html);
+                    if(data['status'] == "success") {                                                    
+                        alert("Booking Cancelled");                
+                    } else if(data['status'] == 'date error') {
+                        alert("You cannot cancel a booking scheduled in the next 2 weeks.");
+                    } else {
+                        alert("There was an error, please try again!");
+                    }
+                    location.reload();
+                },
+            });
         });
-    });
 });
 </script>
 @endsection

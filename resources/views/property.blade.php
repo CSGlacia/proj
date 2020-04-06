@@ -172,12 +172,14 @@ $(document).ready(function() {
                 data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons,
                 success: function(html) {
                     var data = JSON.parse(html);
-
                     if(data['status'] == "success") {
                         alert("Success!");
                     } else if(data['status'] == 'bad_input') {
                         alert("Please double check all fields are filled!");
-                    } else {
+                    } else if (data['status'] == 'time_booked'){
+                        alert("This booking date has already been taken!");
+                    }
+                    else {
                         alert("There was an error, please try again!");
                     }
                 },
