@@ -386,22 +386,35 @@ class HomeController extends Controller
         $userID = Auth::id();
         $propertyID = $request->input('propertyID');
         $propertyTitle = $request->input('propertyTitle');
+        $propertyAddress = $request->input('propertyAddress');
         $createdAt = time();
 
 
         // Pull from the database.
-        $results = DB::table('wishlist AS w')
-                    ->select('w.*')
-                    ->where([ ['wishlist_propertyID', '=', $propertyID] ])
-                    ->get();
+        // $results = DB::table('wishlist AS w')
+        //             ->select('w.*')
+        //             ->where([
+        //                 ['wishlist_propertyID', '=', $propertyID]
+        //                 ['wishlist_userID', '=', $userID]
+        //             ])
+        //             ->get();
+        DB::table('wishlist')
+                ->updateOrInsert(
+                        ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID],
+                        ['wishlist_propertyTitle' => $propertyTitle, 'wishlist_propertyAddress' => $propertyAddress, 'wishlist_inactive' => 0, 'wishlist_createdAt' => $createdAt]
+                );
 
         // Sanity.
 
         // Only add to the database if it does not exist on there.
-        if (empty($results)) {
-            $insert = ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID, 'wishlist_inactive' => 0];
-            DB::table('wishlist')->insert($insert);
-        }
+        // if (count($results) < 1) {
+        //     error_log("SUP3");
+        //     $insert = ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID, 'wishlist_propertyTitle' => $propertyTitle, 'wishlist_propertyAddress' => $propertyAddress, 'wishlist_inactive' => 0];
+        //     DB::table('wishlist')->insert($insert);
+        // } else {
+        //     DB::table('wishlist')
+        //         ->where('id')
+        // }
 
         return json_encode(['status' => 'success']);
 
@@ -409,20 +422,35 @@ class HomeController extends Controller
 
     public function view_wishlist(Request $request) {
 
+        $userID = Auth::id();
+
         $results = DB::table('wishlist AS w')
                         ->select('w.*')
                         ->where([
-                            ['wishlist_inactive', '=', '0']
+                            ['wishlist_inactive', '=', '0'],
+                            ['wishlist_userID', '=', $userID]
                         ])
                         ->get();
 
         //
-        error_log($results);
 
         return view('view_wishlist', ['wishlist' => $results]);
     }
 
-    // ASK ABOUT SECURITY, RIGHT NOW I THINK ANY USER CAN DELETE ANY PROPERTY (!!)
+    public function delete_wishlist(Request $request) {
+        $userID = Auth::id();
+        $propertyID = $request->input('propertyID');
+
+
+        DB::table('wishlist')
+                ->updateOrInsert(
+                        ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID],
+                        ['wishlist_inactive' => 1]
+                );
+
+        return json_encode(['status' => 'success']);
+    }
+
     public function delete_property(Request $request) {
 
         $userID = Auth::id();

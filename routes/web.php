@@ -45,6 +45,7 @@ Route::post('/create_tennant_review', 'HomeController@create_tennant_review');
 
 Route::get('/view_wishlist', 'HomeController@view_wishlist');
 Route::post('/add_to_wishlist', 'HomeController@add_to_wishlist');
+Route::post('/delete_wishlist', 'HomeController@delete_wishlist');
 
 
 // Deletion

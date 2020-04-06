@@ -93,6 +93,10 @@
     <!-- Check for the correct user to be logged on -->
     <a id="delete_property" class="btn btn-primary">✖ Delete Property</a>
 
+
+    <!-- Check for the correct user to be logged on -->
+    <a id="add_to_wishlist" class="btn btn-primary">★</a>
+
 </div>
 @endsection
 
@@ -137,7 +141,6 @@ $(document).ready(function() {
 <script>
 $(document).ready(function() {
     $(document).on('click', '#delete_property', function(e) {
-
         var logged = $('#user_logged').data('logged');
         if(logged == 1) {
             e.preventDefault();
@@ -148,6 +151,43 @@ $(document).ready(function() {
                 method: 'POST',
                 dataType: 'JSON',
                 data: 'propertyID='+propertyID,
+                success: function(html) {
+                    var data = JSON.parse(html);
+                    if(data['status'] == "success") {
+                        alert("Success!");
+                    } else {
+                        alert("There was an error, please try again!");
+                    }
+                },
+                error: function ( xhr, errorType, exception ) {
+                    var errorMessage = exception || xhr.statusText;
+                    alert("There was a connectivity problem. Please try again.");
+                }
+            });
+        } else {
+            alert("An error occurred! (You shouldn't see this)");
+        }
+    });
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    $(document).on('click', '#add_to_wishlist', function(e) {
+        var logged = $('#user_logged').data('logged');
+        if(logged == 1) {
+            e.preventDefault();
+            var propertyID = {{$p->property_id}};
+            var propertyTitle = "{{$p->property_title}}";
+            var propertyAddress = "{{$p->property_address}}";
+
+            alert("Added this listing to your wishlist!");
+
+            $.ajax({
+                url: '/add_to_wishlist',
+                method: 'POST',
+                dataType: 'JSON',
+                data: 'propertyID='+propertyID+'&propertyTitle='+propertyTitle+'&propertyAddress='+propertyAddress,
                 success: function(html) {
                     var data = JSON.parse(html);
                     if(data['status'] == "success") {
