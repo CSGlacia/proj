@@ -7,6 +7,12 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     -msn-background-size: cover;
+    height: 100vh;
+}
+
+.nav-header{
+    height: 10vh;
+
 }
 .nav-header .overlay{
     background: rgba(0, 0, 0, 0.58);
