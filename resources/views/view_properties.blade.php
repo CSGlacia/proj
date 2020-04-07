@@ -49,9 +49,9 @@
           </div>
           <input type="checkbox" name="address_checkbox" value="1" style="margin-left:25vh">
           <label for="address_checkbox"> Address </label>
-          <input type="checkbox" name="suburb_checkbox" value="1">
+          <input type="checkbox" name="suburb_checkbox" value="1" style="margin-left:30px">
           <label for="suburb_checkbox"> Suburb </label>
-          <input type="checkbox" name="postcode_checkbox" value="1">
+          <input type="checkbox" name="postcode_checkbox" value="1" style="margin-left:30px">
           <label for="postcode_checkbox"> Postcode </label>
 
         </form>
