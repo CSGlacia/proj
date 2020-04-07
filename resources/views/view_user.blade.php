@@ -72,7 +72,6 @@
                 <hr>
               @endforeach
           </div>
-    @if($page_owner)
     @if($page_owner == true)
         <a href="/create_property_listing" class="btn btn-primary">Create a property listing</a>
     @endif
