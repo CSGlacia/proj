@@ -149,11 +149,9 @@ $(document).ready(function() {
             dataType: 'JSON',
             data: 'score='+score+'&review='+review+'&booking_id='+{{$b->booking_id}}+'&property_id='+{{$p->property_id}},
             success: function(html) {
-                var data = JSON.parse(html);
-
-                if(data['status'] == "success") {
+                if(html['status'] == "success") {
                     alert("Review Submitted Successfully");
-                } else if(data['status'] == 'bad_input') {
+                } else if(html['status'] == 'bad_input') {
                     alert("Please double check all fields are filled!");
                 } else {
                     alert("There was an error, please try again!");

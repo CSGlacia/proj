@@ -34,16 +34,6 @@
                 <div class="card-title" style="text-align:center;">     
                     <h2>Current Availabilities</h2>
                 </div>
-                <hr>
-                <div class="card-text">
-                @if(count($avail) > 0)
-                    @foreach ($avail as $a)
-                        <h4> {{ $a->booking_startDate }} - {{$a->booking_endDate}} </h4> 
-                    @endforeach
-                @else
-                    <h4> Everything is available!</h4>
-                @endif
-                </div>
             </div>
         </div>
 
@@ -70,7 +60,7 @@
                         <input id="endDate" class="form-control" type="date" placeholder="(dateTime)" required>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
-                        <span>(!) Number of People:&nbsp;</span>
+                        <span>Number of People:&nbsp;</span>
                         <input id="persons" class="form-control" type="number" placeholder="(int)" required>
                     </div>
                 </div>
@@ -131,6 +121,44 @@
             </div>
         </div>
     </div>
+
+    @if($page_owner == true)
+    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">  
+        <div class="row card">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
+                    <h2>Current bookings:</h2>
+                </div>
+                <hr>
+                <div class="card-text">
+                @if(count($bookings) > 0)
+                    @foreach($bookings as $b)
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-12">
+                                        <div>
+                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}} 
+                                                @if($b->scores > 2.5)
+                                                    <i class="fas fa-star gold-star"></i>
+                                                @else
+                                                    <i class="fas fa-star"></i>
+                                                @endif
+                                            </div>
+                                            <div>Persons: {{$b->booking_persons}}</div>
+                                            <span>Start Date: {{$b->booking_startDate}}</span>
+                                            <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                    @endforeach
+                @else 
+                    <div>You have no tennants to review</div>
+                @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
 
@@ -160,7 +188,7 @@ $(document).ready(function() {
         if(logged == 1) {
             e.preventDefault();
 
-            var propertyID = {{$p->property_id}}
+            var propertyID = {{$p->property_id}};
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
             var persons = $('#persons').val();
@@ -171,12 +199,11 @@ $(document).ready(function() {
                 dataType: 'JSON',
                 data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons,
                 success: function(html) {
-                    var data = JSON.parse(html);
-                    if(data['status'] == "success") {
+                    if(html['status'] == "success") {
                         alert("Success!");
-                    } else if(data['status'] == 'bad_input') {
+                    } else if(html['status'] == 'bad_input') {
                         alert("Please double check all fields are filled!");
-                    } else if (data['status'] == 'time_booked'){
+                    } else if (html['status'] == 'time_booked'){
                         alert("This booking date has already been taken!");
                     }
                     else {

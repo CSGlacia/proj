@@ -80,7 +80,10 @@ class GeneralController extends Controller
 
                 $bookings = DB::table('bookings AS b')
                                 ->select('b.*', 'p.*')
-                                ->where('b.booking_inactive', 0)
+                                ->where([
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_startDate', '>', time()]
+                                ])
                                 ->whereIn('b.booking_id', explode(',', $user->bookings))
                                 ->leftJoin('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                                 ->get();
@@ -108,8 +111,18 @@ class GeneralController extends Controller
                                 ->join('users AS u', 'u.id', '=', 'trs_reviewer_id')
                                 ->get();
 
+                $average_guest_score = 0;
+                $count = 0;
                 foreach($reviews as $r) {
                     $r->trs_submitted_at = date('d/m/Y', $r->trs_submitted_at);
+                    $count = $count + 1;
+                    $average_guest_score = $average_guest_score + $r->trs_score;
+                }
+
+                if ($count != 0) {
+                    $average_guest_score = $average_guest_score/$count;
+                } else {
+                    $average_guest_score = 'No reviews yet';
                 }
 
                 $page_owner = false;
@@ -128,7 +141,8 @@ class GeneralController extends Controller
                     'listings' => $listings,
                     'properties' => $properties,
                     'page_owner' => $page_owner,
-                    'reviews' => $reviews
+                    'reviews' => $reviews,
+                    'guest_score' => $average_guest_score
                     ]
                 );
             }
@@ -188,18 +202,26 @@ class GeneralController extends Controller
 
         if(isset($prop) && !empty($prop) && !is_null($prop)) {
 
-            $avail = DB::table('bookings AS b')
-                        ->select('b.*')
-                        ->where([
-                            ['b.booking_propertyID', $id],
-                            ['b.booking_inactive', 0]
-                        ])
-                        ->get();
+            $bookings = DB::table('bookings as b')
+                            ->select('b.*', 'u.*', 
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
+                            )
+                            ->where([
+                                ['b.booking_propertyID', $id],
+                                ['b.booking_inactive', 0],
+                                ['b.booking_startDate', '>', time()],
+                            ])
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID') // gets user info for each of the people booking
+                            ->get();
 
-            foreach($avail as $a) {
-                $a->booking_startDate = date('d/m/Y', $a->booking_startDate);
-                $a->booking_endDate = date('d/m/Y', $a->booking_endDate);
-            }
+            foreach($bookings as $b) {
+                $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+
+                $scores = explode(',', $b->scores);
+                $scores = array_sum($scores)/count($scores);
+                $b->scores = $scores;
+            }            
 
             $reviews = DB::table('property_reviews AS p')
                         ->where([
@@ -213,11 +235,22 @@ class GeneralController extends Controller
                 $r->prs_submitted_at = date('d/m/Y', $r->prs_submitted_at);
             }
 
+            $page_owner = false;
+
+            $id = Auth::id();
+
+            if(is_null($id) || !isset($id) || empty($id)) {
+                $page_owner = false;
+            } else if($id == $prop->property_user_id) {
+                $page_owner = true;
+            }
+
             return view('property',
                             ['p' => $prop,
-                            'avail' => $avail,
+                            'bookings' => $bookings,
                             'reviews' => $reviews,
-                            'images' => $prop_images]
+                            'images' => $prop_images,
+                            'page_owner' => $page_owner]
                 );
         }
     }

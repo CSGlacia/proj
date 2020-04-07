@@ -4,7 +4,10 @@
 <div class="container">
     <span class="label bg-primary">Name: {{$user->name}}</span>
     <span class="label bg-warning">Email: {{$user->email}}</span>
-
+    <span class="label bg-secondary">Guest rating: </span> 
+    <span>{{$guest_score}}</span>
+    <span name="score-star"><i class="fas fa-star gold-star"></i></span>
+    
     @if($page_owner)
     <div class="row">
         <b><h2>Bookings:</h2></b>
@@ -40,10 +43,9 @@
                 <div class="col-sm-12 col-md-12 col-lg-12">
                     <h3><b> {{ $p->property_title }}</b></h3>
                     <div>Address: {{ $p->property_address }}</div>
-                    <div>Suburb: {{ $p->property_suburb }}, {{ $p->property_postcode}} </div>
-                    <span class="label bg-primary"> Beds: {{ $p->property_beds }} </span>
-                    <span class="label bg-warning"> Bathrooms: {{ $p->property_baths }} </span>
-                    <span class="label bg-danger"> Cars: {{ $p->property_cars }} </span>
+                    <span> <i class="fas fa-bed"></i>&nbsp;{{ $p->property_beds }} </span>
+                    <span> <i class="fas fa-toilet"></i>&nbsp;{{ $p->property_baths }} </span>
+                    <span> <i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
                     <div> {{ $p->property_desc }}  </div>
                     <a class="btn btn-primary" name="view_property" href="/view_property/{{$p->property_id}}"> View property </a>
                 </div>
@@ -71,6 +73,7 @@
               @endforeach
           </div>
     @if($page_owner)
+    @if($page_owner == true)
         <a href="/create_property_listing" class="btn btn-primary">Create a property listing</a>
     @endif
     </div>
@@ -121,7 +124,7 @@ $(document).ready(function() {
                     }
                     location.reload();
                 },
-            });
+            }); 
         });
 });
 </script>
