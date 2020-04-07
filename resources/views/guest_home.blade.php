@@ -2,32 +2,62 @@
 
 
 @section('content')
-
-
-
-
-<div class="hero-wrap js-fullheight" style="background-image: url('https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg');" data-stellar-background-ratio="0.5">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-start" data-scrollax-parent="true">
-      <div class="col-md-7 ftco-animate">
-        <h1 class="mb-4">Rent an appartment for your vacation</h1>
-        <p><a href="#" class="btn btn-primary">Learn more</a> <a href="#" class="btn btn-white">Contact us</a></p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<section class="ftco-intro" style="background-image: url(images/bg_1.jpg);" data-stellar-background-ratio="0.5">
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-9 text-center">
-                <h2>Ready to get started</h2>
-                <p class="mb-4">It’s safe to book online with us! Get your dream stay in clicks or drop us a line with your questions.</p>
-                <p class="mb-0"><a href="#" class="btn btn-primary px-4 py-3">Book now</a> <a href="#" class="btn btn-white px-4 py-3">Contact us</a></p>
+<div class="hs-slider owl-carousel">
+    <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="hs-text">
+                        <h2>Photography Studio</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et<br /> dolore magna aliqua. Quis ipsum suspendisse ultrices
+                            gravida accumsan lacus vel facilisis.</p>
+                        <a href="#" class="primary-btn">Contact us</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</section>
+    <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="hs-text">
+                        <h2>Photography Studio</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et<br /> dolore magna aliqua. Quis ipsum suspendisse ultrices
+                            gravida accumsan lacus vel facilisis.</p>
+                        <a href="#" class="primary-btn">Contact us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@endsection
+
+@section('scripts')
+<script>
+    $('.set-bg').each(function () {
+        var bg = $(this).data('setbg');
+        $(this).css('background-image', 'url(' + bg + ')');
+    });
+    var hero_s = $(".hs-slider");
+    hero_s.owlCarousel({
+        loop: true,
+        margin: 0,
+        nav: true,
+        items: 1,
+        dots: false,
+        animateOut: 'fadeOut',
+        animateIn: 'fadeIn',
+        navText: ['<span class="arrow_carrot-left"></span>', '<span class="arrow_carrot-right"></span>'],
+        smartSpeed: 1200,
+        autoHeight: false,
+        autoplay: true
+    });
+
+</script>
 @endsection

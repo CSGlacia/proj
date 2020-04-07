@@ -12,50 +12,20 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="{{asset('js/owl.carousel.min.js')}}"></script>
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/nav_bar.css') }}" rel="stylesheet">
-
+    <link href="{{asset('css/owl.carousel.min.css')}}" rel="stylesheet">
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <script src="https://kit.fontawesome.com/06f34836f7.js" crossorigin="anonymous"></script>
 </head>
 
-<style>
-    .topnav {
-      background-color: #333;
-      overflow: hidden;
-    }
-    .card {
-        margin: 10px;
-    }
-    .row {
-        margin-bottom: 20px;
-    }
-    .item-card:hover {
-        background-color: #f6f6f6;
-        box-shadow: inset 0 0 0 5px #c9c9c9;
-        transition: all 1s ease;
-    }
-    .item-card {
-        background-color: #ffffff;
-        width:75%;
-    }
-    .cursor-pointer:hover{
-        cursor: pointer;
-    }
-    .gold-star {
-        color:gold;
-    }
-    .gold-star-temp {
-        color:gold;
-    }
 
-</style>
-@yield('style')
 
 
 <body>
