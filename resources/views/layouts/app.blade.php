@@ -12,7 +12,7 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/nav_bar.css') }}" rel="stylesheet">
@@ -57,9 +57,91 @@
 @yield('style')
 
 
-
 <body>
-    <section class="nav-header overlay background">
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container">
+
+        <a class="navbar-brand" href="/">TURTLE</a>
+            @if (Route::has('login'))
+            @auth
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
+                    <li class="nav-item"><a href="/create_property_listing" class="nav-link">Create Listing</a></li>
+                    <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
+                    <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
+
+
+
+                    <li class="nav-item"><a href="" id="user_profile" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="{{ url('/logout') }}" class="nav-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a></li>
+                    <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                        {{ csrf_field() }}
+                    </form>
+                </ul>
+            @else
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
+                    @if (Route::has('register'))
+                        <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
+                    @endif
+                </ul>
+
+            @endauth
+        @endif
+    </div>
+    </nav>
+    <main class="py-4">
+        @yield('content')
+    </main>
+
+
+
+
+
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+
+            function set_profile_button() {
+                $.ajax({
+                    url: '/get_user_id',
+                    method: 'GET',
+                    success: function(html) {
+                        var data = JSON.parse(html);
+                        if(data['status'] == "success") {
+                            var id = data['id'];
+                            $('#user_profile').attr('href', '/user_profile/'+id);
+                        } else if (data['status'] == "not_logged_in"){
+                            //if the user is not logged in, tells it to not do anything
+                        }
+                        else {
+                            alert("There was an error, please try again!");
+                        }
+                    },
+                    error: function ( xhr, errorType, exception ) {
+                        var errorMessage = exception || xhr.statusText;
+                        alert("There was a connectivity problem. Please try again.");
+                    }
+                });
+            }
+        $(document).ready(function() {
+
+            set_profile_button();
+        });
+    </script>
+    @yield('scripts')
+</body>
+
+
+
+<!--    OLD NAV-BAR
+<body>
+    <section class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
         <div class="navbar-default">
             @if (Route::has('login'))
                 <div class="top-right links" style="padding:15px;">
@@ -129,6 +211,6 @@
     </section>
 </body>
 
-
+-->
 
 </html>
