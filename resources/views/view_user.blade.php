@@ -4,15 +4,15 @@
 <div class="container">
     <span class="label bg-primary">Name: {{$user->name}}</span>
     <span class="label bg-warning">Email: {{$user->email}}</span>
-    <span class="label bg-secondary">Guest rating: </span> 
+    <span class="label bg-secondary">Guest rating: </span>
     <span>{{$guest_score}}</span>
     <span name="score-star"><i class="fas fa-star gold-star"></i></span>
-    
+
     @if($page_owner)
     <div class="row">
         <b><h2>Bookings:</h2></b>
         <div class="col-sm-12 col-md-12 col-lg-12">
-            @foreach($bookings as $b) 
+            @foreach($bookings as $b)
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                         <div class="card-title">
@@ -53,6 +53,24 @@
             <hr>
           @endforeach
         </div>
+    </div>
+        <div class="row">
+            <b><h2>Listings:</h2></b>
+            <hr>
+            <div class="col-sm-12 col-md-12 col-lg-12">
+              @foreach ($listings as $l)
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h3><b> {{ $l->property_title }}</b></h3>
+                        <div>Address: {{ $l->property_address }}</div>
+                        <div>Start Date: {{ $l->start_date }}  </div>
+                        <div>End Date: {{ $l->end_date }}  </div>
+                        <a class="btn btn-primary" name="view_property" href="/view_property/{{$l->property_id}}"> View property </a>
+                    </div>
+                </div>
+                <hr>
+              @endforeach
+          </div>
     @if($page_owner == true)
         <a href="/create_property_listing" class="btn btn-primary">Create a property listing</a>
     @endif
@@ -89,14 +107,14 @@ $(document).ready(function() {
         $(document).on('click', '[name="delete_booking"]', function(){
 
             booking_id = $(this).data('id');
-            $.ajax({ 
-                url: '/cancel_booking', 
-                method: 'POST', 
+            $.ajax({
+                url: '/cancel_booking',
+                method: 'POST',
                 data: 'booking_id='+booking_id,
-                success: function(html) { 
+                success: function(html) {
                     var data = JSON.parse(html);
-                    if(data['status'] == "success") {                                                    
-                        alert("Booking Cancelled");                
+                    if(data['status'] == "success") {
+                        alert("Booking Cancelled");
                     } else if(data['status'] == 'date error') {
                         alert("You cannot cancel a booking scheduled in the next 2 weeks.");
                     } else {
@@ -104,7 +122,7 @@ $(document).ready(function() {
                     }
                     location.reload();
                 },
-            }); 
+            });
         });
 });
 </script>

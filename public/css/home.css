@@ -1,0 +1,97 @@
+/*---------------------
+  Services
+-----------------------*/
+
+.services-section {
+	padding-top: 0;
+	padding-bottom: 60px;
+}
+
+.services-section.services-normal .container {
+	margin-top: 0;
+}
+
+.services-section .container {
+	position: relative;
+	margin-top: -70px;
+	z-index: 99;
+}
+
+.services-item {
+	text-align: center;
+	padding: 10px 10px 18px 10px;
+	background: #ffffff;
+	-webkit-box-shadow: 0px 10px 25px rgba(206, 206, 206, 0.5);
+	box-shadow: 0px 10px 25px rgba(206, 206, 206, 0.5);
+	margin-bottom: 30px;
+}
+
+.services-item img {
+	margin-bottom: 28px;
+	min-width: 100%;
+}
+
+.services-item h3 {
+	color: #191039;
+	font-weight: 700;
+	text-transform: uppercase;
+	margin-bottom: 10px;
+}
+
+.spad {
+	padding-top: 100px;
+	padding-bottom: 100px;
+}
+
+.spad-2 {
+	padding-top: 50px;
+	padding-bottom: 70px;
+}
+
+/*---------------------
+  Services Option
+-----------------------*/
+
+.services-option {
+	padding-bottom: 50px;
+}
+
+.so-item {
+	margin-bottom: 42px;
+}
+
+.so-item .so-title {
+	overflow: hidden;
+	margin-bottom: 12px;
+}
+
+.so-item .so-title .so-number {
+	font-size: 16px;
+	color: #ffffff;
+	font-weight: 600;
+	width: 36px;
+	height: 36px;
+	line-height: 36px;
+	text-align: center;
+	background: #009603;
+	float: left;
+	margin-right: 20px;
+}
+
+.so-item .so-title h5 {
+	font-size: 20px;
+	color: #111111;
+	font-weight: 700;
+	text-transform: uppercase;
+	overflow: hidden;
+	line-height: 36px;
+}
+
+.so-item p {
+	color: #666666;
+	margin-bottom: 0;
+}
+
+img {
+	max-width: 100%;
+}

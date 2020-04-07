@@ -36,13 +36,11 @@ class GeneralController extends Controller
             );
         } else{
 
-            $address = true;
-            $suburb = true;
-            $postcode = true;
-
             $searchCritera = [];
+
             if($address_checkbox == 1){
                 array_push($searchCritera, ['p.property_address', 'LIKE', '%'.$query.'%', 'OR']);
+
             }
             $results = DB::table('properties AS p')
                             ->select('p.*')
@@ -69,7 +67,7 @@ class GeneralController extends Controller
                             ['u.inactive', 0]
                         ])
                         ->first();
-            
+
             if(isset($user) && !empty($user) && !is_null($user)) {
 
                 $bookings = DB::table('bookings AS b')
@@ -90,6 +88,11 @@ class GeneralController extends Controller
                 $properties = DB::table('properties AS p')
                                 ->where('p.property_inactive', 0)
                                 ->whereIn('p.property_id', explode(',', $user->properties))
+                                ->get();
+
+                $listings = DB::table('property_listing AS l')
+                                ->join('project.properties AS p', 'l.property_id', '=', 'p.property_id')
+                                ->where('p.property_user_id', '=', $id)
                                 ->get();
 
                 $reviews = DB::table('tennant_reviews AS t')
@@ -114,6 +117,11 @@ class GeneralController extends Controller
                     $average_guest_score = 'No reviews yet';
                 }
 
+                foreach($listings as $l) {
+                    $l->start_date = date('d/m/Y', $l->start_date);
+                    $l->end_date = date('d/m/Y', $l->end_date);
+                }
+
                 $page_owner = false;
 
                 $id = Auth::id();
@@ -124,9 +132,10 @@ class GeneralController extends Controller
                     $page_owner = true;
                 }
 
-                return view('view_user', 
+                return view('view_user',
                     ['user' => $user,
                     'bookings' => $bookings,
+                    'listings' => $listings,
                     'properties' => $properties,
                     'page_owner' => $page_owner,
                     'reviews' => $reviews,
@@ -165,7 +174,7 @@ class GeneralController extends Controller
                         ['p.property_inactive', 0]
                     ])
                     ->first();
-        
+
         $prop_images = DB::table('property_images AS p')
                         ->select('p.property_image_name')
                         ->where([['p.property_id',$id]])
@@ -191,7 +200,7 @@ class GeneralController extends Controller
         if(isset($prop) && !empty($prop) && !is_null($prop)) {
 
             $bookings = DB::table('bookings as b')
-                            ->select('b.*', 'u.*', 
+                            ->select('b.*', 'u.*',
                                 DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
                             )
                             ->where([
@@ -209,7 +218,7 @@ class GeneralController extends Controller
                 $scores = explode(',', $b->scores);
                 $scores = array_sum($scores)/count($scores);
                 $b->scores = $scores;
-            }            
+            }
 
             $reviews = DB::table('property_reviews AS p')
                         ->where([
@@ -241,5 +250,10 @@ class GeneralController extends Controller
                             'page_owner' => $page_owner]
                 );
         }
+    }
+
+    public function guest_home()
+    {
+        return view('guest_home');
     }
 }

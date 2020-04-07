@@ -18,6 +18,7 @@ Auth::routes();
 Route::get('/get_user_id', 'GeneralController@get_user_id');
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/guest_home', 'GeneralController@guest_home');
 
 //property functions
 Route::get('/create_property_page', 'HomeController@listing_page');
@@ -49,3 +50,14 @@ Route::get('/review_property', 'HomeController@review_property');
 Route::post('/create_property_review', 'HomeController@create_property_review');
 Route::post('/create_tennant_review', 'HomeController@create_tennant_review');
 
+// Wishlist handlers
+
+Route::get('/view_wishlist', 'HomeController@view_wishlist');
+Route::post('/add_to_wishlist', 'HomeController@add_to_wishlist');
+Route::post('/delete_wishlist', 'HomeController@delete_wishlist');
+
+
+// Deletion
+Route::post('delete_property', 'HomeController@delete_property');
+//  Where should this go?
+// Route::post('delete_listing', 'HomeContoller@delte_listing');

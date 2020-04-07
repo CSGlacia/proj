@@ -11,9 +11,16 @@
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">    
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/nav_bar.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/home.css') }}" rel="stylesheet">
+    <link href="{{asset('css/owl.carousel.min.css')}}" rel="stylesheet">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -34,7 +41,7 @@
     }
     .item-card:hover {
         background-color: #f6f6f6;
-        box-shadow: inset 0 0 0 5px #c9c9c9;
+        box-shadow: inset 0 0 0 5px #85CB33;
         transition: all 1s ease;  
     }
     .item-card {
@@ -91,35 +98,47 @@
 
 
 
+
 <body>
-    <div class="topnav">
-        @if (Route::has('login'))
-            <div class="top-right links" style="padding:15px;">
-                    <a class="btn btn-xs btn-primary" href="/">Homepage</a>
-                @auth
-                    <a class="btn btn-xs btn-primary" id="user_profile" href="">User Profile</a>
-                    <a class="btn btn-xs btn-primary" href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container">
+
+        <a class="navbar-brand" href="/">TURTLE</a>
+            @if (Route::has('login'))
+            @auth
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
+                    <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
+                    <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
+
+
+
+                    <li class="nav-item"><a href="" id="user_profile" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="{{ url('/logout') }}" class="nav-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a></li>
                     <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
                     </form>
-                    <a class="btn btn-xs btn-warning" href="/create_property_listing">Create a property listing</a>
-                    <a class="btn btn-xs btn-success" href="/property_reviews">Review past properties</a>
-                    <a class="btn btn-xs btn-success"href="/tennant_reviews">Review past tennants</a>
-                    <a class="btn btn-xs btn-danger" href="/create_property_page">Add a new property to your account</a>
-                @else
-                    <a class="btn btn-xs btn-primary" href="{{ route('login') }}">Login</a>
-
+                </ul>
+            @else
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
                     @if (Route::has('register'))
-                        <a class="btn btn-xs btn-primary" href="{{ route('register') }}">Register</a>
+                        <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
                     @endif
-                @endauth
-            </div>
+                </ul>
+
+            @endauth
         @endif
     </div>
-
+    </nav>
     <main class="py-4">
         @yield('content')
     </main>
+
+
+
+
+
 
     <script>
         $.ajaxSetup({
@@ -160,5 +179,79 @@
 </body>
 
 
+
+<!--    OLD NAV-BAR
+<body>
+    <section class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+        <div class="navbar-default">
+            @if (Route::has('login'))
+                <div class="top-right links" style="padding:15px;">
+                        <a class="navbar-brand" href="/" style="margin-left:30px">Turtle</a>
+                    @auth
+                        <a class="btn btn-xs btn-primary" id="user_profile" href="">User Profile</a>
+                        <a class="btn btn-xs btn-primary" href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
+                        <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                            {{ csrf_field() }}
+                        </form>
+                        <a class="btn btn-xs btn-warning" href="/create_property_listing">Create a property listing</a>
+                        <a class="btn btn-xs btn-success" href="/property_reviews">Review past properties</a>
+                        <a class="btn btn-xs btn-success"href="/tennant_reviews">Review past tennants</a>
+                        <a class="btn btn-xs btn-danger" href="/create_property_page">Add a new property to your account</a>
+                    @else
+                        @if (Route::has('register'))
+                            <a class="navbar-brand float-right" href="{{ route('register') }}" style="margin-left:15px">Register</a>
+                        @endif
+                        <a class="navbar-brand float-right" href="{{ route('login') }}">Login</a>
+
+
+                    @endauth
+                </div>
+            @endif
+        </div>
+
+        <main class="py-4">
+            @yield('content')
+        </main>
+
+        <script>
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+
+                function set_profile_button() {
+                    $.ajax({
+                        url: '/get_user_id',
+                        method: 'GET',
+                        success: function(html) {
+                            var data = JSON.parse(html);
+                            if(data['status'] == "success") {
+                                var id = data['id'];
+                                $('#user_profile').attr('href', '/user_profile/'+id);
+                            } else if (data['status'] == "not_logged_in"){
+                                //if the user is not logged in, tells it to not do anything
+                            }
+                            else {
+                                alert("There was an error, please try again!");
+                            }
+                        },
+                        error: function ( xhr, errorType, exception ) {
+                            var errorMessage = exception || xhr.statusText;
+                            alert("There was a connectivity problem. Please try again.");
+                        }
+                    });
+                }
+            $(document).ready(function() {
+
+                set_profile_button();
+            });
+        </script>
+        @yield('scripts')
+    </section>
+</body>
+
+-->
 
 </html>
