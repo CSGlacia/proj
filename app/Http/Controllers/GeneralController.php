@@ -254,4 +254,9 @@ class GeneralController extends Controller
                 );
         }
     }
+
+    public function guest_home()
+    {
+        return view('guest_home');
+    }
 }

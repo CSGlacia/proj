@@ -18,6 +18,7 @@ Auth::routes();
 Route::get('/get_user_id', 'GeneralController@get_user_id');
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/guest_home', 'GeneralController@guest_home');
 
 //property functions
 Route::get('/create_property_page', 'HomeController@listing_page');
@@ -43,4 +44,3 @@ Route::get('/review_tennant', 'HomeController@review_tennant');
 Route::get('/review_property', 'HomeController@review_property');
 Route::post('/create_property_review', 'HomeController@create_property_review');
 Route::post('/create_tennant_review', 'HomeController@create_tennant_review');
-
