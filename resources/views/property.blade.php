@@ -23,15 +23,15 @@
                         @endforeach
                     </div>
 
-                    <div>{{$p->property_address}}, {{ $p->property_suburb }}, {{ $p->property_postcode}} </div>
+                    <div>{{$p->property_address}} </div>
                     <div style="margin:5px;"> {{ $p->property_desc }}  </div>
                 </div>
             </div>
         </div>
 
         <div class="row card">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body">   
-                <div class="card-title" style="text-align:center;">     
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
                     <h2>Current Availabilities</h2>
                 </div>
             </div>
@@ -75,7 +75,7 @@
         </div>
     </div>
 
-    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">  
+    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
@@ -88,7 +88,7 @@
         </div>
     </div>
 
-    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">  
+    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
@@ -102,7 +102,7 @@
                         <div class="col-sm-6 col-md-6 col-lg-6">
                             <div>{{$r->prs_review}}</div>
                             <div>
-                                <i class="fas fa-star @if($r->prs_score >= 1) gold-star @endif"></i> 
+                                <i class="fas fa-star @if($r->prs_score >= 1) gold-star @endif"></i>
                                 <i class="fas fa-star @if($r->prs_score >= 2) gold-star @endif"></i>
                                 <i class="fas fa-star @if($r->prs_score >= 3) gold-star @endif"></i>
                                 <i class="fas fa-star @if($r->prs_score >= 4) gold-star @endif"></i>
@@ -123,7 +123,7 @@
     </div>
 
     @if($page_owner == true)
-    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">  
+    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
@@ -136,7 +136,7 @@
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}} 
+                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
                                                 @if($b->scores > 2.5)
                                                     <i class="fas fa-star gold-star"></i>
                                                 @else
@@ -151,7 +151,7 @@
                                     <hr>
                                 </div>
                     @endforeach
-                @else 
+                @else
                     <div>You have no tennants to review</div>
                 @endif
                 </div>
@@ -178,7 +178,7 @@ function initMap() {
         streetViewControl: false});
 
   var marker = new google.maps.Marker({position: prop_location, map: map});
-  
+
 }
 
 $(document).ready(function() {
