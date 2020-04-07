@@ -47,6 +47,7 @@ class HomeController extends Controller
         $images = $request->file('files');
         $lat = $request->input('lat');
         $lng = $request->input('lng');
+        $always_list = $request->input('always_list');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
@@ -58,7 +59,19 @@ class HomeController extends Controller
                     return json_encode(['status' => 'wrong_state']);
                 }
 
-                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name];
+                if($always_list != 'true' && $always_list != 'false') {
+                    $always_list = 0;
+                }
+
+                if($always_list == 'true') {
+                    $always_list = 1;
+                }
+
+                if($always_list == 'false') {
+                    $always_list = 0;
+                }
+
+                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baistths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list];
 
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
@@ -105,6 +118,44 @@ class HomeController extends Controller
                     return json_encode(['status' => 'bad_input']);
                 }
             }
+            return json_encode(['status' => 'success']);
+        }
+        return json_encode(['status' => 'error']);
+    }
+
+    public function remove_property_images(Request $request, $property_id) {
+        $bucket = 'turtle-database';
+        $directory = "images/";
+        $remove_ids = $request->input('remove_ids');
+
+        $s3 = new \Aws\S3\S3Client([
+            'version' => 'latest',
+            'region'  => 'ap-southeast-2'
+        ]);
+
+        if(isset($property_id) && !is_null($property_id) && !empty($property_id) && is_numeric($property_id) &&isset($remove_ids) && !is_null($remove_ids) && !empty($remove_ids)) {
+            $ids = explode(',', $remove_ids);
+            
+            $images = DB::table('property_images')
+                        ->where('property_id', $property_id)
+                        ->whereIn('image_id', $ids)
+                        ->get();
+
+            foreach ($images as $i) {
+                try {
+                    $result = $s3->deleteObject(array(
+                        'Bucket' => $bucket,
+                        'Key'    => $i->property_image_name,
+                    ));
+                } catch (S3Exception $e) {
+                    return json_encode(['status' => 'bad_input']);
+                }
+            }
+
+            DB::table('property_images')
+                        ->where('property_id', $property_id)
+                        ->whereIn('image_id', $ids)
+                        ->delete();
             return json_encode(['status' => 'success']);
         }
         return json_encode(['status' => 'error']);
@@ -476,5 +527,164 @@ class HomeController extends Controller
             return json_encode(['status' => 'date error']);
         }
         return json_encode(['status' => 'error']);
+    }
+
+    public function edit_property(Request $request, $id) {
+        $user_id = Auth::id();
+
+        if(isset($id) && !empty($id) && !is_null($id)) {
+            
+            $prop = DB::table('properties AS p')
+                        ->select('p.*')
+                        ->where([
+                            ['p.property_id', $id],
+                            ['p.property_inactive', 0]
+                        ])
+                        ->first();
+
+            if($user_id != $prop->property_user_id) {
+                return view('bad_permissions');
+            }
+
+            $listings = DB::table('property_listing AS pl')
+                            ->where([
+                                ['pl.property_id', $id],
+                                ['pl.inactive', 0]
+                            ])
+                            ->get();
+
+            foreach($listings as $l) {
+                $l->start_date = date('Y-m-d', $l->start_date);
+                $l->end_date = date('Y-m-d', $l->end_date);
+            }
+
+            $bucket = 'turtle-database';
+
+            $s3 = new \Aws\S3\S3Client([
+            'version' => 'latest',
+            'region'  => 'ap-southeast-2'
+            ]);
+            
+            $prop_images = DB::table('property_images AS p')
+                            ->select('p.*')
+                            ->where([['p.property_id',$id]])
+                            ->get();
+
+            return view('edit_property',
+                            ['p' => $prop,
+                            'images' => $prop_images,
+                            'listings' => $listings,
+                            'image_count' => count($prop_images)
+                            ]
+                );
+        }
+    }
+
+    public function update_property(Request $request) {
+        $prop_id = $request->input('prop_id');
+        $user = Auth::id();
+        $address = $request->input('address');
+        $beds = $request->input('beds');
+        $baths = $request->input('baths');
+        $cars = $request->input('cars');
+        $desc = $request->input('desc');
+        $l_name = $request->input('l_name');
+        $images = $request->file('files');
+        $lat = $request->input('lat');
+        $lng = $request->input('lng');
+        $always_list = $request->input('always_list');
+
+        if(isset($user) && !is_null($user) && is_numeric($user)) {
+            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds) 
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) 
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
+
+                if(strpos($address, 'NSW') === false) {
+                    return json_encode(['status' => 'wrong_state']);
+                }
+
+                if($always_list != 'true' && $always_list != 'false') {
+                    $always_list = 0;
+                }
+
+                if($always_list == 'true') {
+                    $always_list = 1;
+                }
+
+                if($always_list == 'false') {
+                    $always_list = 0;
+                }
+
+                $update = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list];
+
+                DB::table('properties')
+                    ->where('property_id', $prop_id)
+                    ->update($update);
+
+                return json_encode(['status' => 'success']);
+
+            } else {
+                return json_encode(['status' => 'bad_input']);
+            }
+        }
+
+        return json_encode(['status' => 'error']);
+    }
+
+    public function update_property_listing(Request $request) {
+        $user = Auth::id();
+        $property = $request->input('property'); //this is property id
+        $price = $request->input('price');
+        $data = $request->input('data');
+
+        //set current property listings to inactive
+        DB::table('property_listing')
+            ->where([
+                ['inactive', 0],
+                ['property_id', $property]
+            ])
+            ->update(['inactive' => 1]);
+
+        $data = explode(',', $data);
+        $listings = [];
+
+        foreach($data as $d) {
+            $listings[] = explode('~', $d);
+        }
+
+        if(!isset($price) || !isset($property)){
+            return json_encode(['status' => 'bad_input']);
+        }
+
+        if($price <=  0){
+            return json_encode(['status' => 'price_low']);
+        } else if($price >= 1000000){
+            return json_encode(['status' => 'price_high']);
+        }
+
+        $insert = [];
+
+        foreach($listings as $l) {
+            $start = strtotime($l[0]);
+            $end = strtotime($l[1]);
+            $curr = time();
+
+            if($l[2] == "false") {
+                $reccurring = 0;
+            } else {
+                $reccurring = 1;
+            }
+
+            if ($start >= $end || $start <= $curr) {
+                return json_encode(['status' => 'date_invalid']);
+            }
+
+            $insert[] = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];  
+        }        
+        DB::table('property_listing')->insert($insert);  
+
+
+        return json_encode(['status' => 'success']);
     }
 }

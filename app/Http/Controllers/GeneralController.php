@@ -44,12 +44,6 @@ class GeneralController extends Controller
             if($address_checkbox == 1){
                 array_push($searchCritera, ['p.property_address', 'LIKE', '%'.$query.'%', 'OR']);
             }
-            if($suburb_checkbox == 1){
-                array_push($searchCritera, ['p.property_suburb', 'LIKE', '%'.$query.'%', 'OR']);
-            }
-            if($postcode_checkbox == 1){
-                array_push($searchCritera, ['p.property_postcode', 'LIKE', '%'.$query.'%', 'OR']);
-            }
             $results = DB::table('properties AS p')
                             ->select('p.*')
                             ->where([

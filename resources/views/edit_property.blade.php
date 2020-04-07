@@ -18,16 +18,16 @@
 <div class="container">
     <div class="card col-sm-12 col-md-12 col-lg-12">
         <br>
-        <b><h3 style="text-align:center;">Add a new property to your account</h3></b>
+        <b><h3 style="text-align:center;">Edit Property</h3></b>
         <hr>
         <div id="listing_form" class="form-group">
             <h5>Location Details:&nbsp;</h5>
             <div class="row">
                 <div class="col-sm-6 col-md-6 col-lg-6">
                     <span>Address:&nbsp;</span>
-                    <input id="address" class="form-control" type="text" placeholder="E.g. 6/5 George Street" required>
-                    <input type="hidden" id="lat" name="lat" />
-                    <input type="hidden" id="lng" name="lng" />  
+                    <input id="address" class="form-control" type="text" value="{{$p->property_address}}" required>
+                    <input type="hidden" id="lat" name="lat" value="{{$p->property_lat}}"/>
+                    <input type="hidden" id="lng" name="lng" value="{{$p->property_lng}}"/>  
                 </div>
             </div>
             <hr>
@@ -35,36 +35,100 @@
             <div class="row">
                 <div class="col-sm-8 col-md-8 col-lg-8">
                     <span>Listing Name:&nbsp;</span>
-                    <input id="l_name" class="form-control" type="text" placeholder="E.g. Grand Beachouse" required>
+                    <input id="l_name" class="form-control" type="text" value="{{$p->property_title}}" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-4 col-md-4 col-lg-4">
                     <span># of Bedrooms:&nbsp;</span>
-                    <input id="beds" class="form-control" type="number" placeholder="0" required>
+                    <input id="beds" class="form-control" type="number" value="{{$p->property_beds}}" required>
                 </div>
                 <div class="col-sm-4 col-md-4 col-lg-4">
                     <span># of Bathrooms:&nbsp;</span>
-                    <input id="baths" class="form-control" type="number" placeholder="0" required>
+                    <input id="baths" class="form-control" type="number" value="{{$p->property_baths}}" required>
                 </div>
                 <div class="col-sm-4 col-md-4 col-lg-4">
                     <span># of Car Spaces:&nbsp;</span>
-                    <input id="cars" class="form-control" type="number" placeholder="0" required>
+                    <input id="cars" class="form-control" type="number" value="{{$p->property_cars}}" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
-                    <textarea id="property_desc" class="form-control" rows="5" placeholder="Please enter a brief description of the property." required></textarea>
+                    <textarea id="property_desc" class="form-control" rows="5" required>{!! $p->property_desc !!}</textarea>
                 </div>
             </div>  
             <hr>
-            <h5>Property Images:&nbsp;</h5>
+            @if($image_count > 0)
+            <span id="remove_images">
+                <h5>Remove Property Images:&nbsp;</h5>
+                <div class="row">
+                    @foreach ($images as $key => $image)
+                    <div class="col-sm-4 col-md-4 col-lg-4 image-container" style="margin-bottom:10px;">
+                        <img class="prop-img prop-img-edit float-left" style="margin-left:auto;margin-right:auto;" src={{"https://turtle-database.s3-ap-southeast-2.amazonaws.com/".$image->property_image_name}} data-id="{{$image->image_id}}">
+                        <div class="image-overlay" name="delete_image" title="Delete Image">
+                            <i class="fa fa-times image-icon"></i>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <hr>
+            </span>
+            @endif
+            <h5>Add Additional Property Images:&nbsp;</h5>
             <div class="row">
                 <div id="image_drop" class="dropzone"></div>
             </div>
             <hr>
             <h5>Listing Dates:&nbsp;</h5>
             <span id="dates_start">
+                @if(count($listings) > 0)
+                @foreach ($listings as $key => $l)
+                    @if($key == 0)
+                    <div class="row listing_dates" name="listing_dates">
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <span>Start Date:&nbsp;</span>
+                            <input class="form-control" name="start_date" type="date" value="{{$l->start_date}}" required>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <span>End Date:&nbsp;</span>
+                            <input class="form-control" name="end_date" type="date" value="{{$l->end_date}}" required>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
+                            <div class="pretty p-default p-round p-smooth p-bigger">
+                                <input name="reccur_dates" type="checkbox" @if($l->reccurring == 1) checked @endif/>
+                                <div class="state p-primary">
+                                    <label>Set as reccuring dates</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @else
+                    <div class="row listing_dates" name="listing_dates">
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <span>Start Date:&nbsp;</span>
+                            <input class="form-control" name="start_date" type="date" value="{{$l->start_date}}" required>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <span>End Date:&nbsp;</span>
+                            <input class="form-control" name="end_date" type="date" value="{{$l->end_date}}" required>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
+                            <div class="pretty p-default p-round p-smooth p-bigger">
+                                <input name="reccur_dates" type="checkbox" @if($l->reccurring == 1) checked @endif/>
+                                <div class="state p-primary">
+                                    <label>Set as reccuring dates</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;">
+                            <label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;">
+                                <i class="fas fa-times"></i>
+                            </label>
+                        </div>
+                    </div>
+                    @endif
+                @endforeach
+                @else
                 <div class="row listing_dates" name="listing_dates">
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>Start Date:&nbsp;</span>
@@ -83,12 +147,13 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </span>
             <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
                 <label class="btn btn-primary float-right" id="add_dates"><i class="fas fa-plus"></i>&nbsp;Add Dates</label>
             </div>
             <div class="pretty p-default p-round p-smooth p-bigger" style="margin-bottom:20px;">
-                <input id="always_list" type="checkbox" />
+                <input id="always_list" type="checkbox" @if($p->property_always_list) checked @endif/>
                 <div class="state p-primary">
                     <label>List my property indefinitely</label>
                 </div>
@@ -96,7 +161,7 @@
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
-                    <a id="property_submit" class="btn btn-primary">Submit</a>
+                    <a id="property_submit" class="btn btn-primary">Save</a>
                 </div>
             </div>
         </div>
@@ -169,8 +234,49 @@ function initMap() {
 Dropzone.autoDiscover = false;
 
 $(document).ready(function() {
-
     var count = 1;
+    var image_count = {{$image_count}};
+    var removed_images = [];
+
+    if({{$p->property_always_list}} == 0) {
+        $('[name="listing_dates"]').each(function(i) {
+            $(this).show();
+        });
+    } else {
+        $('[name="listing_dates"]').each(function(i) {
+            $(this).hide();
+        });
+    }
+
+    $(document).on('click', '[name="delete_image"]', function(e){
+        var removed_id = $(this).prev().data('id');
+        removed_images.push(removed_id);
+        $(this).parent().remove();
+        image_count--;
+        image_count_updates();
+    });
+
+    var fileDrop = new Dropzone('#image_drop', {
+        url: '/image_upload',
+        autoProcessQueue: false,
+        uploadMultiple: true,
+        maxFiles: 5-image_count,
+        parallelUploads: 5,
+        sending: function(file, xhr, formData) {
+            formData.append("_token", "{{ csrf_token() }}");
+        },
+        addRemoveLinks: true,
+        previewTemplate: $('#preview-template').html(),
+        dictDefaultMessage: '<div style="text-align:center;margin:10px;"><i class="fas fa-file-upload fa-7x"></i></div><div>Click here or drag and drop photos of your property to upload them</div>'
+    });
+
+    function image_count_updates() {
+        fileDrop.options.maxFiles = 5-image_count;
+
+        if(image_count == 0) {
+            $('#remove_images').hide();
+        }
+    }
 
     $(document).on('change', '#always_list', function(e) {
         e.preventDefault();
@@ -202,20 +308,6 @@ $(document).ready(function() {
         count--;
     });
 
-    var fileDrop = new Dropzone('#image_drop', {
-        url: '/image_upload',
-        autoProcessQueue: false,
-        uploadMultiple: true,
-        maxFiles: 5,
-        parallelUploads: 5,
-        sending: function(file, xhr, formData) {
-            formData.append("_token", "{{ csrf_token() }}");
-        },
-        addRemoveLinks: true,
-        previewTemplate: $('#preview-template').html(),
-        dictDefaultMessage: '<div style="text-align:center;margin:10px;"><i class="fas fa-file-upload fa-7x"></i></div><div>Click here or drag and drop photos of your property to upload them</div>'
-    });
-
     $(document).on('click', '#property_submit', function(e) {
         e.preventDefault();
 
@@ -229,15 +321,9 @@ $(document).ready(function() {
         var lng = $('#lng').val();
         var always_list = $('#always_list').prop('checked');
 
-        //var image_name = "image";
         var form_data = new FormData();
-        /*
-        var no_images = $('#property_images')[0].files.length;
-        for (var i = 0; i < no_images; i++){
-            var images = $('#property_images').prop('files')[i];
-            form_data.append('files[]',images,image_name.concat(i.toString(10)));
-        }
-        */
+
+        form_data.append('prop_id',{{$p->property_id}});
         form_data.append('address',address);
         form_data.append('beds',beds);
         form_data.append('baths',baths);
@@ -257,14 +343,12 @@ $(document).ready(function() {
 
             var add_arr = [];
 
-            add_arr.push(start_date);
-            add_arr.push(end_date);
-            add_arr.push(recur);
+            add_arr.push(start_date+'~'+end_date+'~'+recur);
             listing_dates_arr.push(add_arr);
         }); 
 
         $.ajax({
-            url: '/create_property',
+            url: '/update_property',
             method: 'POST',
             dataType: 'JSON',
             data: form_data,
@@ -273,41 +357,54 @@ $(document).ready(function() {
             cache: false,
             success: function(html) {
                 if(html['status'] == "success") {
-                    fileDrop.options.url = "/upload_property_images/"+html['id']
+                    fileDrop.options.url = "/upload_property_images/"+{{$p->property_id}};
                     fileDrop.processQueue();
-                    var prop_id = html['id'];
+                    var prop_id = {{$p->property_id}};
 
-                    if(always_list == false) {
-                        $.each(listing_dates_arr, function(i) {
-                            $.ajax({
-                                url: '/create_property_listing',
-                                method: 'POST',
-                                dataType: 'JSON',
-                                data: 'property='+prop_id+'&price='+1+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
-                                success: function(html) {
-                                    if(html['status'] == "success") {
-                                        alert("Property Listing created successfully");
-                                    } else if(html['status'] == 'bad_input'){
-                                        alert("Please check all fields are filled.");
-                                    } else if(html['status'] == 'price_low') {
-                                        alert("You must enter a price which is positive. You cannot charge negative amounts.");
-                                    } else if(html['status'] == 'price_high'){
-                                        alert("There's a price limit of $999999.99 . Please enter a lower price per night.");
-                                    } else if(html['status'] == 'date_invalid'){
-                                        alert("Your start date must be before your end date and today or after.")
-                                    }
-                                    else {
-                                        alert("There was an error, please try again!");
-                                    }
-                                },
-                                error: function ( xhr, errorType, exception ) {
-                                    var errorMessage = exception || xhr.statusText;
-                                    alert("There was a connectivity problem. Please try again.");
-                                }
-                            });
+                    if(removed_images.length > 0) {
+                        $.ajax({
+                            url: '/remove_property_images/'+{{$p->property_id}},
+                            method: 'POST',
+                            data: 'remove_ids='+encodeURIComponent(removed_images),
+                            success: function(html) {
+
+                            },
+                            error: function ( xhr, errorType, exception ) {
+                                var errorMessage = exception || xhr.statusText;
+                                alert("There was a connectivity problem. Please try again.");
+                            }
                         });
                     }
-                    alert("Property Created Successfully");
+
+                    if(always_list == false) {
+                        $.ajax({
+                            url: '/update_property_listing',
+                            method: 'POST',
+                            dataType: 'JSON',
+                            data: 'property='+prop_id+'&price='+1+'&data='+encodeURIComponent(listing_dates_arr),
+                            success: function(html) {
+                                if(html['status'] == "success") {
+                                    alert("Property Listings updated successfully");
+                                } else if(html['status'] == 'bad_input'){
+                                    alert("Please check all fields are filled.");
+                                } else if(html['status'] == 'price_low') {
+                                    alert("You must enter a price which is positive. You cannot charge negative amounts.");
+                                } else if(html['status'] == 'price_high'){
+                                    alert("There's a price limit of $999999.99 . Please enter a lower price per night.");
+                                } else if(html['status'] == 'date_invalid'){
+                                    alert("Your start date must be before your end date and today or after.")
+                                }
+                                else {
+                                    alert("There was an error, please try again!");
+                                }
+                            },
+                            error: function ( xhr, errorType, exception ) {
+                                var errorMessage = exception || xhr.statusText;
+                                alert("There was a connectivity problem. Please try again.");
+                            }
+                        });
+                    }
+                    alert("Property Updated Successfully");
                 } else if(html['status'] == 'bad_input') {
                     alert("Please double check all fields are filled!");
                 } else if(html['status'] == 'wrong_state') {

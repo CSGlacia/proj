@@ -20,13 +20,12 @@
                         </div>
                         <div>
                             <div>Address: {{$b->property_address}}</div>
-                            <div>Suburb: {{$b->property_suburb}}</div>
                             <div>Persons: {{$b->booking_persons}}</div>
                         </div>
                         <span>Start Date: {{$b->booking_startDate}}</span>
                         <span>End Date: {{$b->booking_endDate}}</span>
                         <a class="btn btn-primary" name="view_booking" data-id="{{$b->booking_id}}"> View booking</a>
-                        <a class="btn btn-warning" name="delete_booking" data-id="{{$b->booking_id}}"> Cancel booking</a>
+                        <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}"> Cancel booking</a>
                     </div>
                     <hr>
                 </div>
@@ -48,6 +47,7 @@
                     <span> <i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
                     <div> {{ $p->property_desc }}  </div>
                     <a class="btn btn-primary" name="view_property" href="/view_property/{{$p->property_id}}"> View property </a>
+                    <a class="btn btn-warning" name="edit_property" href="/edit_property/{{$p->property_id}}"> Edit property </a>
                 </div>
             </div>
             <hr>

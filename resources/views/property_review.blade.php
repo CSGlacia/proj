@@ -16,7 +16,7 @@
                     <span><i class="fas fa-toilet"></i>&nbsp;{{ $b->property_baths }} </span>
                     <span><i class="fas fa-car"></i>&nbsp;{{ $b->property_cars }} </span>
                   </div>
-                  <div>{{ $b->property_address }}, {{ $b->property_suburb }}, {{ $b->property_postcode}} </div>
+                  <div>{{ $b->property_address }}</div>
                   <div style="margin:5px;"> {{ $b->property_desc }}  </div>
                   <hr>
                   <span>{{$b->booking_startDate}} - {{$b->booking_endDate}}</span>

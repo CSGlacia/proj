@@ -23,7 +23,7 @@
                         @endforeach
                     </div>
 
-                    <div>{{$p->property_address}}, {{ $p->property_suburb }}, {{ $p->property_postcode}} </div>
+                    <div>{{$p->property_address}}</div>
                     <div style="margin:5px;"> {{ $p->property_desc }}  </div>
                 </div>
             </div>
