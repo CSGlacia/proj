@@ -152,11 +152,11 @@ class HomeController extends Controller
         }
 
         if(isset($userID) && is_numeric($userID) && isset($propertyID) && is_numeric($propertyID) && isset($startDate) && isset($endDate) && isset($persons) && is_numeric($persons)) {
-            
+
             $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
-            
+
             DB::table('bookings')->insert($insert);
-            
+
             return json_encode(['status' => 'success']);
         }
 
@@ -236,9 +236,10 @@ class HomeController extends Controller
             $id = Auth::id();
             $user_properties = DB::table('properties AS p')
             ->select('p.*')
-            ->where([ ['property_user_id', '=', $id] ])
+            ->where([ ['property_user_id', '=', $id],
+                        ['property_inactive',0] ])
             ->get();
-    
+
             return view('create_property_listing',['properties' => $user_properties]);
         }
         else if($request->isMethod('POST')){
@@ -258,17 +259,21 @@ class HomeController extends Controller
             } else if($price >= 1000000){
                 return json_encode(['status' => 'price_high']);
             }
-
-            if($reccurring != "false" && $reccurring != "true") {
-                return json_encode(['status' => 'error']);
+            if(isset($reccurring)){
+                if($reccurring != "false" && $reccurring != "true") {
+                    return json_encode(['status' => 'error']);
+                }
+    
+                if($reccurring == "false") {
+                    $reccurring = 0;
+                }
+    
+                if($reccurring == "true") {
+                    $reccurring = 1;
+                }
             }
-
-            if($reccurring == "false") {
+            else{
                 $reccurring = 0;
-            }
-
-            if($reccurring == "true") {
-                $reccurring = 1;
             }
 
             $start = strtotime($start_date);
@@ -311,7 +316,7 @@ class HomeController extends Controller
             $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
             $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
 
-            return view('review_property', 
+            return view('review_property',
                 [
                     'booking_id' => $booking_id,
                     'property_id' => $property_id,
@@ -348,7 +353,7 @@ class HomeController extends Controller
             $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
             $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
 
-            return view('review_tennant', 
+            return view('review_tennant',
                 [
                     'booking_id' => $booking_id,
                     'property_id' => $property_id,
@@ -476,5 +481,98 @@ class HomeController extends Controller
             return json_encode(['status' => 'date error']);
         }
         return json_encode(['status' => 'error']);
+    }
+    public function add_to_wishlist(Request $request) {
+        $userID = Auth::id();
+        $propertyID = $request->input('propertyID');
+        $propertyTitle = $request->input('propertyTitle');
+        $propertyAddress = $request->input('propertyAddress');
+        $createdAt = time();
+
+
+        // Pull from the database.
+        // $results = DB::table('wishlist AS w')
+        //             ->select('w.*')
+        //             ->where([
+        //                 ['wishlist_propertyID', '=', $propertyID]
+        //                 ['wishlist_userID', '=', $userID]
+        //             ])
+        //             ->get();
+        DB::table('wishlist')
+                ->updateOrInsert(
+                        ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID],
+                        ['wishlist_propertyTitle' => $propertyTitle, 'wishlist_propertyAddress' => $propertyAddress, 'wishlist_inactive' => 0, 'wishlist_createdAt' => $createdAt]
+                );
+
+        // Sanity.
+
+        // Only add to the database if it does not exist on there.
+        // if (count($results) < 1) {
+        //     error_log("SUP3");
+        //     $insert = ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID, 'wishlist_propertyTitle' => $propertyTitle, 'wishlist_propertyAddress' => $propertyAddress, 'wishlist_inactive' => 0];
+        //     DB::table('wishlist')->insert($insert);
+        // } else {
+        //     DB::table('wishlist')
+        //         ->where('id')
+        // }
+
+        return json_encode(['status' => 'success']);
+
+    }
+
+    public function view_wishlist(Request $request) {
+
+        $userID = Auth::id();
+
+        $results = DB::table('wishlist AS w')
+                        ->select('w.*')
+                        ->where([
+                            ['wishlist_inactive', '=', '0'],
+                            ['wishlist_userID', '=', $userID]
+                        ])
+                        ->get();
+
+        //
+
+        return view('view_wishlist', ['wishlist' => $results]);
+    }
+
+    public function delete_wishlist(Request $request) {
+        $userID = Auth::id();
+        $propertyID = $request->input('propertyID');
+
+
+        DB::table('wishlist')
+                ->updateOrInsert(
+                        ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID],
+                        ['wishlist_inactive' => 1]
+                );
+
+        return json_encode(['status' => 'success']);
+    }
+
+    public function delete_property(Request $request) {
+
+        $userID = Auth::id();
+        $id = $request->input('propertyID');
+
+        $results = DB::table('properties')
+                    ->where([
+                        ['property_user_id', '=', $userID],
+                        ['property_id', '=', $id],
+                    ])
+                    ->get();
+
+        if (!empty($results)) {
+        DB::table('properties')
+            ->where([
+                ['property_user_id', '=', $userID],
+                ['property_id', '=', $id],
+            ])
+            ->update(['property_inactive' => 1]);
+
+            return json_encode(["status" => "Success!"]);
+        }
+        return json_encode(["status" => "This property cannot be removed."]);
     }
 }

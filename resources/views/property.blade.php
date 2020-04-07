@@ -29,19 +29,24 @@
             </div>
         </div>
 
-        <div class="row card">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
-                <div class="card-title" style="text-align:center;">
-                    <h2>Current Availabilities</h2>
-                </div>
-            </div>
-        </div>
-
-            @auth
-            <div id="user_logged" data-logged="1" hidden></div>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <h2><b>Current Availabilities</b></h2>
+            <hr>
+            {{-- @if(count($avail) > 0)
+                @foreach ($avail as $a)
+                    <h4> {{ $a->booking_startDate }} - {{$a->booking_endDate}} </h4>
+                @endforeach
             @else
-            <div id="user_logged" data-logged="0" hidden></div>
-            @endif
+                <h4> Everything is available!</h4>
+            @endif --}}
+        </div>
+    </div>
+        @auth
+        <div id="user_logged" data-logged="1" hidden></div>
+        @else
+        <div id="user_logged" data-logged="0" hidden></div>
+        @endif
 
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
@@ -159,6 +164,13 @@
         </div>
     </div>
     @endif
+    <!-- Check for the correct user to be logged on -->
+    <a id="delete_property" class="btn btn-primary">✖ Delete Property</a>
+
+
+    <!-- Check for the correct user to be logged on -->
+    <a id="add_to_wishlist" class="btn btn-primary">★</a>
+
 </div>
 @endsection
 
@@ -184,15 +196,12 @@ function initMap() {
 $(document).ready(function() {
     $(document).on('click', '#book_submit', function(e) {
         var logged = $('#user_logged').data('logged');
-
         if(logged == 1) {
             e.preventDefault();
-
-            var propertyID = {{$p->property_id}};
+            var propertyID = {{$p->property_id}}
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
             var persons = $('#persons').val();
-
             $.ajax({
                 url: '/create_booking',
                 method: 'POST',
@@ -219,8 +228,76 @@ $(document).ready(function() {
             alert("Please log in before making a booking");
         }
     });
-
 });
+</script>
 
+<script>
+$(document).ready(function() {
+    $(document).on('click', '#delete_property', function(e) {
+        var logged = $('#user_logged').data('logged');
+        if(logged == 1) {
+            e.preventDefault();
+            var propertyID = {{$p->property_id}};
+
+            $.ajax({
+                url: '/delete_property',
+                method: 'POST',
+                dataType: 'JSON',
+                data: 'propertyID='+propertyID,
+                success: function(html) {
+                    var data = JSON.parse(html);
+                    if(data['status'] == "success") {
+                        alert("Success!");
+                    } else {
+                        alert("There was an error, please try again!");
+                    }
+                },
+                error: function ( xhr, errorType, exception ) {
+                    var errorMessage = exception || xhr.statusText;
+                    alert("There was a connectivity problem. Please try again.");
+                }
+            });
+        } else {
+            alert("An error occurred! (You shouldn't see this)");
+        }
+    });
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    $(document).on('click', '#add_to_wishlist', function(e) {
+        var logged = $('#user_logged').data('logged');
+        if(logged == 1) {
+            e.preventDefault();
+            var propertyID = {{$p->property_id}};
+            var propertyTitle = "{{$p->property_title}}";
+            var propertyAddress = "{{$p->property_address}}";
+
+            alert("Added this listing to your wishlist!");
+
+            $.ajax({
+                url: '/add_to_wishlist',
+                method: 'POST',
+                dataType: 'JSON',
+                data: 'propertyID='+propertyID+'&propertyTitle='+propertyTitle+'&propertyAddress='+propertyAddress,
+                success: function(html) {
+                    var data = JSON.parse(html);
+                    if(data['status'] == "success") {
+                        alert("Success!");
+                    } else {
+                        alert("There was an error, please try again!");
+                    }
+                },
+                error: function ( xhr, errorType, exception ) {
+                    var errorMessage = exception || xhr.statusText;
+                    alert("There was a connectivity problem. Please try again.");
+                }
+            });
+        } else {
+            alert("An error occurred! (You shouldn't see this)");
+        }
+    });
+});
 </script>
 @endsection

@@ -20,7 +20,6 @@
                         </div>
                         <div>
                             <div>Address: {{$b->property_address}}</div>
-                            <div>Suburb: {{$b->property_suburb}}</div>
                             <div>Persons: {{$b->booking_persons}}</div>
                         </div>
                         <span>Start Date: {{$b->booking_startDate}}</span>
