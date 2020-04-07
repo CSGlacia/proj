@@ -69,7 +69,7 @@
                     <span><i class="fas fa-toilet"></i>&nbsp;{{ $p->property_baths }} </span>
                     <span><i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
                   </div>
-                  <div>{{ $p->property_address }}, {{ $p->property_suburb }}, {{ $p->property_postcode}} </div>
+                  <div>{{ $p->property_address }} </div>
                   <div style="margin:5px;"> {{ $p->property_desc }}  </div>
                 </div>
             </div>
