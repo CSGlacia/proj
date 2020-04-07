@@ -107,6 +107,7 @@ class GeneralController extends Controller
                 $count = 0;
                 foreach($reviews as $r) {
                     $r->trs_submitted_at = date('d/m/Y', $r->trs_submitted_at);
+                    $r->trs_edited_at = date('d/m/Y', $r->trs_edited_at);
                     $count = $count + 1;
                     $average_guest_score = $average_guest_score + $r->trs_score;
                 }

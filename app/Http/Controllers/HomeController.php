@@ -273,9 +273,26 @@ class HomeController extends Controller
                 $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
             }
 
+            $past_reviews = DB::table('tennant_reviews as t')
+                            ->where([
+                                ['t.trs_inactive', 0],
+                                ['t.trs_reviewer_id', $id]
+                            ])
+                            ->join('bookings AS b', 'b.booking_id', '=', 't.trs_booking_id')
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->get();
+
+            foreach($past_reviews as $p) {
+                $p->trs_submitted_at = date('d/m/Y', $p->trs_submitted_at);
+                $p->booking_startDate = date('d/m/Y', $p->booking_startDate);
+                $p->booking_endDate = date('d/m/Y', $p->booking_endDate);
+            }
+
             return view('tennant_review',
                     [
-                        'bookings' => $bookings
+                        'bookings' => $bookings,
+                        'past_reviews' => $past_reviews
                     ]);
         }
 
@@ -785,5 +802,57 @@ class HomeController extends Controller
             return json_encode(["status" => "Success!"]);
         }
         return json_encode(["status" => "This property cannot be removed."]);
+    }
+
+    public function edit_tennant_review(Request $request, $review_id) {
+        $id = Auth::id();
+
+        if(isset($id) && !is_null($id) && !empty($id) && isset($review_id) && !is_null($review_id) && !empty($review_id)) {
+            $review = DB::table('tennant_reviews AS t')
+                        ->where([
+                            ['t.trs_id', $review_id],
+                            ['t.trs_reviewer_id', $id],
+                            ['t.trs_inactive', 0]
+                        ])
+                        ->join('bookings AS b', 'b.booking_id', '=', 't.trs_booking_id')
+                        ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+                        ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                        ->first();
+
+                return view('edit_tennant_review', 
+                    ['review' => $review]
+                );
+            
+        }
+
+        return view('bad_permissions');
+    }
+
+    public function update_tennant_review(Request $request) {
+        $id = Auth::id();
+        $score = $request->input('score');
+        $review = $request->input('review');
+        $review_id = $request->input('review_id');
+
+        if(isset($id) && !is_null($id) && !empty($id)) {
+            if(isset($score) && !empty($score) && !is_null($score) && is_numeric($score) && isset($review) && !is_null($review)) {
+
+                $review_present = DB::table('tennant_reviews')
+                            ->where('trs_id', $review_id)
+                            ->first();
+
+                if(isset($review_present) && !is_null($review_present)) {
+                    $insert = ['trs_score' => $score, 'trs_review' => $review, 'trs_edited_at' => time(), 'trs_edited' => 1];
+
+                    $inserted = DB::table('tennant_reviews')
+                                    ->where('trs_id', $review_id)
+                                    ->update($insert);
+
+                    return json_encode(['status' => 'success']);
+                }
+            }
+            return json_encode(['status' => 'bad_input']);
+        }
+        return json_encode(['status' => 'error']);
     }
 }

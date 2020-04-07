@@ -37,44 +37,29 @@
         <b><h2>Properties:</h2></b>
         <hr>
         <div class="col-sm-12 col-md-12 col-lg-12">
-          @foreach ($properties as $p)
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <h3><b> {{ $p->property_title }}</b></h3>
-                    <div>Address: {{ $p->property_address }}</div>
-                    <span> <i class="fas fa-bed"></i>&nbsp;{{ $p->property_beds }} </span>
-                    <span> <i class="fas fa-toilet"></i>&nbsp;{{ $p->property_baths }} </span>
-                    <span> <i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
-                    <div> {{ $p->property_desc }}  </div>
-                    <a class="btn btn-primary" name="view_property" href="/view_property/{{$p->property_id}}"> View property </a>
-                    <a class="btn btn-warning" name="edit_property" href="/edit_property/{{$p->property_id}}"> Edit property </a>
+      @foreach ($properties as $p)
+        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:0px; border:none;">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
+                <div class="card-title">
+                  <h3>{{ $p->property_title }}</h3>
                 </div>
+                <div class="card-text">
+                  <div style="margin:5px;">
+                    <span><i class="fas fa-bed"></i>&nbsp;{{ $p->property_beds }} </span>
+                    <span><i class="fas fa-bath"></i>&nbsp;{{ $p->property_baths }} </span>
+                    <span><i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
+                  </div>
+                  <div>{{ $p->property_address }}</div>
+                  <div style="margin:5px;"> {{ $p->property_desc }}  </div>
+                </div>
+                <a class="btn btn-primary" name="view_property" href="/view_property/{{$p->property_id}}"> View property </a>
+                    <a class="btn btn-warning" name="edit_property" href="/edit_property/{{$p->property_id}}"> Edit property </a>
             </div>
-            <hr>
-          @endforeach
+        </div>
+      @endforeach
         </div>
     </div>
-        <div class="row">
-            <b><h2>Listings:</h2></b>
-            <hr>
-            <div class="col-sm-12 col-md-12 col-lg-12">
-              @foreach ($listings as $l)
-                <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                        <h3><b> {{ $l->property_title }}</b></h3>
-                        <div>Address: {{ $l->property_address }}</div>
-                        <div>Start Date: {{ $l->start_date }}  </div>
-                        <div>End Date: {{ $l->end_date }}  </div>
-                        <a class="btn btn-primary" name="view_property" href="/view_property/{{$l->property_id}}"> View property </a>
-                    </div>
-                </div>
-                <hr>
-              @endforeach
-          </div>
-    @if($page_owner == true)
-        <a href="/create_property_listing" class="btn btn-primary">Create a property listing</a>
-    @endif
-    </div>
+
     <div class="row">
         <b><h2>User Reviews</h2></b>
         <div class="col-sm-12 col-md-12 col-lg-12">
@@ -86,6 +71,7 @@
                         <div>Review: {{$r->trs_review}}</div>
                         <div>Submitted At: {{$r->trs_submitted_at}}</div>
                         <div>Submitted by <a href="/user_profile/{{$r->id}}">{{$r->name}}</a></div>
+                        @if($r->trs_edited == 1)<div>Edited at {{$r->trs_edited_at}}</div>@endif
                     </div>
                 </div>
                 <hr>

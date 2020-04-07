@@ -12,7 +12,7 @@
                 <div class="card-text">
                     <div style="margin:5px;">
                         <span><i class="fas fa-bed"></i>&nbsp;{{ $p->property_beds }} </span>
-                        <span><i class="fas fa-toilet"></i>&nbsp;{{ $p->property_baths }} </span>
+                        <span><i class="fas fa-bath"></i>&nbsp;{{ $p->property_baths }} </span>
                         <span><i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
                     </div>
                     <div class="gallery">
@@ -24,6 +24,15 @@
                     </div>
                     <div>{{$p->property_address}}</div>
                     <div style="margin:5px;"> {{ $p->property_desc }}  </div>
+                    <div class="float-right">
+                        @if($page_owner == true)
+                        <label id="delete_property" class="btn btn-primary">✖ Delete Property</label>
+                        @endif
+                        @auth
+                        <label id="add_to_wishlist" class="btn btn-primary">★ Add to my Wishlist</label>
+                        @endauth
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -163,12 +172,6 @@
         </div>
     </div>
     @endif
-    <!-- Check for the correct user to be logged on -->
-    <a id="delete_property" class="btn btn-primary">✖ Delete Property</a>
-
-
-    <!-- Check for the correct user to be logged on -->
-    <a id="add_to_wishlist" class="btn btn-primary">★</a>
 
 </div>
 @endsection
