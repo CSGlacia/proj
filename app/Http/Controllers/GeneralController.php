@@ -125,6 +125,11 @@ class GeneralController extends Controller
                     $average_guest_score = 'No reviews yet';
                 }
 
+                foreach($listings as $l) {
+                    $l->start_date = date('d/m/Y', $l->start_date);
+                    $l->end_date = date('d/m/Y', $l->end_date);
+                }
+
                 $page_owner = false;
 
                 $id = Auth::id();
@@ -203,7 +208,7 @@ class GeneralController extends Controller
         if(isset($prop) && !empty($prop) && !is_null($prop)) {
 
             $bookings = DB::table('bookings as b')
-                            ->select('b.*', 'u.*', 
+                            ->select('b.*', 'u.*',
                                 DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
                             )
                             ->where([
@@ -221,7 +226,7 @@ class GeneralController extends Controller
                 $scores = explode(',', $b->scores);
                 $scores = array_sum($scores)/count($scores);
                 $b->scores = $scores;
-            }            
+            }
 
             $reviews = DB::table('property_reviews AS p')
                         ->where([

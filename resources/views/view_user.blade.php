@@ -4,10 +4,10 @@
 <div class="container">
     <span class="label bg-primary">Name: {{$user->name}}</span>
     <span class="label bg-warning">Email: {{$user->email}}</span>
-    <span class="label bg-secondary">Guest rating: </span> 
+    <span class="label bg-secondary">Guest rating: </span>
     <span>{{$guest_score}}</span>
     <span name="score-star"><i class="fas fa-star gold-star"></i></span>
-    
+
     @if($page_owner)
     <div class="row">
         <b><h2>Bookings:</h2></b>
@@ -63,8 +63,7 @@
                     <div class="col-sm-12 col-md-12 col-lg-12">
                         <h3><b> {{ $l->property_title }}</b></h3>
                         <div>Address: {{ $l->property_address }}</div>
-                        <div>Suburb: {{ $l->property_suburb }}, {{ $l->property_postcode}} </div>
-                        <div>Start Date: {{ $l->start_date }}  </div> <!-- @@@@@@@@ CHANGE THESE @@@@@@@@@@@-->
+                        <div>Start Date: {{ $l->start_date }}  </div>
                         <div>End Date: {{ $l->end_date }}  </div>
                         <a class="btn btn-primary" name="view_property" href="/view_property/{{$l->property_id}}"> View property </a>
                     </div>
@@ -123,7 +122,7 @@ $(document).ready(function() {
                     }
                     location.reload();
                 },
-            }); 
+            });
         });
 });
 </script>
