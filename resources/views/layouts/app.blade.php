@@ -14,6 +14,7 @@
     <script src="https://unpkg.com/@popperjs/core@2"></script>
 
     <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/nav_bar.css') }}" rel="stylesheet">
 
