@@ -11,7 +11,6 @@
                             <div>
                                 <div>Property Name: {{$b->property_title}}</div>
                                 <div>Address: {{$b->property_address}}</div>
-                                <div>Suburb: {{$b->property_suburb}}</div>
                             </div>
                             <div>
                             	<div>Tennant: {{$b->name}}</div>

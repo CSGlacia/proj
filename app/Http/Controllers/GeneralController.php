@@ -44,7 +44,7 @@ class GeneralController extends Controller
                     array_push($searchCritera, ['p.property_address', 'LIKE', '%'.$query.'%', 'OR']);
                 }
                 if($suburb_checkbox == 1){
-                    array_push($searchCritera, ['p.property_suburb', 'LIKE', '%'.$query.'%', 'OR']);
+                    //array_push($searchCritera, ['p.property_suburb', 'LIKE', '%'.$query.'%', 'OR']);
                 }
                 if($postcode_checkbox == 1){
                     array_push($searchCritera, ['p.property_postcode', 'LIKE', '%'.$query.'%', 'OR']);

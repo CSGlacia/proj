@@ -9,8 +9,6 @@
             <h3><b>Property Details</b></h3>
             <div>Property Name: {{$p->property_title}}</div>
             <div>Address: {{$p->property_address}}</div>
-            <div>Suburb: {{$p->property_suburb}}</div>
-            <div>Postcode: {{$p->property_postcode}}</div>
             <span>Beds: {{$p->property_beds}}</span>&nbsp;<span>Baths: {{$p->property_baths}}</span>&nbsp;<span>Cars: {{$p->property_cars}}</span>
             <div>Description: {{$p->property_desc}}</div>
             <div>Owner: <a href="/user_profile/{{$p->id}}">{{$p->name}}</a></div>
