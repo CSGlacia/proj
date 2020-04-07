@@ -123,6 +123,9 @@
                             </div>
 
                             <div>Submitted by <a href="/user_profile/{{$r->id}}">{{$r->name}} </a>on {{$r->prs_submitted_at}}</div>
+                            @if($r->prs_edited == 1)
+                            <div>Edited on {{$r->prs_edited_at}}</div>
+                            @endif
                         </div>
                     </div>
                     <hr>

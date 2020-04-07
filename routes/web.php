@@ -51,7 +51,8 @@ Route::post('/create_property_review', 'HomeController@create_property_review');
 Route::post('/create_tennant_review', 'HomeController@create_tennant_review');
 Route::get('/edit_tennant_review/{review_id?}', 'HomeController@edit_tennant_review')->where('review_id', '[0-9]+');
 Route::post('/update_tennant_review', 'HomeController@update_tennant_review');
-
+Route::get('/edit_property_review/{review_id?}', 'HomeController@edit_property_review')->where('review_id', '[0-9]+');
+Route::post('/update_property_review', 'HomeController@update_property_review');
 // Wishlist handlers
 Route::get('/view_wishlist', 'HomeController@view_wishlist');
 Route::post('/add_to_wishlist', 'HomeController@add_to_wishlist');

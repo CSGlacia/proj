@@ -25,12 +25,24 @@ class GeneralController extends Controller
 
         if(empty($query)){
             $results = DB::table('properties AS p')
-                            ->select('p.*')
+                            ->select('p.*',
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`')
+                            )
                             ->where([
                                 ['property_inactive', '=', '0']
                             ])
                             ->get();
 
+            foreach($results as $r) {
+                if(is_null($r->scores)) {
+                    $r->scores = "No Reviews Yet";
+                    $r->review_count = 0;
+                } else {
+                    $r->review_count = count(explode(',', $r->review_count));
+                    $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
+                }
+            }
             return view('view_properties',
                         ['properties' => $results]
             );
@@ -43,12 +55,24 @@ class GeneralController extends Controller
 
             }
             $results = DB::table('properties AS p')
-                            ->select('p.*')
+                            ->select('p.*',
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`')
+                            )
                             ->where([
                                 ['property_inactive', '=', '0'],
                                 [$searchCritera]
                             ])
                             ->get();
+
+            foreach($results as $r) {
+                if(is_null($r->scores)) {
+                    $r->scores = "No Reviews Yet";
+                    $r->review_count = 0;
+                } else {
+                    $r->review_count = count(explode(',', $r->review_count));
+                    $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
+                }
+            }
             return view('view_properties',
                         ['properties' => $results]
                         );
@@ -231,6 +255,7 @@ class GeneralController extends Controller
 
             foreach($reviews as $r) {
                 $r->prs_submitted_at = date('d/m/Y', $r->prs_submitted_at);
+                $r->prs_edited_at = date('d/m/Y', $r->prs_edited_at);
             }
 
             $page_owner = false;

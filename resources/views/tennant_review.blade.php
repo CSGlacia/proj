@@ -3,7 +3,7 @@
 @section('content')
 <div class="container row">
     <div class="col-sm-6 col-md-6 col-lg-6">
-        <h1>Tennant Reviews</h1>
+        <h1>Incomplete Tennant Reviews</h1>
         @if(count($bookings) > 0)
             @foreach($bookings as $b)
             <div class="row card item-card cursor-pointer" name="review_tennant" data-prop-id="{{$b->property_id}}" data-booking-id="{{$b->booking_id}}" style="margin:0px; border:none;">
@@ -23,7 +23,7 @@
         @endif
     </div>
     <div class="col-sm-6 col-md-6 col-lg-6">
-        <h1>Past Tennant Reviews</h1>
+        <h1>Submitted Tennant Reviews</h1>
         @if(count($past_reviews) > 0)
             @foreach($past_reviews as $p)
             <div class="row card item-card cursor-pointer" name="edit_review" data-review-id="{{$p->trs_id}}" style="margin:0px; border:none;">
@@ -51,7 +51,13 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    $(document).on('click', '[name="review_property"]', function() {
+        window.location.href = '/review_tennant?'+'booking_id='+$(this).data('booking-id')+'&prop_id='+$(this).data('prop-id');
+    });
 
+    $(document).on('click', '[name="edit_review"]', function() {
+        window.location.href = '/edit_tennant_review/'+$(this).data('review-id');
+    });
 });
 </script>
 @endsection

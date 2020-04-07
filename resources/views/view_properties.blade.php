@@ -68,6 +68,7 @@
                   </div>
                   <div>{{ $p->property_address }}</div>
                   <div style="margin:5px;"> {{ $p->property_desc }}  </div>
+                  <div><i class="fas fa-star @if($p->scores > 2.5 && $p->scores != 'No Reviews Yet') gold-star @endif"></i>&nbsp;{{$p->scores}}@if($p->scores != "No Reviews Yet")({{$p->review_count}} Review(s))@endif</div>
                 </div>
             </div>
         </div>

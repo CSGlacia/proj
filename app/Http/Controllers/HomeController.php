@@ -236,6 +236,7 @@ class HomeController extends Controller
                                 ['b.booking_property_reviewed', 0]
                             ])
                             ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->join('users AS u', 'u.id', '=', 'p.property_user_id')
                             ->get();
 
 
@@ -244,9 +245,25 @@ class HomeController extends Controller
                 $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
             }
 
+            $reviews = DB::table('property_reviews AS r')
+                            ->where([
+                                ['r.prs_reviewer_id', $id],
+                                ['r.prs_inactive', 0]
+                            ])
+                            ->join('properties AS p', 'p.property_id', '=', 'r.prs_property_id')
+                            ->join('users AS u', 'u.id', '=', 'p.property_user_id')
+                            ->join('bookings AS b', 'b.booking_id', '=', 'r.prs_booking_id')
+                            ->get();
+
+            foreach($reviews as $r) {
+                $r->booking_startDate = date('d/m/Y', $r->booking_startDate);
+                $r->booking_endDate = date('d/m/Y', $r->booking_endDate);
+            }
+
             return view('property_review',
                     [
-                        'bookings' => $bookings
+                        'bookings' => $bookings,
+                        'reviews' => $reviews
                     ]);
         }
         return view('error_page');
@@ -854,5 +871,56 @@ class HomeController extends Controller
             return json_encode(['status' => 'bad_input']);
         }
         return json_encode(['status' => 'error']);
+    }
+
+    public function edit_property_review(Request $request, $review_id) {
+        $id = Auth::id();
+
+        if(isset($review_id) && !empty($review_id) && !is_null($review_id) && isset($id) && !empty($id) && !is_null($id)) {
+            $review = DB::table('property_reviews AS r')
+                        ->where([
+                            ['r.prs_reviewer_id', $id],
+                            ['r.prs_id', $review_id]
+                        ])
+                        ->join('properties AS p', 'p.property_id', '=', 'r.prs_property_id')
+                        ->join('bookings AS b', 'b.booking_id', '=', 'r.prs_booking_id')
+                        ->join('users AS u', 'u.id', '=', 'p.property_user_id')
+                        ->first();
+
+            return view('edit_property_review',
+                [
+                    'review' => $review
+                ]
+            );
+        }
+        return view('bad_permissions');
+    }
+
+    public function update_property_review(Request $request) {
+        $id = Auth::id();
+        $score = $request->input('score');
+        $review = $request->input('review');
+        $review_id = $request->input('review_id');
+
+        if(isset($id) && !is_null($id) && !empty($id)) {
+            if(isset($score) && !empty($score) && !is_null($score) && is_numeric($score) && isset($review) && !is_null($review)) {
+
+                $review_present = DB::table('property_reviews')
+                            ->where('prs_id', $review_id)
+                            ->first();
+
+                if(isset($review_present) && !is_null($review_present)) {
+                    $insert = ['prs_score' => $score, 'prs_review' => $review, 'prs_edited_at' => time(), 'prs_edited' => 1];
+
+                    $inserted = DB::table('property_reviews')
+                                    ->where('prs_id', $review_id)
+                                    ->update($insert);
+
+                    return json_encode(['status' => 'success']);
+                }
+            }
+            return json_encode(['status' => 'bad_input']);
+        }
+        return json_encode(['status' => 'error']);        
     }
 }
