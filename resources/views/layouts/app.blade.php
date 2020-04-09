@@ -13,6 +13,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+    
+    <!-- Sweet Alert -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.js"></script>
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
@@ -161,18 +165,19 @@
                             //if the user is not logged in, tells it to not do anything
                         }
                         else {
-                            alert("There was an error, please try again!");
+                            Swal.fire("Error", "There was an error, please try again!", "error");
                         }
                     },
                     error: function ( xhr, errorType, exception ) {
                         var errorMessage = exception || xhr.statusText;
-                        alert("There was a connectivity problem. Please try again.");
+                        Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                     }
                 });
             }
         $(document).ready(function() {
 
             set_profile_button();
+
         });
     </script>
     @yield('scripts')

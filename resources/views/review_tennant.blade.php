@@ -148,16 +148,19 @@ $(document).ready(function() {
             data: 'score='+score+'&review='+review+'&booking_id='+{{$b->booking_id}}+'&tennant_id='+{{$b->booking_userID}},
             success: function(html) {
                 if(html['status'] == "success") {
-                    alert("Review Submitted Successfully");
+                    Swal.fire("Success", "Review Submitted Successfully", "success");
+                    setTimeout(function() {
+                        window.location.href("/tennant_reviews")
+                    }, 3000);
                 } else if(html['status'] == 'bad_input') {
-                    alert("Please double check all fields are filled!");
+                    Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else {
-                    alert("There was an error, please try again!");
+                    Swal.fire("Error", "There was an error, please try again!", "error");
                 }
             },
             error: function ( xhr, errorType, exception ) {
                 var errorMessage = exception || xhr.statusText;
-                alert("There was a connectivity problem. Please try again.");
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
             }
         });
 

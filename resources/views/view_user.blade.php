@@ -100,11 +100,11 @@ $(document).ready(function() {
                 success: function(html) {
                     var data = JSON.parse(html);
                     if(data['status'] == "success") {
-                        alert("Booking Cancelled");
+                        Swal.fire("Success", "Booking Cancelled Successfully", "success");
                     } else if(data['status'] == 'date error') {
-                        alert("You cannot cancel a booking scheduled in the next 2 weeks.");
+                        Swal.fire("Warning", "You cannot cancel a booking scheduled in the next 2 weeks.", "warning");
                     } else {
-                        alert("There was an error, please try again!");
+                        Swal.fire("Error", "There was an error, please try again!", "error");
                     }
                     location.reload();
                 },

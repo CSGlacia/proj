@@ -192,7 +192,7 @@ $(document).ready(function() {
             $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-3 col-md-3 col-lg-3"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="date" required></div><div class="col-sm-3 col-md-3 col-lg-3"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="date" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');
             count++;
         } else {
-            alert("You can only have 5 listing periods maximum");
+            Swal.fire("Warning", "You can only have 5 listing periods maximum", "warning");
         }
     });
 
@@ -286,39 +286,39 @@ $(document).ready(function() {
                                 data: 'property='+prop_id+'&price='+1+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
                                 success: function(html) {
                                     if(html['status'] == "success") {
-                                        alert("Property Listing created successfully");
+                                        Swal.fire("Success", "Property Listing created successfully", "success");
                                     } else if(html['status'] == 'bad_input'){
-                                        alert("Please check all fields are filled.");
+                                        Swal.fire("Warning", "Please check all fields are filled.", "warning");
                                     } else if(html['status'] == 'price_low') {
-                                        alert("You must enter a price which is positive. You cannot charge negative amounts.");
+                                        Swal.fire("Warning", "You must enter a price which is positive. You cannot charge negative amounts.", "warning");
                                     } else if(html['status'] == 'price_high'){
-                                        alert("There's a price limit of $999999.99 . Please enter a lower price per night.");
+                                        Swal.fire("Warning", "There's a price limit of $999999.99 . Please enter a lower price per night.", "warning");
                                     } else if(html['status'] == 'date_invalid'){
-                                        alert("Your start date must be before your end date and today or after.")
-                                    }
-                                    else {
-                                        alert("There was an error, please try again!");
+                                        Swal.fire("Warning", "Your start date must be before your end date and today or after.", "warning")
+                                    } else {
+                                        Swal.fire("Error", "There was an error, please try again!", "error");
                                     }
                                 },
                                 error: function ( xhr, errorType, exception ) {
                                     var errorMessage = exception || xhr.statusText;
-                                    alert("There was a connectivity problem. Please try again.");
+                                    Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                                 }
                             });
                         });
                     }
-                    alert("Property Created Successfully");
+                    Swal.fire("Success", "Property Created Successfully", "success");
+
                 } else if(html['status'] == 'bad_input') {
-                    alert("Please double check all fields are filled!");
+                    Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else if(html['status'] == 'wrong_state') {
-                    alert("Please ensure your property is in NSW");
+                    Swal.fire("Warning", "Please ensure your property is in NSW", "warning");
                 } else {
-                    alert("There was an error, please try again!");
+                    Swal.fire("Error", "There was an error, please try again!", "error");
                 }
             },
             error: function ( xhr, errorType, exception ) {
                 var errorMessage = exception || xhr.statusText;
-                alert("There was a connectivity problem. Please try again.");
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
             }
         });
     });

@@ -214,23 +214,23 @@ $(document).ready(function() {
                 data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons,
                 success: function(html) {
                     if(html['status'] == "success") {
-                        alert("Success!");
+                        Swal.fire("Success", "Booking created successfully", "success");
                     } else if(html['status'] == 'bad_input') {
-                        alert("Please double check all fields are filled!");
+                        Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                     } else if (html['status'] == 'time_booked'){
-                        alert("This booking date has already been taken!");
+                        Swal.fire("Warning", "This booking date has already been taken!", "warning");
                     }
                     else {
-                        alert("There was an error, please try again!");
+                        Swal.fire("Error", "There was an error, please try again!", "error");
                     }
                 },
                 error: function ( xhr, errorType, exception ) {
                     var errorMessage = exception || xhr.statusText;
-                    alert("There was a connectivity problem. Please try again.");
+                    Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                 }
             });
         } else {
-            alert("Please log in before making a booking");
+            Swal.fire("Warning", "Please log in before making a booking", "warning");
         }
     });
 });
@@ -252,18 +252,18 @@ $(document).ready(function() {
                 success: function(html) {
                     var data = JSON.parse(html);
                     if(data['status'] == "success") {
-                        alert("Success!");
+                        Swal.fire("Success", "Property Deleted Successfully", "success");
                     } else {
-                        alert("There was an error, please try again!");
+                        Swal.fire("Error", "There was an error, please try again!", "error");
                     }
                 },
                 error: function ( xhr, errorType, exception ) {
                     var errorMessage = exception || xhr.statusText;
-                    alert("There was a connectivity problem. Please try again.");
+                    Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                 }
             });
         } else {
-            alert("An error occurred! (You shouldn't see this)");
+            Swal.fire("Error", "An error occurred!", "error");
         }
     });
 });
@@ -279,8 +279,6 @@ $(document).ready(function() {
             var propertyTitle = "{{$p->property_title}}";
             var propertyAddress = "{{$p->property_address}}";
 
-            alert("Added this listing to your wishlist!");
-
             $.ajax({
                 url: '/add_to_wishlist',
                 method: 'POST',
@@ -289,18 +287,18 @@ $(document).ready(function() {
                 success: function(html) {
                     var data = JSON.parse(html);
                     if(data['status'] == "success") {
-                        alert("Success!");
+                        Swal.fire("Success", "Added this listing to your wishlist!", "success");
                     } else {
-                        alert("There was an error, please try again!");
+                        Swal.fire("Error", "There was an error, please try again!", "error");
                     }
                 },
                 error: function ( xhr, errorType, exception ) {
                     var errorMessage = exception || xhr.statusText;
-                    alert("There was a connectivity problem. Please try again.");
+                    Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                 }
             });
         } else {
-            alert("An error occurred! (You shouldn't see this)");
+            Swal.fire("Error", "An error occurred!", "error");
         }
     });
 });
