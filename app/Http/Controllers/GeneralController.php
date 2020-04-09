@@ -260,12 +260,43 @@ class GeneralController extends Controller
 
             $page_owner = false;
 
-            $id = Auth::id();
+            $user_id = Auth::id();
 
-            if(is_null($id) || !isset($id) || empty($id)) {
+            if(is_null($user_id) || !isset($user_id) || empty($user_id)) {
                 $page_owner = false;
-            } else if($id == $prop->property_user_id) {
+            } else if($user_id == $prop->property_user_id) {
                 $page_owner = true;
+            }
+
+
+            //grab listing dates and booking dates for the calendar
+            $cal_bookings = DB::table('bookings AS b')
+                                ->select('b.booking_startDate', 'b.booking_endDate')
+                                ->where([
+                                    ['b.booking_propertyID', $id],
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_startDate', '>', time()],
+                                ])
+                                ->get();
+
+            $cal_booking_arr = [];
+
+            foreach($cal_bookings as $c) {
+                $cal_booking_arr[] = ['start' => $c->booking_startDate, 'end' => $c->booking_endDate];
+            }
+
+            $cal_listings = DB::table('property_listing AS p')
+                                ->select('p.start_date', 'p.end_date', 'p.reccurring')
+                                ->where([
+                                    ['p.inactive', 0],
+                                    ['p.property_id', $id]
+                                ])
+                                ->get();
+
+            $cal_listing_arr = [];
+
+            foreach($cal_listings as $c) {
+                $cal_listing_arr[] = ['start' => $c->start_date, 'end' => $c->end_date, 'reccurring' => $c->reccurring];
             }
 
             return view('property',
@@ -273,7 +304,10 @@ class GeneralController extends Controller
                             'bookings' => $bookings,
                             'reviews' => $reviews,
                             'images' => $prop_images,
-                            'page_owner' => $page_owner]
+                            'page_owner' => $page_owner,
+                            'cal_bookings' => $cal_booking_arr,
+                            'cal_listings' => $cal_listing_arr
+                        ]
                 );
         }
     }

@@ -175,11 +175,15 @@ class HomeController extends Controller
         $persons = $request->input('persons');
 
 
-        // TODO: (?) User cannot book more than one property for themselves
-        // TODO: App crashes if unrecognised commands injected.
+        $startDate = explode('/', $startDate);
+        $startDate = $startDate[2].'-'.$startDate[1].'-'.$startDate[0];
+
+        $endDate = explode('/', $endDate);
+        $endDate = $endDate[2].'-'.$endDate[1].'-'.$endDate[0];
 
         $s = strtotime($startDate);
         $e = strtotime($endDate);
+
         // If the end date is before $s, fail. (You can't book for 1 day)
         if ($s >= $e) {
             return json_encode(["status" => "Time failure!"]);

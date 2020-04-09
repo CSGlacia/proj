@@ -66,11 +66,11 @@
                 <div class="row">
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>Start Date:&nbsp;</span>
-                        <input id="startDate" class="form-control" type="date" placeholder="(dateTime)" required>
+                        <input id="startDate" class="form-control" type="text"  required>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>End Date:&nbsp;</span>
-                        <input id="endDate" class="form-control" type="date" placeholder="(dateTime)" required>
+                        <input id="endDate" class="form-control" type="text" required>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>Number of People:&nbsp;</span>
@@ -199,6 +199,108 @@ function initMap() {
 }
 
 $(document).ready(function() {
+    console.log(@json($cal_bookings));
+    var startDate = $('#startDate').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+        beforeShowDay: function(date) {
+            var listings = @json($cal_listings);
+            var dateStr = (parseInt(date.getYear())+1900)+'-'+(parseInt(date.getMonth())+1)+'-'+date.getDate();
+            var epoch = moment(dateStr).unix();
+            //fix 6 hour time diff
+            epoch = epoch + 36000;
+
+            var bool = false;
+            for(i = 0; i < listings.length; i++) {
+                if(listings[i]['reccurring'] == 1) {
+                    //for next year allow bookings
+                    if((epoch >= listings[i]['start'] && epoch <= listings[i]['end']) || (epoch >= listings[i]['start']+31536000 && epoch <= listings[i]['end']+31536000))   {
+                        bool = true;
+                    }
+                } else {
+                    if(epoch >= listings[i]['start'] && epoch <= listings[i]['end']) {
+                        bool = true;
+                    }
+                }
+            }
+            if(listings.length == 0) {
+                bool = true;
+            }
+            var bookings = @json($cal_bookings);
+            for(i = 0; i < bookings.length; i++) {
+                if(epoch >= bookings[i]['start'] && epoch <= bookings[i]['end']) {
+                    bool = false;
+                }
+            }
+            return bool;
+        },
+    });
+    var endDate = $('#endDate').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+        beforeShowDay: function(date) {
+            var listings = @json($cal_listings);
+            var dateStr = (parseInt(date.getYear())+1900)+'-'+(parseInt(date.getMonth())+1)+'-'+date.getDate();
+            var epoch = moment(dateStr).unix();
+            console.log(epoch);
+            var bool = false;
+            //fix 6 hour time diff
+            epoch = epoch + 36000;
+
+            for(i = 0; i < listings.length; i++) {
+
+                if(listings[i]['reccurring'] == 1) {
+                    //for next year allow bookings
+                    if((epoch >= listings[i]['start'] && epoch <= listings[i]['end']) || (epoch >= listings[i]['start']+31536000 && epoch <= listings[i]['end']+31536000))   {
+                        bool = true;
+                    }
+                } else {
+                    if(epoch >= listings[i]['start'] && epoch <= listings[i]['end']) {
+                        bool = true;
+                    }
+                }
+            }
+            if(listings.length == 0) {
+                bool = true;
+            }
+            var bookings = @json($cal_bookings);
+            for(i = 0; i < bookings.length; i++) {
+                if(epoch >= bookings[i]['start'] && epoch <= bookings[i]['end']) {
+                    bool = false;
+                }
+            }
+            return bool;
+        }
+    });
+
+    $('#startDate').change(function() {
+        var newStartDate = startDate.val();
+        newStartDate = newStartDate.split('/');
+        newStartDate = newStartDate[2]+'-'+newStartDate[1]+'-'+newStartDate[0];
+        newStartDate = new Date(newStartDate);
+        endDate.datepicker("setStartDate",  newStartDate);
+    });
+
+    $('#endDate').change(function() {
+        var newEndDate = endDate.val();
+        newEndDate = newEndDate.split('/');
+        newEndDate = newEndDate[2]+'-'+newEndDate[1]+'-'+newEndDate[0];
+        newEndDate = new Date(newEndDate);
+
+        startDate.datepicker("setEndDate",  newEndDate);
+    });
+
+/*
+    function test() {
+        var epoch = moment('2020-05-29').unix();
+        console.log(epoch);
+        var listings = @json($cal_listings);
+        console.log(listings);
+        var bookings = @json($cal_bookings);
+        console.log(bookings);
+    }
+    test();
+    */
     $(document).on('click', '#book_submit', function(e) {
         var logged = $('#user_logged').data('logged');
         if(logged == 1) {
