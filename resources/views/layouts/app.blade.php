@@ -11,13 +11,21 @@
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">    
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/nav_bar.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/home.css') }}" rel="stylesheet">
+    <link href="{{asset('css/owl.carousel.min.css')}}" rel="stylesheet">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/06f34836f7.js" crossorigin="anonymous"></script>
 </head>
 
 <style>
@@ -31,38 +39,106 @@
     .row {
         margin-bottom: 20px;
     }
+    .item-card:hover {
+        background-color: #f6f6f6;
+        box-shadow: inset 0 0 0 5px #85CB33;
+        transition: all 1s ease;  
+    }
+    .item-card {
+        background-color: #ffffff;
+        width:75%;
+    }
+    .cursor-pointer:hover{
+        cursor: pointer;
+    }
+    .gold-star {
+        color:gold;
+    }
+    .gold-star-temp {
+        color:gold;
+    }
+    .prop-img {
+        position: relative;
+        width:100%;
+    }
 
+    /* Overlay animtaitons */
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      width: 100%;
+      opacity: 0;
+      transition: .8s ease;
+      background-color: red;
+      border-radius: 10px;
+    }
+
+    .image-container:hover .image-overlay {
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .image-icon {
+      color: white;
+      font-size: 100px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    /* End overlay animations
 </style>
+@yield('style')
+
+
+
 
 <body>
-    <div class="topnav">
-        @if (Route::has('login'))
-            <div class="top-right links" style="padding:15px;">
-                    <a class="btn btn-xs btn-primary" href="/">Homepage</a>
-                @auth
-                    <a class="btn btn-xs btn-primary" id="user_profile" href="">User Profile</a>
-                    <a class="btn btn-xs btn-primary" href="{{ url('/logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container">
+
+        <a class="navbar-brand" href="/">TURTLE</a>
+            @if (Route::has('login'))
+            @auth
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
+                    <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
+                    <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
+
+
+
+                    <li class="nav-item"><a href="" id="user_profile" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="{{ url('/logout') }}" class="nav-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a></li>
                     <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
                     </form>
-                    <a class="btn btn-xs btn-warning" href="/create_property_listing">Create a property listing</a>
-                    <a class="btn btn-xs btn-success" href="/property_reviews">Review past properties</a>
-                    <a class="btn btn-xs btn-success"href="/tennant_reviews">Review past tennants</a>
-                    <a class="btn btn-xs btn-danger" href="/create_property_page">Add a new property to your account</a>
-                @else
-                    <a class="btn btn-xs btn-primary" href="{{ route('login') }}">Login</a>
-
+                </ul>
+            @else
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
                     @if (Route::has('register'))
-                        <a class="btn btn-xs btn-primary" href="{{ route('register') }}">Register</a>
+                        <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
                     @endif
-                @endauth
-            </div>
+                </ul>
+
+            @endauth
         @endif
     </div>
-
+    </nav>
     <main class="py-4">
         @yield('content')
     </main>
+
+
+
+
+
 
     <script>
         $.ajaxSetup({
@@ -101,7 +177,5 @@
     </script>
     @yield('scripts')
 </body>
-
-
 
 </html>

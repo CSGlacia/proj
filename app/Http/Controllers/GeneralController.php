@@ -1,6 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+// Include the SDK using the Composer autoloader
+require '../vendor/autoload.php';
+use \Aws\S3\S3Client;
+use \Aws\S3\Exception\S3Exception;
 
 use Illuminate\Http\Request;
 use Auth;
@@ -21,38 +25,54 @@ class GeneralController extends Controller
 
         if(empty($query)){
             $results = DB::table('properties AS p')
-                            ->select('p.*')
+                            ->select('p.*',
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`')
+                            )
                             ->where([
                                 ['property_inactive', '=', '0']
                             ])
                             ->get();
 
+            foreach($results as $r) {
+                if(is_null($r->scores)) {
+                    $r->scores = "No Reviews Yet";
+                    $r->review_count = 0;
+                } else {
+                    $r->review_count = count(explode(',', $r->review_count));
+                    $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
+                }
+            }
             return view('view_properties',
                         ['properties' => $results]
             );
         } else{
 
-            $address = true;
-            $suburb = true;
-            $postcode = true;
-
             $searchCritera = [];
+
             if($address_checkbox == 1){
                 array_push($searchCritera, ['p.property_address', 'LIKE', '%'.$query.'%', 'OR']);
-            }
-            if($suburb_checkbox == 1){
-                array_push($searchCritera, ['p.property_suburb', 'LIKE', '%'.$query.'%', 'OR']);
-            }
-            if($postcode_checkbox == 1){
-                array_push($searchCritera, ['p.property_postcode', 'LIKE', '%'.$query.'%', 'OR']);
+
             }
             $results = DB::table('properties AS p')
-                            ->select('p.*')
+                            ->select('p.*',
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`')
+                            )
                             ->where([
                                 ['property_inactive', '=', '0'],
                                 [$searchCritera]
                             ])
                             ->get();
+
+            foreach($results as $r) {
+                if(is_null($r->scores)) {
+                    $r->scores = "No Reviews Yet";
+                    $r->review_count = 0;
+                } else {
+                    $r->review_count = count(explode(',', $r->review_count));
+                    $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
+                }
+            }
             return view('view_properties',
                         ['properties' => $results]
                         );
@@ -71,12 +91,15 @@ class GeneralController extends Controller
                             ['u.inactive', 0]
                         ])
                         ->first();
-            
+
             if(isset($user) && !empty($user) && !is_null($user)) {
 
                 $bookings = DB::table('bookings AS b')
                                 ->select('b.*', 'p.*')
-                                ->where('b.booking_inactive', 0)
+                                ->where([
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_startDate', '>', time()]
+                                ])
                                 ->whereIn('b.booking_id', explode(',', $user->bookings))
                                 ->leftJoin('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                                 ->get();
@@ -91,6 +114,11 @@ class GeneralController extends Controller
                                 ->whereIn('p.property_id', explode(',', $user->properties))
                                 ->get();
 
+                $listings = DB::table('property_listing AS l')
+                                ->join('project.properties AS p', 'l.property_id', '=', 'p.property_id')
+                                ->where('p.property_user_id', '=', $id)
+                                ->get();
+
                 $reviews = DB::table('tennant_reviews AS t')
                                 ->where([
                                     ['trs_tennant_id', $id],
@@ -99,8 +127,24 @@ class GeneralController extends Controller
                                 ->join('users AS u', 'u.id', '=', 'trs_reviewer_id')
                                 ->get();
 
+                $average_guest_score = 0;
+                $count = 0;
                 foreach($reviews as $r) {
                     $r->trs_submitted_at = date('d/m/Y', $r->trs_submitted_at);
+                    $r->trs_edited_at = date('d/m/Y', $r->trs_edited_at);
+                    $count = $count + 1;
+                    $average_guest_score = $average_guest_score + $r->trs_score;
+                }
+
+                if ($count != 0) {
+                    $average_guest_score = $average_guest_score/$count;
+                } else {
+                    $average_guest_score = 'No reviews yet';
+                }
+
+                foreach($listings as $l) {
+                    $l->start_date = date('d/m/Y', $l->start_date);
+                    $l->end_date = date('d/m/Y', $l->end_date);
                 }
 
                 $page_owner = false;
@@ -113,12 +157,14 @@ class GeneralController extends Controller
                     $page_owner = true;
                 }
 
-                return view('view_user', 
+                return view('view_user',
                     ['user' => $user,
                     'bookings' => $bookings,
+                    'listings' => $listings,
                     'properties' => $properties,
                     'page_owner' => $page_owner,
-                    'reviews' => $reviews
+                    'reviews' => $reviews,
+                    'guest_score' => $average_guest_score
                     ]
                 );
             }
@@ -139,6 +185,13 @@ class GeneralController extends Controller
     }
 
     public function view_one_property(Request $request, $id) {
+        $bucket = 'turtle-database';
+
+        $s3 = new \Aws\S3\S3Client([
+        'version' => 'latest',
+        'region'  => 'ap-southeast-2'
+        ]);
+
         $prop = DB::table('properties AS p')
                     ->select('p.*')
                     ->where([
@@ -147,19 +200,49 @@ class GeneralController extends Controller
                     ])
                     ->first();
 
-        if(isset($prop) && !empty($prop) && !is_null($prop)) {
-
-            $avail = DB::table('bookings AS b')
-                        ->select('b.*')
-                        ->where([
-                            ['b.booking_propertyID', $id],
-                            ['b.booking_inactive', 0]
-                        ])
+        $prop_images = DB::table('property_images AS p')
+                        ->select('p.property_image_name')
+                        ->where([['p.property_id',$id]])
                         ->get();
 
-            foreach($avail as $a) {
-                $a->booking_startDate = date('d/m/Y', $a->booking_startDate);
-                $a->booking_endDate = date('d/m/Y', $a->booking_endDate);
+        /*foreach ($prop_images as $path) {
+            try{
+                $extension = preg_match('/\./',$path->property_image_name) ? preg_replace('/^.*\./','',$path->property_image_name): '';
+                $image = $s3->getObject(array(
+                    'Bucket' => $bucket,
+                    'Key'    => $path->property_image_name,
+                    'ResponseContentType' => 'image/'.$extension,
+                ));
+                array_push($image_array,$image);
+            }
+            catch (S3Exception $e) {
+                return json_encode(['status' => 'image_fail']);
+            }
+
+        }*/
+
+
+        if(isset($prop) && !empty($prop) && !is_null($prop)) {
+
+            $bookings = DB::table('bookings as b')
+                            ->select('b.*', 'u.*',
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
+                            )
+                            ->where([
+                                ['b.booking_propertyID', $id],
+                                ['b.booking_inactive', 0],
+                                ['b.booking_startDate', '>', time()],
+                            ])
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID') // gets user info for each of the people booking
+                            ->get();
+
+            foreach($bookings as $b) {
+                $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+
+                $scores = explode(',', $b->scores);
+                $scores = array_sum($scores)/count($scores);
+                $b->scores = $scores;
             }
 
             $reviews = DB::table('property_reviews AS p')
@@ -172,13 +255,31 @@ class GeneralController extends Controller
 
             foreach($reviews as $r) {
                 $r->prs_submitted_at = date('d/m/Y', $r->prs_submitted_at);
+                $r->prs_edited_at = date('d/m/Y', $r->prs_edited_at);
+            }
+
+            $page_owner = false;
+
+            $id = Auth::id();
+
+            if(is_null($id) || !isset($id) || empty($id)) {
+                $page_owner = false;
+            } else if($id == $prop->property_user_id) {
+                $page_owner = true;
             }
 
             return view('property',
                             ['p' => $prop,
-                            'avail' => $avail,
-                            'reviews' => $reviews]
+                            'bookings' => $bookings,
+                            'reviews' => $reviews,
+                            'images' => $prop_images,
+                            'page_owner' => $page_owner]
                 );
         }
+    }
+
+    public function guest_home()
+    {
+        return view('guest_home');
     }
 }

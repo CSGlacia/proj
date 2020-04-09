@@ -2,47 +2,47 @@
 
 @section('content')
 <div class="container">
-    <div><h2><b>Property Review</b></h2>
+    <div><h2><b>Edit Tennant Review</b></h2>
     <hr>
     <div class="row">
         <div class="col-sm-6 col-md-6 col-lg-6">
             <h3><b>Property Details</b></h3>
-            <div>Property Name: {{$p->property_title}}</div>
-            <div>Address: {{$p->property_address}}</div>
-            <span>Beds: {{$p->property_beds}}</span>&nbsp;<span>Baths: {{$p->property_baths}}</span>&nbsp;<span>Cars: {{$p->property_cars}}</span>
-            <div>Description: {{$p->property_desc}}</div>
-            <div>Owner: <a href="/user_profile/{{$p->id}}">{{$p->name}}</a></div>
+            <div>Property Name: {{$review->property_title}}</div>
+            <div>Address: {{$review->property_address}}</div>
+            <span><i class="fas fa-bed"></i> {{$review->property_beds}}</span>&nbsp;<span><i class="fas fa-bath"></i> {{$review->property_baths}}</span>&nbsp;<span><i class="fas fa-car"></i> {{$review->property_cars}}</span>
+            <div>Description: {{$review->property_desc}}</div>
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6">
             <h3><b>Booking Details</b></h3>
-            <div>Start Date: {{$b->booking_startDate}}</div>
-            <div>End Date: {{$b->booking_endDate}}</div>
-            <div>Persons Booked: {{$b->booking_persons}}</div>
+            <div>Start Date: {{$review->booking_startDate}}</div>
+            <div>End Date: {{$review->booking_endDate}}</div>
+            <div>Persons Booked: {{$review->booking_persons}}</div>
+            <div>Tennant: <a href="/user_profile/{{$review->id}}">{{$review->name}}</a></div>
         </div>
 
     </div>
     <hr>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
-            <div>How would you rate your stay at the property?</div>
+            <div>How would you rate your tennant's stay at the property?</div>
             <span>
-                <span name="score-star"><i class="fas fa-star gold-star" id="s1" data-num="1"></i></span>
-                <span name="score-star"><i class="fas fa-star" id="s2" data-num="2"></i></span>
-                <span name="score-star"><i class="fas fa-star" id="s3" data-num="3"></i></span>
-                <span name="score-star"><i class="fas fa-star" id="s4" data-num="4"></i></span>
-                <span name="score-star"><i class="fas fa-star" id="s5" data-num="5"></i></span>
+                <span name="score-star"><i class="fas fa-star @if($review->trs_score >= 1) gold-star @endif" id="s1" data-num="1"></i></span>
+                <span name="score-star"><i class="fas fa-star @if($review->trs_score >= 2) gold-star @endif" id="s2" data-num="2"></i></span>
+                <span name="score-star"><i class="fas fa-star @if($review->trs_score >= 3) gold-star @endif" id="s3" data-num="3"></i></span>
+                <span name="score-star"><i class="fas fa-star @if($review->trs_score >= 4) gold-star @endif" id="s4" data-num="4"></i></span>
+                <span name="score-star"><i class="fas fa-star @if($review->trs_score >= 5) gold-star @endif" id="s5" data-num="5"></i></span>
             </span>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
-            <span>Please add any additional comments about your property or your stay</span>
-            <textarea id="review_desc" class="form-control" rows="5" placeholder="Additional comments" required></textarea>
+            <span>Please add any additional comments about the tennant</span>
+            <textarea id="review_desc" class="form-control" rows="5" placeholder="Additional comments" required>{!! $review->trs_review !!}</textarea>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
-            <span class="btn btn-xs btn-primary" id="submit_review">Submit Review</span>
+            <span class="btn btn-xs btn-primary" id="submit_review">Save Review</span>
         </div>
     </div>    
 </div>
@@ -135,17 +135,16 @@ $(document).ready(function() {
         star_score = num;
     });
 
-    var star_score = 0
+    var star_score = {{$review->trs_score}}
 
     $(document).on('click', '#submit_review', function(e){
         var score = star_score
         var review = $('#review_desc').val();
-
+        
         $.ajax({
-            url: '/create_property_review',
+            url: '/update_tennant_review',
             method: 'POST',
-            dataType: 'JSON',
-            data: 'score='+score+'&review='+review+'&booking_id='+{{$b->booking_id}}+'&property_id='+{{$p->property_id}},
+            data: 'score='+score+'&review='+review+'&review_id='+{{$review->trs_id}},
             success: function(html) {
                 if(html['status'] == "success") {
                     alert("Review Submitted Successfully");

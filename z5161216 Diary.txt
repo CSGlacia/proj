@@ -6,3 +6,10 @@ Week 3 Diary
 Finished up with the project plan, writing out a bunch of user stories. 
 Had some problems at the start of the week due to unathorised user deleting the database.
 Week 4 Diary
+Starting the code for user property listing. Still writing up user stories and fixing the existing ones to have points.
+Week 5 Diary
+Finished User property listing and added in a feature to select time period. Helping Jun with searching. Writing user stories.
+Week 6 Diary
+Searching and coding up S3 SDK integration with php as well as google maps api integration with php.
+Week 7 Diary
+Had some trouble doing AWS S3 link. Had to change form format 
