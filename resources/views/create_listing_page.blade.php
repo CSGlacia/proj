@@ -13,16 +13,6 @@
                     <span>Address:&nbsp;</span>
                     <input id="address" class="form-control" type="text" placeholder="E.g. 6/5 George Street" required>
                 </div>
-                <div class="col-sm-6 col-md-6 col-lg-6">
-                    <span>Suburb:&nbsp;</span>
-                    <input id="suburb" class="form-control" type="text" placeholder="E.g. Ryde" required>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6 col-md-6 col-lg-6">
-                    <span>Postcode:&nbsp;</span>
-                    <input id="postcode" class="form-control" type="number" placeholder="E.g. 2225" required>
-                </div>
             </div>
             <hr>
             <h5>Property Details:&nbsp;</h5>
@@ -61,10 +51,7 @@
 $(document).ready(function() {
     $(document).on('click', '#property_submit', function(e) {
         e.preventDefault();
-
         var address = $('#address').val();
-        var suburb = $('#suburb').val();
-        var postcode = $('#postcode').val();
         var beds  = $('#beds').val();
         var baths = $('#baths').val();
         var cars = $('#cars').val();
@@ -73,7 +60,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/create_property',
             method: 'POST',
-            data: 'address='+address+'&suburb='+suburb+'&postcode='+postcode+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc,
+            data: 'address='+address+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&desc='+desc,
             success: function(html) {
                 var data = tryParseJSON(html);
 
