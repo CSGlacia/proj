@@ -820,9 +820,9 @@ class HomeController extends Controller
             ])
             ->update(['property_inactive' => 1]);
 
-            return json_encode(["status" => "Success!"]);
+            return json_encode(["status" => "success"]);
         }
-        return json_encode(["status" => "This property cannot be removed."]);
+        return json_encode(["status" => "property_remove_error"]);
     }
 
     public function edit_tennant_review(Request $request, $review_id) {

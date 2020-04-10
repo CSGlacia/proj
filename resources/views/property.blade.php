@@ -352,9 +352,14 @@ $(document).ready(function() {
                 dataType: 'JSON',
                 data: 'propertyID='+propertyID,
                 success: function(html) {
-                    var data = JSON.parse(html);
-                    if(data['status'] == "success") {
-                        Swal.fire("Success", "Property Deleted Successfully", "success");
+                    if(html['status'] == "success") {
+                        swal({
+                            title:"Success!",
+                            text: "You have successfully deleted your property.",
+                            type:"success",
+                        }).then(function(){
+                            window.location.href = "/";
+                        });
                     } else {
                         Swal.fire("Error", "There was an error, please try again!", "error");
                     }
