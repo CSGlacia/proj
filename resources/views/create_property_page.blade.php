@@ -57,6 +57,16 @@
                     <textarea id="property_desc" class="form-control" rows="5" placeholder="Please enter a brief description of the property." required></textarea>
                 </div>
             </div>  
+            <div class="row">
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <span>Tags:</span>
+                    <select id="tags" class="form-control tag-select" name="tags[]" multiple>
+                        @foreach($tags as $t)
+                            <option value="{{$t['id']}}">{{$t['text']}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             <hr>
             <h5>Property Images:&nbsp;</h5>
             <div class="row">
@@ -169,6 +179,30 @@ function initMap() {
 Dropzone.autoDiscover = false;
 
 $(document).ready(function() {
+/*
+    $('#tags').select2({
+        ajax: {
+            url: "/get_property_tags",
+            dataType: 'json',
+            delay: 250,
+            type: 'post',
+            data: function (params) {
+              return {
+                term: params.term,
+                page: params.page
+              };
+            },
+            processResults: function (data) {
+              return {
+                results: data
+              };
+            }
+        },
+        minimumInputLength: 1,
+    });
+*/
+
+    $('#tags').select2();
 
     var count = 1;
 
@@ -247,7 +281,8 @@ $(document).ready(function() {
         form_data.append('lat',lat);
         form_data.append('lng',lng);
         form_data.append('always_list',always_list);
-
+        var tags  = ($('#tags').val());
+        form_data.append('tags', tags);
         var listing_dates_arr = [];
 
         $('.listing_dates').each(function (i) {
@@ -285,17 +320,7 @@ $(document).ready(function() {
                                 dataType: 'JSON',
                                 data: 'property='+prop_id+'&price='+1+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
                                 success: function(html) {
-                                    if(html['status'] == "success") {
-                                        Swal.fire("Success", "Property Listing created successfully", "success");
-                                    } else if(html['status'] == 'bad_input'){
-                                        Swal.fire("Warning", "Please check all fields are filled.", "warning");
-                                    } else if(html['status'] == 'price_low') {
-                                        Swal.fire("Warning", "You must enter a price which is positive. You cannot charge negative amounts.", "warning");
-                                    } else if(html['status'] == 'price_high'){
-                                        Swal.fire("Warning", "There's a price limit of $999999.99 . Please enter a lower price per night.", "warning");
-                                    } else if(html['status'] == 'date_invalid'){
-                                        Swal.fire("Warning", "Your start date must be before your end date and today or after.", "warning")
-                                    } else {
+                                    if(html['status'] != "success") {
                                         Swal.fire("Error", "There was an error, please try again!", "error");
                                     }
                                 },

@@ -57,6 +57,16 @@
                     <textarea id="property_desc" class="form-control" rows="5" required>{!! $p->property_desc !!}</textarea>
                 </div>
             </div>  
+            <div class="row">
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <span>Tags:</span>
+                    <select id="tags" class="form-control tag-select" name="tags[]" multiple>
+                        @foreach($tags as $t)
+                            <option value="{{$t['id']}}" @if($t['selected']) selected @endif>{{$t['text']}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             <hr>
             @if($image_count > 0)
             <span id="remove_images">
@@ -234,6 +244,8 @@ function initMap() {
 Dropzone.autoDiscover = false;
 
 $(document).ready(function() {
+    $('#tags').select2();
+
     var count = 1;
     var image_count = {{$image_count}};
     var removed_images = [];
@@ -333,6 +345,9 @@ $(document).ready(function() {
         form_data.append('lat',lat);
         form_data.append('lng',lng);
         form_data.append('always_list',always_list);
+
+        var tags = $('#tags').val();
+        form_data.append('tags', tags);
 
         var listing_dates_arr = [];
 

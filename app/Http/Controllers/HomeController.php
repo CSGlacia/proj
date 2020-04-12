@@ -33,7 +33,20 @@ class HomeController extends Controller
     }
 
     public function listing_page(Request $request) {
-        return view('create_property_page');
+
+        $tags = DB::table('tags AS t')
+                    ->get();
+
+
+        $ret_arr = [];
+
+        foreach($tags as $r) {
+            $ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name];
+        }
+
+        return view('create_property_page',
+            ['tags' => $ret_arr]
+        );
     }
 
     public function create_property(Request $request) {
@@ -48,6 +61,7 @@ class HomeController extends Controller
         $lat = $request->input('lat');
         $lng = $request->input('lng');
         $always_list = $request->input('always_list');
+        $tags = $request->input('tags');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
@@ -71,17 +85,28 @@ class HomeController extends Controller
                     $always_list = 0;
                 }
 
-                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baistths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list];
+                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list];
 
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
+
+                $tags = explode(',', $tags);
+
+                $tag_insert = [];
+
+                foreach($tags as $t) {
+                    $tag_insert[] = ['pt_property_id' => $property_id, 'pt_tag_id' => $t, 'pt_inactive' => 0];
+                }
+
+                DB::table('property_tags')
+                    ->insert($tag_insert);
 
                 return json_encode(['status' => 'success', 'id' => $property_id]);
 
             } else {
                 return json_encode(['status' => 'bad_input']);
             }
-        }
+        }   
 
         return json_encode(['status' => 'error']);
     }
@@ -578,12 +603,16 @@ class HomeController extends Controller
         if(isset($id) && !empty($id) && !is_null($id)) {
             
             $prop = DB::table('properties AS p')
-                        ->select('p.*')
+                        ->select('p.*', 
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_id) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
+                        )
                         ->where([
                             ['p.property_id', $id],
                             ['p.property_inactive', 0]
                         ])
                         ->first();
+
+            $selected_tags = explode(',' , $prop->tags);
 
             if($user_id != $prop->property_user_id) {
                 return view('bad_permissions');
@@ -613,11 +642,28 @@ class HomeController extends Controller
                             ->where([['p.property_id',$id]])
                             ->get();
 
+            $tags = DB::table('tags AS t')
+                        ->get();
+
+
+            $tag_ret_arr = [];
+
+            foreach($tags as $r) {
+                if(in_array($r->tag_id, $selected_tags)) {
+                    $is_selected = true;
+                } else {
+                    $is_selected = false;
+                }
+
+                $tag_ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name, 'selected' => $is_selected];
+            }
+
             return view('edit_property',
                             ['p' => $prop,
                             'images' => $prop_images,
                             'listings' => $listings,
-                            'image_count' => count($prop_images)
+                            'image_count' => count($prop_images),
+                            'tags' => $tag_ret_arr
                             ]
                 );
         }
@@ -636,6 +682,7 @@ class HomeController extends Controller
         $lat = $request->input('lat');
         $lng = $request->input('lng');
         $always_list = $request->input('always_list');
+        $tags = $request->input('tags');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
@@ -664,6 +711,24 @@ class HomeController extends Controller
                 DB::table('properties')
                     ->where('property_id', $prop_id)
                     ->update($update);
+
+                $tags = explode(',', $tags);
+                
+                DB::table('property_tags')
+                        ->where([
+                            ['pt_property_id', $prop_id],
+                            ['pt_inactive', 0]
+                        ])
+                        ->delete();
+
+                $tag_insert = [];
+
+                foreach($tags as $t) {
+                    $tag_insert[] = ['pt_property_id' => $prop_id, 'pt_tag_id' => (int)$t, 'pt_inactive' => 0];
+                }
+
+                DB::table('property_tags')
+                    ->insert($tag_insert);
 
                 return json_encode(['status' => 'success']);
 

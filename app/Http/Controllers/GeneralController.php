@@ -27,13 +27,13 @@ class GeneralController extends Controller
             $results = DB::table('properties AS p')
                             ->select('p.*',
                                 DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
-                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`')
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`'),
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
                             )
                             ->where([
                                 ['property_inactive', '=', '0']
                             ])
                             ->get();
-
             foreach($results as $r) {
                 if(is_null($r->scores)) {
                     $r->scores = "No Reviews Yet";
@@ -42,7 +42,9 @@ class GeneralController extends Controller
                     $r->review_count = count(explode(',', $r->review_count));
                     $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
                 }
+                $r->tags = explode(',', $r->tags);
             }
+
             return view('view_properties',
                         ['properties' => $results]
             );
@@ -63,7 +65,6 @@ class GeneralController extends Controller
                                 [$searchCritera]
                             ])
                             ->get();
-
             foreach($results as $r) {
                 if(is_null($r->scores)) {
                     $r->scores = "No Reviews Yet";
@@ -299,6 +300,22 @@ class GeneralController extends Controller
                 $cal_listing_arr[] = ['start' => $c->start_date, 'end' => $c->end_date, 'reccurring' => $c->reccurring];
             }
 
+            $tags = DB::table('property_tags AS t')
+                    ->where([
+                        ['t.pt_inactive', 0],
+                        ['t.pt_property_id', $id]
+                    ])
+                    ->join('tags', 'tag_id', '=', 'pt_tag_id')
+                    ->get();
+
+
+            $tag_ret_arr = [];
+
+            foreach($tags as $r) {
+                $tag_ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name];
+            }
+
+
             return view('property',
                             ['p' => $prop,
                             'bookings' => $bookings,
@@ -306,9 +323,28 @@ class GeneralController extends Controller
                             'images' => $prop_images,
                             'page_owner' => $page_owner,
                             'cal_bookings' => $cal_booking_arr,
-                            'cal_listings' => $cal_listing_arr
+                            'cal_listings' => $cal_listing_arr,
+                            'tags' => $tag_ret_arr
                         ]
                 );
+        }
+    }
+
+    public function get_property_tags(Request $request) {
+        $term = $request->input('term');
+
+        if(isset($term) && !is_null($term) && !empty($term)) {
+            $results = DB::table('tags AS t')
+                            ->where('t.tag_name', 'LIKE', '%'.$term.'%')
+                            ->get();
+
+            $ret_arr = [];
+
+            foreach($results as $r) {
+                $ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name];
+            }
+
+            return json_encode($ret_arr);
         }
     }
 

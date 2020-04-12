@@ -59,6 +59,10 @@ Route::post('/add_to_wishlist', 'HomeController@add_to_wishlist');
 Route::post('/delete_wishlist', 'HomeController@delete_wishlist');
 
 
+//tag functions
+Route::post('/get_property_tags', 'GeneralController@get_property_tags');
+
+
 // Deletion
 Route::post('delete_property', 'HomeController@delete_property');
 //  Where should this go?

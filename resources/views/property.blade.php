@@ -24,6 +24,11 @@
                     </div>
                     <div>{{$p->property_address}}</div>
                     <div style="margin:5px;"> {{ $p->property_desc }}  </div>
+                    <div>
+                        @foreach($tags as $t)
+                            <span class="badge badge-secondary">{{$t['text']}}</span>
+                        @endforeach
+                    </div>
                     <div class="float-right">
                         @if($page_owner == true)
                         <label id="delete_property" class="btn btn-primary">✖ Delete Property</label>
@@ -199,7 +204,9 @@ function initMap() {
 }
 
 $(document).ready(function() {
-    console.log(@json($cal_bookings));
+
+    $('#tags').select2();
+
     var startDate = $('#startDate').datepicker({
         format: 'dd/mm/yyyy',
         autoclose: true,
@@ -242,7 +249,6 @@ $(document).ready(function() {
             var listings = @json($cal_listings);
             var dateStr = (parseInt(date.getYear())+1900)+'-'+(parseInt(date.getMonth())+1)+'-'+date.getDate();
             var epoch = moment(dateStr).unix();
-            console.log(epoch);
             var bool = false;
             //fix 6 hour time diff
             epoch = epoch + 36000;
