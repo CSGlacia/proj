@@ -12,4 +12,6 @@ Finished User property listing and added in a feature to select time period. Hel
 Week 6 Diary
 Searching and coding up S3 SDK integration with php as well as google maps api integration with php.
 Week 7 Diary
-Had some trouble doing AWS S3 link. Had to change form format 
+Had some trouble doing AWS S3 link. Had to change form format. Worked with Jun on UI improvements. Finished navbar
+Week 8 Diary
+Working on bug fixing and improving the UI right now.

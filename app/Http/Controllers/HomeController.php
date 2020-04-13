@@ -805,13 +805,16 @@ class HomeController extends Controller
 
 
         // Pull from the database.
-        // $results = DB::table('wishlist AS w')
-        //             ->select('w.*')
-        //             ->where([
-        //                 ['wishlist_propertyID', '=', $propertyID]
-        //                 ['wishlist_userID', '=', $userID]
-        //             ])
-        //             ->get();
+        $results = DB::table('wishlist AS w')
+                    ->select('w.*')
+                    ->where([
+                        ['wishlist_propertyID', '=', $propertyID],
+                        ['wishlist_userID', '=', $userID]
+                    ])
+                    ->get();
+        if(isset($results)){
+            return json_encode(['status' => 'exists']);
+        }
         DB::table('wishlist')
                 ->updateOrInsert(
                         ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID],
@@ -885,9 +888,9 @@ class HomeController extends Controller
             ])
             ->update(['property_inactive' => 1]);
 
-            return json_encode(["status" => "Success!"]);
+            return json_encode(["status" => "success"]);
         }
-        return json_encode(["status" => "This property cannot be removed."]);
+        return json_encode(["status" => "property_remove_error"]);
     }
 
     public function edit_tennant_review(Request $request, $review_id) {
