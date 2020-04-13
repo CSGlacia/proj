@@ -1014,7 +1014,7 @@ class HomeController extends Controller
         Mail::send('emails.success', ['email' => $userEmail->email], function ($message)
         {
             $message->from('turtleaccommodation@gmail.com', 'Goodness Kayode');
-            $message->to($userEmail->email);
+            $message->to("pafekoy997@lagsixtome.com");
         });
 
     }
