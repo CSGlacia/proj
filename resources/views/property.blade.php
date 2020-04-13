@@ -358,9 +358,14 @@ $(document).ready(function() {
                 dataType: 'JSON',
                 data: 'propertyID='+propertyID,
                 success: function(html) {
-                    var data = JSON.parse(html);
-                    if(data['status'] == "success") {
-                        Swal.fire("Success", "Property Deleted Successfully", "success");
+                    if(html['status'] == "success") {
+                        swal({
+                            title:"Success!",
+                            text: "You have successfully deleted your property.",
+                            type:"success",
+                        }).then(function(){
+                            window.location.href = "/";
+                        });
                     } else {
                         Swal.fire("Error", "There was an error, please try again!", "error");
                     }
@@ -393,10 +398,12 @@ $(document).ready(function() {
                 dataType: 'JSON',
                 data: 'propertyID='+propertyID+'&propertyTitle='+propertyTitle+'&propertyAddress='+propertyAddress,
                 success: function(html) {
-                    var data = JSON.parse(html);
-                    if(data['status'] == "success") {
+                    if(html['status'] == "success") {
                         Swal.fire("Success", "Added this listing to your wishlist!", "success");
-                    } else {
+                    } else if(html['status'] == "exists"){
+                        Swal.fire("Error","You have already added this property to your wishlist","error");
+                    }
+                    else {
                         Swal.fire("Error", "There was an error, please try again!", "error");
                     }
                 },
