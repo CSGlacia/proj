@@ -1,35 +1,7 @@
 @extends('layouts.app')
 <link href="{{asset('css/view_property.css')}}" rel="stylesheet">
 @section('content')
-<div class="hs-slider owl-carousel">
-    <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="hs-text">
-                        <h2>Turtle</h2>
-                        <p>Would you like to book a place at turtle?
-                        <br /> Try it below!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/Houses_in_Sanctuary_Cove_seen_from_Coomera_River%2C_Queensland_09.jpg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="hs-text">
-                        <h2>Turtle</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                            incididunt ut labore et<br /> dolore magna aliqua. Quis ipsum suspendisse ultrices
-                            gravida accumsan lacus vel facilisis.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <div class="container col-sm-10 col-md-10 col-lg-10">
     <div class="search-container">
@@ -67,7 +39,7 @@
                     <span><i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
                   </div>
                   <div>{{ $p->property_address }}</div>
-                  <div style="margin-top:5px;"> {{ $p->property_desc }}  </div>
+                  <div style="margin:5px;"> {{ $p->property_desc }}  </div>
                   <div>
                       @foreach($p->tags as $t)
                           <span class="badge badge-secondary">{{$t}}</span>
