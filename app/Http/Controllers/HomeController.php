@@ -1011,10 +1011,10 @@ class HomeController extends Controller
                     ])
                     ->first();
 
-        Mail::send('emails.success', ['email' => $userEmail->email], function ($message)
+        Mail::send('emails.success', ['email' => $userEmail->email], function ($message) use ($userEmail)
         {
             $message->from('turtleaccommodation@gmail.com', 'Goodness Kayode');
-            $message->to("pafekoy997@lagsixtome.com");
+            $message->to($userEmail->email);
         });
 
     }
