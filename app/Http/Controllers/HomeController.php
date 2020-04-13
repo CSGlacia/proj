@@ -34,7 +34,6 @@ class HomeController extends Controller
     }
 
     public function listing_page(Request $request) {
-        $this->sendEmail($request);
         $tags = DB::table('tags AS t')
                     ->get();
 
@@ -1002,7 +1001,7 @@ class HomeController extends Controller
 
 
     /* Email stuff */
-    public function sendEmail(Request $request)
+    public static function sendEmail(Request $request)
     {
         $userEmail = DB::table('users AS u')
                     ->select('email')
@@ -1017,5 +1016,19 @@ class HomeController extends Controller
             $message->to($userEmail->email);
         });
 
+    }
+    /* Comparing 2 start and end dates to check if they overlap */
+    public function checkValidDates($startDate1, $endDate1, $startDate2, $endDate2)
+    {
+        if ($startDate1 < $startDate2) {
+            if ($startDate2 > $endDate1) {
+                return json_encode(['status' => 'success']);
+            }
+        } else {
+            if ($startDate1 > $endDate2){
+                return json_encode(['status' => 'success']);
+            }
+        }
+        return json_encode(['status' => 'error']);
     }
 }
