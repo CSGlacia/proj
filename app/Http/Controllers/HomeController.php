@@ -7,6 +7,7 @@ use \Aws\S3\S3Client;
 use \Aws\S3\Exception\S3Exception;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Auth;
 use DB;
 use App;
@@ -50,6 +51,7 @@ class HomeController extends Controller
     }
 
     public function create_property(Request $request) {
+        sendEmail();
         $user = Auth::id();
         $address = $request->input('address');
         $beds = $request->input('beds');
@@ -64,9 +66,9 @@ class HomeController extends Controller
         $tags = $request->input('tags');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
-            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds) 
-            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) 
+            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars)
             && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
 
                 if(strpos($address, 'NSW') === false) {
@@ -106,7 +108,7 @@ class HomeController extends Controller
             } else {
                 return json_encode(['status' => 'bad_input']);
             }
-        }   
+        }
 
         return json_encode(['status' => 'error']);
     }
@@ -128,7 +130,7 @@ class HomeController extends Controller
                     // Upload data.
                     $path = $directory.$property_id.'/'.$key.'.'.$value->extension();
                     $insert = ['property_id' => $property_id,'property_image_name'=> $path];
-            
+
                     DB::table('property_images')
                         ->insert($insert);
 
@@ -160,7 +162,7 @@ class HomeController extends Controller
 
         if(isset($property_id) && !is_null($property_id) && !empty($property_id) && is_numeric($property_id) &&isset($remove_ids) && !is_null($remove_ids) && !empty($remove_ids)) {
             $ids = explode(',', $remove_ids);
-            
+
             $images = DB::table('property_images')
                         ->where('property_id', $property_id)
                         ->whereIn('image_id', $ids)
@@ -377,11 +379,11 @@ class HomeController extends Controller
                 if($reccurring != "false" && $reccurring != "true") {
                     return json_encode(['status' => 'error']);
                 }
-    
+
                 if($reccurring == "false") {
                     $reccurring = 0;
                 }
-    
+
                 if($reccurring == "true") {
                     $reccurring = 1;
                 }
@@ -399,9 +401,9 @@ class HomeController extends Controller
             }
 
             $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
-            
-            DB::table('property_listing')->insert($data);            
-            
+
+            DB::table('property_listing')->insert($data);
+
             return json_encode(['status' => 'success']);
         }
     }
@@ -578,7 +580,7 @@ class HomeController extends Controller
 
         $time = strtotime('-14 days', $booking->booking_startDate);
 
-        
+
         if ($curr <= $time) {
             $changed = DB::table('bookings AS b')
                         ->where([
@@ -587,10 +589,10 @@ class HomeController extends Controller
 
                         ])
                         ->update(['b.booking_inactive' => 1]);
-            
+
             if(!empty($changed)) {
                 return json_encode(['status' => 'success']);
-            } 
+            }
         } else if ($curr > $time) {
             return json_encode(['status' => 'date error']);
         }
@@ -601,9 +603,9 @@ class HomeController extends Controller
         $user_id = Auth::id();
 
         if(isset($id) && !empty($id) && !is_null($id)) {
-            
+
             $prop = DB::table('properties AS p')
-                        ->select('p.*', 
+                        ->select('p.*',
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_id) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
                         )
                         ->where([
@@ -636,7 +638,7 @@ class HomeController extends Controller
             'version' => 'latest',
             'region'  => 'ap-southeast-2'
             ]);
-            
+
             $prop_images = DB::table('property_images AS p')
                             ->select('p.*')
                             ->where([['p.property_id',$id]])
@@ -685,9 +687,9 @@ class HomeController extends Controller
         $tags = $request->input('tags');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
-            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds) 
-            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) 
+            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars)
             && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
 
                 if(strpos($address, 'NSW') === false) {
@@ -713,7 +715,7 @@ class HomeController extends Controller
                     ->update($update);
 
                 $tags = explode(',', $tags);
-                
+
                 DB::table('property_tags')
                         ->where([
                             ['pt_property_id', $prop_id],
@@ -788,9 +790,9 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
 
-            $insert[] = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];  
-        }        
-        DB::table('property_listing')->insert($insert);  
+            $insert[] = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
+        }
+        DB::table('property_listing')->insert($insert);
 
 
         return json_encode(['status' => 'success']);
@@ -905,10 +907,10 @@ class HomeController extends Controller
                         ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                         ->first();
 
-                return view('edit_tennant_review', 
+                return view('edit_tennant_review',
                     ['review' => $review]
                 );
-            
+
         }
 
         return view('bad_permissions');
@@ -990,6 +992,28 @@ class HomeController extends Controller
             }
             return json_encode(['status' => 'bad_input']);
         }
-        return json_encode(['status' => 'error']);        
+        return json_encode(['status' => 'error']);
+    }
+
+
+
+
+
+    /* Email stuff */
+    public function sendEmail(Request $request)
+    {
+        $userEmail = DB::table('users AS u')
+                    ->select('email')
+                    ->where([
+                        ['u.id', '=', $id],
+                    ])
+                    ->first();
+
+        Mail::send('emails.success', ['email' => $userEmail], function ($message)
+        {
+            $message->from('turtleaccommodation@gmail.com', 'Goodness Kayode');
+            $message->to($userEmail);
+        });
+
     }
 }
