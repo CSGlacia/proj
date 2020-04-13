@@ -34,7 +34,7 @@ class HomeController extends Controller
     }
 
     public function listing_page(Request $request) {
-
+        $this->sendEmail($request);
         $tags = DB::table('tags AS t')
                     ->get();
 
@@ -51,7 +51,6 @@ class HomeController extends Controller
     }
 
     public function create_property(Request $request) {
-        sendEmail();
         $user = Auth::id();
         $address = $request->input('address');
         $beds = $request->input('beds');
@@ -1005,14 +1004,14 @@ class HomeController extends Controller
         $userEmail = DB::table('users AS u')
                     ->select('email')
                     ->where([
-                        ['u.id', '=', $id],
+                        ['u.id', '=', Auth::id()],
                     ])
                     ->first();
 
         Mail::send('emails.success', ['email' => $userEmail], function ($message)
         {
             $message->from('turtleaccommodation@gmail.com', 'Goodness Kayode');
-            $message->to($userEmail);
+            $message->to($userEmail->'email');
         });
 
     }
