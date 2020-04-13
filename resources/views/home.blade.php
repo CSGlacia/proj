@@ -2,12 +2,6 @@
 
 <link href="{{asset('css/view_property.css')}}" rel="stylesheet">
 @section('content')
-    @if (session('status'))
-        <div class="alert alert-success" role="alert">
-            {{ session('status') }}
-        </div>
-    @endif
-
 <div class="hs-slider owl-carousel">
     <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg">
         <div class="container">
