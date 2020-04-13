@@ -97,11 +97,11 @@
                     <div class="row listing_dates" name="listing_dates">
                         <div class="col-sm-3 col-md-3 col-lg-3">
                             <span>Start Date:&nbsp;</span>
-                            <input class="form-control" name="start_date" type="date" value="{{$l->start_date}}" required>
+                            <input class="form-control" name="start_date" type="text" value="{{$l->start_date}}" required>
                         </div>
                         <div class="col-sm-3 col-md-3 col-lg-3">
                             <span>End Date:&nbsp;</span>
-                            <input class="form-control" name="end_date" type="date" value="{{$l->end_date}}" required>
+                            <input class="form-control" name="end_date" type="text" value="{{$l->end_date}}" required>
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
                             <div class="pretty p-default p-round p-smooth p-bigger">
@@ -116,11 +116,11 @@
                     <div class="row listing_dates" name="listing_dates">
                         <div class="col-sm-3 col-md-3 col-lg-3">
                             <span>Start Date:&nbsp;</span>
-                            <input class="form-control" name="start_date" type="date" value="{{$l->start_date}}" required>
+                            <input class="form-control" name="start_date" type="text" value="{{$l->start_date}}" required>
                         </div>
                         <div class="col-sm-3 col-md-3 col-lg-3">
                             <span>End Date:&nbsp;</span>
-                            <input class="form-control" name="end_date" type="date" value="{{$l->end_date}}" required>
+                            <input class="form-control" name="end_date" type="text" value="{{$l->end_date}}" required>
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
                             <div class="pretty p-default p-round p-smooth p-bigger">
@@ -142,11 +142,11 @@
                 <div class="row listing_dates" name="listing_dates">
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>Start Date:&nbsp;</span>
-                        <input class="form-control" name="start_date" type="date" required>
+                        <input class="form-control" name="start_date" type="text" required>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>End Date:&nbsp;</span>
-                        <input class="form-control" name="end_date" type="date" required>
+                        <input class="form-control" name="end_date" type="text" required>
                     </div>
                     <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
                         <div class="pretty p-default p-round p-smooth p-bigger">
@@ -245,7 +245,7 @@ Dropzone.autoDiscover = false;
 
 $(document).ready(function() {
     $('#tags').select2();
-
+    console.log(@json($listings));
     var count = 1;
     var image_count = {{$image_count}};
     var removed_images = [];
@@ -305,9 +305,54 @@ $(document).ready(function() {
         }
     });
 
+    $(document).on('change', '[name="start_date"]', function() {
+        var date = $(this).val();
+        date = date.split('/');
+        date = date[2]+'-'+date[1]+'-'+date[0];
+        date = new Date(date);
+        $(this).closest('.listing_dates').find('[name="end_date"]').datepicker("setStartDate",  date);
+    });
+
+    $(document).on('change', '[name="end_date"]', function() {
+        var date = $(this).val();
+        date = date.split('/');
+        date = date[2]+'-'+date[1]+'-'+date[0];
+        date = new Date(date);
+        $(this).closest('.listing_dates').find('[name="start_date"]').datepicker("setEndDate",  date);
+    });
+
+    $('[name="start_date"]').each(function() {
+        $(this).datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+    });
+
+    $('[name="end_date"]').each(function() {
+            $(this).datepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true
+            });
+    });   
+
     $(document).on('click', '#add_dates', function(e) {
         if(count < 5) {
-            $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-3 col-md-3 col-lg-3"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="date" required></div><div class="col-sm-3 col-md-3 col-lg-3"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="date" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');
+            $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-3 col-md-3 col-lg-3"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="text" required></div><div class="col-sm-3 col-md-3 col-lg-3"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="text" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');
+                
+                $('[name="start_date"]').each(function() {
+                    $(this).datepicker({
+                        format: 'dd/mm/yyyy',
+                        autoclose: true
+                    });
+                });
+
+                $('[name="end_date"]').each(function() {
+                    $(this).datepicker({
+                        format: 'dd/mm/yyyy',
+                        autoclose: true
+                    });
+                });
+
             count++;
         } else {
             Swal.fire("Warning", "You can only have 5 listing periods maximum", "warning");
@@ -398,18 +443,7 @@ $(document).ready(function() {
                             dataType: 'JSON',
                             data: 'property='+prop_id+'&price='+1+'&data='+encodeURIComponent(listing_dates_arr),
                             success: function(html) {
-                                if(html['status'] == "success") {
-                                    Swal.fire("Success", "Property Listings updated successfully");
-                                } else if(html['status'] == 'bad_input'){
-                                    Swal.fire("Warning", "Please check all fields are filled.", "warning");
-                                } else if(html['status'] == 'price_low') {
-                                    Swal.fire("Warning", "You must enter a price which is positive. You cannot charge negative amounts.", "warning");
-                                } else if(html['status'] == 'price_high'){
-                                    Swal.fire("Warning", "There's a price limit of $999999.99 . Please enter a lower price per night.", "warning");
-                                } else if(html['status'] == 'date_invalid'){
-                                    Swal.fire("Warning", "Your start date must be before your end date and today or after.", "warning")
-                                }
-                                else {
+                                if(html['status'] != "success") {
                                     Swal.fire("Error", "There was an error, please try again!", "error");
                                 }
                             },

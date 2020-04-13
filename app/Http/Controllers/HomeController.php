@@ -390,6 +390,12 @@ class HomeController extends Controller
                 $reccurring = 0;
             }
 
+            $start_date = explode('/', $start_date);
+            $start_date = $start_date[2].'-'.$start_date[1].'-'.$start_date[0];
+
+            $end_date = explode('/', $end_date);
+            $end_date = $end_date[2].'-'.$end_date[1].'-'.$end_date[0];
+
             $start = strtotime($start_date);
             $end = strtotime($end_date);
             $curr = time();
@@ -626,8 +632,8 @@ class HomeController extends Controller
                             ->get();
 
             foreach($listings as $l) {
-                $l->start_date = date('Y-m-d', $l->start_date);
-                $l->end_date = date('Y-m-d', $l->end_date);
+                $l->start_date = date('d/m/Y', $l->start_date);
+                $l->end_date = date('d/m/Y', $l->end_date);
             }
 
             $bucket = 'turtle-database';
@@ -774,8 +780,14 @@ class HomeController extends Controller
         $insert = [];
 
         foreach($listings as $l) {
-            $start = strtotime($l[0]);
-            $end = strtotime($l[1]);
+            $start = explode('/', $l[0]);
+            $start = $start[2].'-'.$start[1].'-'.$start[0];
+
+            $end = explode('/', $l[1]);
+            $end = $end[2].'-'.$end[1].'-'.$end[0];
+
+            $start = strtotime($start);
+            $end = strtotime($end);
             $curr = time();
 
             if($l[2] == "false") {

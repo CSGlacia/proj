@@ -78,11 +78,11 @@
                 <div class="row listing_dates" name="listing_dates">
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>Start Date:&nbsp;</span>
-                        <input class="form-control" name="start_date" type="date" required>
+                        <input class="form-control" id="first_start_date" name="start_date" type="text" required>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>End Date:&nbsp;</span>
-                        <input class="form-control" name="end_date" type="date" required>
+                        <input class="form-control" id="first_end_date" name="end_date" type="text" required>
                     </div>
                     <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
                         <div class="pretty p-default p-round p-smooth p-bigger">
@@ -179,28 +179,34 @@ function initMap() {
 Dropzone.autoDiscover = false;
 
 $(document).ready(function() {
-/*
-    $('#tags').select2({
-        ajax: {
-            url: "/get_property_tags",
-            dataType: 'json',
-            delay: 250,
-            type: 'post',
-            data: function (params) {
-              return {
-                term: params.term,
-                page: params.page
-              };
-            },
-            processResults: function (data) {
-              return {
-                results: data
-              };
-            }
-        },
-        minimumInputLength: 1,
+
+    $('#first_end_date').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true
     });
-*/
+
+
+    $('#first_start_date').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+
+    });
+
+    $(document).on('change', '[name="start_date"]', function() {
+        var date = $(this).val();
+        date = date.split('/');
+        date = date[2]+'-'+date[1]+'-'+date[0];
+        date = new Date(date);
+        $(this).closest('.listing_dates').find('[name="end_date"]').datepicker("setStartDate",  date);
+    });
+
+    $(document).on('change', '[name="end_date"]', function() {
+        var date = $(this).val();
+        date = date.split('/');
+        date = date[2]+'-'+date[1]+'-'+date[0];
+        date = new Date(date);
+        $(this).closest('.listing_dates').find('[name="start_date"]').datepicker("setEndDate",  date);
+    });
 
     $('#tags').select2();
 
@@ -223,7 +229,23 @@ $(document).ready(function() {
 
     $(document).on('click', '#add_dates', function(e) {
         if(count < 5) {
-            $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-3 col-md-3 col-lg-3"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="date" required></div><div class="col-sm-3 col-md-3 col-lg-3"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="date" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');
+            var elem = $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-3 col-md-3 col-lg-3"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="text" required></div><div class="col-sm-3 col-md-3 col-lg-3"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="text" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');
+
+
+            $('[name="start_date"]').each(function() {
+                $(this).datepicker({
+                    format: 'dd/mm/yyyy',
+                    autoclose: true
+                });
+            });
+
+            $('[name="end_date"]').each(function() {
+                $(this).datepicker({
+                    format: 'dd/mm/yyyy',
+                    autoclose: true
+                });
+            });
+
             count++;
         } else {
             Swal.fire("Warning", "You can only have 5 listing periods maximum", "warning");
