@@ -1011,7 +1011,7 @@ class HomeController extends Controller
                     ])
                     ->first();
 
-        Mail::send('emails.booking_application', ['email' => $userEmail->email, 'prop_name' => $request->input('l_name'), 'startDate' => $startDate, 'endDate' => $endDate], function ($message) use ($userEmail)
+        Mail::send('emails.booking_application', [['email' => $userEmail->email], ['prop_name' => $request->input('l_name')], ['startDate' => $startDate], ['endDate' => $endDate]], function ($message) use ($userEmail)
         {
             $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($userEmail->email);
