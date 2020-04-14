@@ -11,7 +11,8 @@
     <br>
     Your booking details are below:
     <br>
-    Property: <span>{{ $prop_name }}</span><br>
+    <br>
+    Property: <span>{{ $propName }}</span><br>
     <br>
     Start Date: <span>{{ $startDate }}</span><br>
     <br>

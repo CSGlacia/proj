@@ -236,7 +236,7 @@ class HomeController extends Controller
             $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
 
             DB::table('bookings')->insert($insert);
-            $this->sendBookingApplicationEmail($request, $s, $e);
+            $this->sendBookingApplicationEmail($propertyID, $s, $e);
             return json_encode(['status' => 'success']);
         }
 
@@ -1002,15 +1002,21 @@ class HomeController extends Controller
 
 
     /* Email stuff when logged in*/
-    public static function sendBookingApplicationEmail(Request $request, $startDate, $endDate)
+    public static function sendBookingApplicationEmail($propertyID, $startDate, $endDate)
     {
         $userEmail = DB::table('users AS u')
                     ->select('email')
-                    ->where([
-                        ['u.id', '=', Auth::id()],
-                    ])
+                    ->where([ ['u.id', '=', Auth::id()], ])
                     ->first();
-        $data = array('email' => $userEmail->email, 'prop_name' => $request->input('l_name'), 'startDate' => $startDate, 'endDate' => $endDate);
+
+        $propName = DB::table('properties AS p')
+                    ->select('property_title')
+                    ->where([ ['p.property_id', '=', $propertyID], ])
+                    ->first();
+
+        $startDateStr = date("Y-m-d", $startDate);
+        $endDateStr = date("Y-m-d", $endDate);
+        $data = array('email' => $userEmail->email, 'propName' => $propName->property_title, 'startDate' => $startDateStr, 'endDate' => $endDateStr);
         Mail::send('emails.booking_application', $data, function ($message) use ($userEmail)
         {
             $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
