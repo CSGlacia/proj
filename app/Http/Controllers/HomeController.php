@@ -398,7 +398,7 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
 
-            checkValidDates($start_date, $end_date, $property);
+            $this->checkValidDates($start, $end, $property);
             $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
 
             DB::table('property_listing')->insert($data);
