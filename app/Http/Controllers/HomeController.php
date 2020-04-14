@@ -1000,7 +1000,7 @@ class HomeController extends Controller
 
 
 
-    /* Email stuff */
+    /* Email stuff when logged in*/
     public static function sendEmail(Request $request)
     {
         $userEmail = DB::table('users AS u')
@@ -1018,8 +1018,17 @@ class HomeController extends Controller
 
     }
     /* Comparing 2 start and end dates to check if they overlap */
-    public function checkValidDates($startDate1, $endDate1, $startDate2, $endDate2)
+    public function checkValidDates($startDate1, $endDate1, $prop_id)
     {
+        $userEmail = DB::table('users AS u')
+                    ->select('email')
+                    ->where([
+                        ['u.id', '=', Auth::id()],
+                    ])
+                    ->first();
+
+
+
         if ($startDate1 < $startDate2) {
             if ($startDate2 > $endDate1) {
                 return json_encode(['status' => 'success']);

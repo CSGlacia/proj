@@ -8,7 +8,7 @@ use \Aws\S3\Exception\S3Exception;
 
 use Illuminate\Http\Request;
 use Auth;
-use DB;
+use Illuminate\Support\Facades\Mail;
 
 class GeneralController extends Controller
 {
@@ -351,5 +351,23 @@ class GeneralController extends Controller
     public function guest_home()
     {
         return view('guest_home');
+    }
+
+    /* Email stuff when not logged in*/
+    public static function sendRegisterEmail($email)
+    {
+        /*$userEmail = DB::table('users AS u')
+                    ->select('email')
+                    ->where([
+                        ['u.id', '=', Auth::id()],
+                    ])
+                    ->first();*/
+
+        Mail::send('emails.success', ['email'=>$email], function ($message) use ($email)
+        {
+            $message->from('turtleaccommodation@gmail.com', 'Goodness Kayode');
+            $message->to($email);
+        });
+
     }
 }
