@@ -13,9 +13,9 @@
     <br>
     Property: <span>{{ $prop_name }}</span><br>
     <br>
-    Start Date: <span>{{ startDate }}</span><br>
+    Start Date: <span>{{ $startDate }}</span><br>
     <br>
-    End Date: <span>{{ endDate }}</span><br>
+    End Date: <span>{{ $endDate }}</span><br>
 </p>
 <p>
     Enjoy your stay,

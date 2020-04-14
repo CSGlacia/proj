@@ -1010,8 +1010,8 @@ class HomeController extends Controller
                         ['u.id', '=', Auth::id()],
                     ])
                     ->first();
-
-        Mail::send('emails.booking_application', [['email' => $userEmail->email], ['prop_name' => $request->input('l_name')], ['startDate' => $startDate], ['endDate' => $endDate]], function ($message) use ($userEmail)
+        $data = array('email' => $userEmail->email, 'prop_name' => $request->input('l_name'), 'startDate' => $startDate, 'endDate' => $endDate);
+        Mail::send('emails.booking_application', $data, function ($message) use ($userEmail)
         {
             $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($userEmail->email);
