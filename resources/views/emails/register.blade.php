@@ -5,16 +5,16 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<p>Hello,</p>
+<p>Hi there!</p>
 <p>
-    Thanks for signing up for our newsletter.
-    I am sure this is your email <span>{{ $email }}</span><br>
-    We love you!!!
+    Thanks for creating an account at TurtleAccommodation.
+    <br>
+    Your registered email is: <span>{{ $email }}</span><br>
 </p>
 <p>
-    Goodness Kayode | Pusher of Codes
+    Enjoy your stay,
     <br>
-    CodebagNG
+    TurtleTeam
 </p>
 </body>
 </html>

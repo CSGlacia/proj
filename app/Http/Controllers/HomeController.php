@@ -398,7 +398,7 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
             if ($this->checkValidDates($start, $end, $property) == false){
-                return json_encode(['status' => 'date_invalid']);
+                return json_encode(['status' => 'overlapping_date']);
             }
 
             $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
@@ -1033,7 +1033,7 @@ class HomeController extends Controller
                     ])
                     ->get();
         foreach ($prop_listsings as $p) {
-            if ($p->reccuring == 1){
+            if ($p->reccurring == 1){
                 $startDateNoYear2 = $p->start_date % 31622400;
                 $endDateNoYear2 = $p->end_date % 31622400;
                 if ($startDateNoYear1 == $startDateNoYear2){
