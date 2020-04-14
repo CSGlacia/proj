@@ -398,6 +398,7 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
 
+            checkValidDates($start_date, $end_date, $property);
             $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
 
             DB::table('property_listing')->insert($data);
@@ -1020,24 +1021,47 @@ class HomeController extends Controller
     /* Comparing 2 start and end dates to check if they overlap */
     public function checkValidDates($startDate1, $endDate1, $prop_id)
     {
-        $userEmail = DB::table('users AS u')
-                    ->select('email')
+        $startDateNoYear1 = $startDate1 % 31622400;
+        $endDateNoYear1 = $endDate1 % 31622400;
+        $prop_listsings = DB::table('propert_listings AS p')
+                    ->select('start_date', 'end_date', 'reccurring')
                     ->where([
-                        ['u.id', '=', Auth::id()],
+                        ['p.propertyID', '=', $prop_id],
+                        ['p.inactive', '=', '0']
                     ])
-                    ->first();
-
-
-
-        if ($startDate1 < $startDate2) {
-            if ($startDate2 > $endDate1) {
-                return json_encode(['status' => 'success']);
-            }
-        } else {
-            if ($startDate1 > $endDate2){
-                return json_encode(['status' => 'success']);
+                    ->get();
+        foreach ($prop_listsings as $p) {
+            if ($p->reccuring == 1){
+                $startDateNoYear2 = $p->start_date % 31622400;
+                $endDateNoYear2 = $p->end_date % 31622400;
+                if ($startDateNoYear1 == $startDateNoYear2){
+                    return json_encode(['status' => 'error']);
+                } else if ($startDateNoYear1 < $startDateNoYear2) {
+                    if ($startDateNoYear2 <= $endDateNoYear1) {
+                        return json_encode(['status' => 'error']);
+                    }
+                } else {
+                    if ($startDateNoYear1 <= $endDateNoYear2){
+                        return json_encode(['status' => 'error']);
+                    }
+                }
+            } else{
+                $startDate2 = $p->start_date;
+                $endDate2 = $p->end_date;
+                if ($startDate1 == $startDate2){
+                    return json_encode(['status' => 'error']);
+                } else if ($startDate1 < $startDate2) {
+                    if ($startDate2 <= $endDate1) {
+                        return json_encode(['status' => 'error']);
+                    }
+                } else {
+                    if ($startDate1 <= $endDate2){
+                        return json_encode(['status' => 'error']);
+                    }
+                }
             }
         }
-        return json_encode(['status' => 'error']);
+        return json_encode(['status' => 'success']);
+
     }
 }

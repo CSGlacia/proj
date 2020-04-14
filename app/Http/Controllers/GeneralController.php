@@ -8,6 +8,7 @@ use \Aws\S3\Exception\S3Exception;
 
 use Illuminate\Http\Request;
 use Auth;
+use DB;
 use Illuminate\Support\Facades\Mail;
 
 class GeneralController extends Controller
