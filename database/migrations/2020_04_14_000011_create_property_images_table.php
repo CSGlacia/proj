@@ -24,7 +24,7 @@ class CreatePropertyImagesTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('image_id');
             $table->string('property_image_name', 45);
-            $table->integer('property_id');
+            $table->integer('property_id')->unsigned();
 
 
             $table->foreign('property_id')

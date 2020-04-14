@@ -25,7 +25,7 @@ class CreatePropertyListingTable extends Migration
             $table->increments('property_listing_id');
             $table->integer('start_date');
             $table->integer('end_date');
-            $table->integer('property_id');
+            $table->integer('property_id')->unsigned();
             $table->decimal('price', 6, 2);
             $table->tinyInteger('reccurring')->default('0');
             $table->tinyInteger('inactive')->default('0');
