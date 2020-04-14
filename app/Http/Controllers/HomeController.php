@@ -1025,10 +1025,10 @@ class HomeController extends Controller
     {
         $startDateNoYear1 = $startDate1 % 31622400;
         $endDateNoYear1 = $endDate1 % 31622400;
-        $prop_listsings = DB::table('propert_listings AS p')
+        $prop_listsings = DB::table('property_listing AS p')
                     ->select('start_date', 'end_date', 'reccurring')
                     ->where([
-                        ['p.propertyID', '=', $prop_id],
+                        ['p.property_id', '=', $prop_id],
                         ['p.inactive', '=', '0']
                     ])
                     ->get();
