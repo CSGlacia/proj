@@ -397,8 +397,10 @@ class HomeController extends Controller
             if ($start >= $end || $start <= $curr) {
                 return json_encode(['status' => 'date_invalid']);
             }
+            if ($this->checkValidDates($start, $end, $property) == false){
+                return json_encode(['status' => 'date_invalid']);
+            }
 
-            $this->checkValidDates($start, $end, $property);
             $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
 
             DB::table('property_listing')->insert($data);
@@ -1035,33 +1037,33 @@ class HomeController extends Controller
                 $startDateNoYear2 = $p->start_date % 31622400;
                 $endDateNoYear2 = $p->end_date % 31622400;
                 if ($startDateNoYear1 == $startDateNoYear2){
-                    return json_encode(['status' => 'error']);
+                    return false;
                 } else if ($startDateNoYear1 < $startDateNoYear2) {
                     if ($startDateNoYear2 <= $endDateNoYear1) {
-                        return json_encode(['status' => 'error']);
+                        return false;
                     }
                 } else {
                     if ($startDateNoYear1 <= $endDateNoYear2){
-                        return json_encode(['status' => 'error']);
+                        return false;
                     }
                 }
             } else{
                 $startDate2 = $p->start_date;
                 $endDate2 = $p->end_date;
                 if ($startDate1 == $startDate2){
-                    return json_encode(['status' => 'error']);
+                    return false;
                 } else if ($startDate1 < $startDate2) {
                     if ($startDate2 <= $endDate1) {
-                        return json_encode(['status' => 'error']);
+                        return false;
                     }
                 } else {
                     if ($startDate1 <= $endDate2){
-                        return json_encode(['status' => 'error']);
+                        return false;
                     }
                 }
             }
         }
-        return json_encode(['status' => 'success']);
+        return true;
 
     }
 }
