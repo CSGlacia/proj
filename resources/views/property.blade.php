@@ -205,7 +205,9 @@ function initMap() {
 
 $(document).ready(function() {
 
-    $('#tags').select2();
+    $('#tags').select2({
+        theme: "bootstrap"
+    });
 
     var startDate = $('#startDate').datepicker({
         format: 'dd/mm/yyyy',

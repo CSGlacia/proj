@@ -85,7 +85,12 @@ class HomeController extends Controller
                     $always_list = 0;
                 }
 
-                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list];
+                $suburb = explode(',' , $address);
+                $suburb = $suburb[1];
+                $suburb = explode(' ', $suburb);
+                $suburb = $suburb[1];
+
+                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list, 'property_suburb' => $suburb];
 
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
@@ -712,7 +717,12 @@ class HomeController extends Controller
                     $always_list = 0;
                 }
 
-                $update = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list];
+                $suburb = explode(',' , $address);
+                $suburb = $suburb[1];
+                $suburb = explode(' ', $suburb);
+                $suburb = $suburb[1];
+
+                $update = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list, 'property_suburb' => $suburb];
 
                 DB::table('properties')
                     ->where('property_id', $prop_id)

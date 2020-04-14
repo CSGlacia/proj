@@ -244,7 +244,9 @@ function initMap() {
 Dropzone.autoDiscover = false;
 
 $(document).ready(function() {
-    $('#tags').select2();
+    $('#tags').select2({
+        theme: "bootstrap"
+    });
     console.log(@json($listings));
     var count = 1;
     var image_count = {{$image_count}};
