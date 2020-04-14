@@ -536,6 +536,12 @@ class GeneralController extends Controller
             </div>';
         }
 
-        return json_encode(['status' => 'success', 'data' => $ret_str]);
+        $status = 'success';
+
+        if($ret_str == '') {
+            $status = "no_results";
+        }
+
+        return json_encode(['status' => $status, 'data' => $ret_str]);
     }
 }

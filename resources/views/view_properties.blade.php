@@ -300,9 +300,14 @@ $(document).ready(function() {
             dataType: 'JSON',
             data: 'rating='+rating+'&name='+name+'&address='+address+'&suburbs='+suburbs+'&tags='+tags+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&start_date='+start_date+'&end_date='+end_date+'&include_unrated='+include_unrated,
             success: function(html) {
-                data = html['data'];
-                $('#prop_div').empty();
-                $('#prop_div').append(data);
+                if(html['status'] == 'success') {
+                    data = html['data'];
+                    $('#prop_div').empty();
+                    $('#prop_div').append(data);
+                } else {
+                    swal('No Results', 'No properties matched your search criteria', 'warning');
+                }
+
             },
             error: function ( xhr, errorType, exception ) {
                 var errorMessage = exception || xhr.statusText;
