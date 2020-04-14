@@ -359,7 +359,7 @@ class GeneralController extends Controller
     {
         Mail::send('emails.register', ['email'=>$email], function ($message) use ($email)
         {
-            $message->from('turtleaccommodation@gmail.com', 'Goodness Kayode');
+            $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($email);
         });
 

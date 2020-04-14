@@ -236,7 +236,7 @@ class HomeController extends Controller
             $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
 
             DB::table('bookings')->insert($insert);
-
+            $this->sendBookingApplicationEmail($request, $s, $e);
             return json_encode(['status' => 'success']);
         }
 
@@ -1001,10 +1001,8 @@ class HomeController extends Controller
 
 
 
-
-
     /* Email stuff when logged in*/
-    public static function sendEmail(Request $request)
+    public static function sendBookingApplicationEmail(Request $request, $startDate, $endDate)
     {
         $userEmail = DB::table('users AS u')
                     ->select('email')
@@ -1013,9 +1011,9 @@ class HomeController extends Controller
                     ])
                     ->first();
 
-        Mail::send('emails.success', ['email' => $userEmail->email], function ($message) use ($userEmail)
+        Mail::send('emails.booking_application', ['email' => $userEmail->email, 'prop_name' => $request->input('l_name'), 'startDate' => $startDate, 'endDate' => $endDate], function ($message) use ($userEmail)
         {
-            $message->from('turtleaccommodation@gmail.com', 'Goodness Kayode');
+            $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($userEmail->email);
         });
 
