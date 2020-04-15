@@ -20,11 +20,13 @@ class AdminController extends Controller{
     }
 
     public function all_bookings(Request $request){
-
+        $results = DB::table('bookings AS c')
+                    ->select('c.*')
+                    ->get();
     }
 
     public function all_reviews(Request $request){
-        
+
     }
 }
 ?>
