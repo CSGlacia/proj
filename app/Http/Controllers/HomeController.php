@@ -128,7 +128,7 @@ class HomeController extends Controller
         ]);
 
         if(isset($property_id) && !is_null($property_id) && !empty($property_id) && is_numeric($property_id) && isset($images) && !empty($images) && !is_null($images)) {
-            foreach ($images as $key => $value) {
+            foreach ($images['file'] as $key => $value) {
                 try {
                     // Upload data.
                     $path = $directory.$property_id.'/'.$key.'.'.$value->extension();
