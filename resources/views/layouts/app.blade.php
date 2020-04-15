@@ -28,6 +28,7 @@
     <!-- Select2 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/select2.full.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css">
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
@@ -61,7 +62,7 @@
     }
     .item-card {
         background-color: #ffffff;
-        width:75%;
+        width:100%;
     }
     .cursor-pointer:hover{
         cursor: pointer;
@@ -108,6 +109,32 @@
       text-align: center;
     }
     /* End overlay animations
+
+
+    /* Style the input container */
+    .input-container {
+      display: flex;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    /* Style the input fields */
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      outline: none;
+    }
+
+    .input-icon {
+      padding: 10px;
+      min-width: 50px;
+      text-align: center;
+      background-color: #c6c6c6;
+      border-top-left-radius:5px;
+      border-bottom-left-radius:5px;
+      margin-right:-5px;
+    }
+
 </style>
 @yield('style')
 

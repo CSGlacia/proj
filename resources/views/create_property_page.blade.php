@@ -208,7 +208,9 @@ $(document).ready(function() {
         $(this).closest('.listing_dates').find('[name="start_date"]').datepicker("setEndDate",  date);
     });
 
-    $('#tags').select2();
+    $('#tags').select2({
+        theme: "bootstrap"
+    });
 
     var count = 1;
 

@@ -33,6 +33,9 @@ Route::post('/update_property', 'HomeController@update_property');
 Route::post('/update_property_listing', 'HomeController@update_property_listing');
 Route::post('/remove_property_images/{property_id?}', 'HomeController@remove_property_images')->where('id', '[0-9]+');
 
+//property search
+Route::post('/property_search', 'GeneralController@property_search');
+
 
 //booking functions
 Route::post('/create_booking', 'HomeController@create_booking');
@@ -70,3 +73,6 @@ Route::post('delete_property', 'HomeController@delete_property');
 
 //Admin functionality test
 Route::get('become_admin','HomeController@admin_test');
+
+// email
+Route::post('apply-two', ['uses'=>'NewsLetterController@autoMail', 'as'=>'apply-two']);

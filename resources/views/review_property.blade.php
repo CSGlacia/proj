@@ -135,7 +135,7 @@ $(document).ready(function() {
         star_score = num;
     });
 
-    var star_score = 0
+    var star_score = 1;
 
     $(document).on('click', '#submit_review', function(e){
         var score = star_score
