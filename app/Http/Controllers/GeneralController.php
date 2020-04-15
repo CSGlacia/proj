@@ -9,6 +9,7 @@ use \Aws\S3\Exception\S3Exception;
 use Illuminate\Http\Request;
 use Auth;
 use DB;
+use Illuminate\Support\Facades\Mail;
 
 class GeneralController extends Controller
 {
@@ -543,5 +544,16 @@ class GeneralController extends Controller
         }
 
         return json_encode(['status' => $status, 'data' => $ret_str]);
+    }
+
+    /* Email stuff when not logged in*/
+    public static function sendRegisterEmail($email)
+    {
+        Mail::send('emails.register', ['email'=>$email], function ($message) use ($email)
+        {
+            $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
+            $message->to($email);
+        });
+
     }
 }

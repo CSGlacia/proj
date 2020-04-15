@@ -7,6 +7,7 @@ use \Aws\S3\S3Client;
 use \Aws\S3\Exception\S3Exception;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Auth;
 use DB;
 use App;
@@ -33,7 +34,6 @@ class HomeController extends Controller
     }
 
     public function listing_page(Request $request) {
-
         $tags = DB::table('tags AS t')
                     ->get();
 
@@ -64,9 +64,9 @@ class HomeController extends Controller
         $tags = $request->input('tags');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
-            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds) 
-            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) 
+            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars)
             && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
 
                 if(strpos($address, 'NSW') === false) {
@@ -111,7 +111,7 @@ class HomeController extends Controller
             } else {
                 return json_encode(['status' => 'bad_input']);
             }
-        }   
+        }
 
         return json_encode(['status' => 'error']);
     }
@@ -133,7 +133,7 @@ class HomeController extends Controller
                     // Upload data.
                     $path = $directory.$property_id.'/'.$key.'.'.$value->extension();
                     $insert = ['property_id' => $property_id,'property_image_name'=> $path];
-            
+
                     DB::table('property_images')
                         ->insert($insert);
 
@@ -165,7 +165,7 @@ class HomeController extends Controller
 
         if(isset($property_id) && !is_null($property_id) && !empty($property_id) && is_numeric($property_id) &&isset($remove_ids) && !is_null($remove_ids) && !empty($remove_ids)) {
             $ids = explode(',', $remove_ids);
-            
+
             $images = DB::table('property_images')
                         ->where('property_id', $property_id)
                         ->whereIn('image_id', $ids)
@@ -241,7 +241,7 @@ class HomeController extends Controller
             $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
 
             DB::table('bookings')->insert($insert);
-
+            $this->sendBookingApplicationEmail($propertyID, $s, $e);
             return json_encode(['status' => 'success']);
         }
 
@@ -382,11 +382,11 @@ class HomeController extends Controller
                 if($reccurring != "false" && $reccurring != "true") {
                     return json_encode(['status' => 'error']);
                 }
-    
+
                 if($reccurring == "false") {
                     $reccurring = 0;
                 }
-    
+
                 if($reccurring == "true") {
                     $reccurring = 1;
                 }
@@ -408,11 +408,14 @@ class HomeController extends Controller
             if ($start >= $end || $start <= $curr) {
                 return json_encode(['status' => 'date_invalid']);
             }
+            if ($this->checkValidDates($start, $end, $property) == false){
+                return json_encode(['status' => 'overlapping_date']);
+            }
 
             $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
-            
-            DB::table('property_listing')->insert($data);            
-            
+
+            DB::table('property_listing')->insert($data);
+
             return json_encode(['status' => 'success']);
         }
     }
@@ -589,7 +592,7 @@ class HomeController extends Controller
 
         $time = strtotime('-14 days', $booking->booking_startDate);
 
-        
+
         if ($curr <= $time) {
             $changed = DB::table('bookings AS b')
                         ->where([
@@ -598,10 +601,10 @@ class HomeController extends Controller
 
                         ])
                         ->update(['b.booking_inactive' => 1]);
-            
+
             if(!empty($changed)) {
                 return json_encode(['status' => 'success']);
-            } 
+            }
         } else if ($curr > $time) {
             return json_encode(['status' => 'date error']);
         }
@@ -612,9 +615,9 @@ class HomeController extends Controller
         $user_id = Auth::id();
 
         if(isset($id) && !empty($id) && !is_null($id)) {
-            
+
             $prop = DB::table('properties AS p')
-                        ->select('p.*', 
+                        ->select('p.*',
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_id) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
                         )
                         ->where([
@@ -647,7 +650,7 @@ class HomeController extends Controller
             'version' => 'latest',
             'region'  => 'ap-southeast-2'
             ]);
-            
+
             $prop_images = DB::table('property_images AS p')
                             ->select('p.*')
                             ->where([['p.property_id',$id]])
@@ -696,9 +699,9 @@ class HomeController extends Controller
         $tags = $request->input('tags');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat) 
-            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds) 
-            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) 
+            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars)
             && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
 
                 if(strpos($address, 'NSW') === false) {
@@ -729,7 +732,7 @@ class HomeController extends Controller
                     ->update($update);
 
                 $tags = explode(',', $tags);
-                
+
                 DB::table('property_tags')
                         ->where([
                             ['pt_property_id', $prop_id],
@@ -810,9 +813,9 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
 
-            $insert[] = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];  
-        }        
-        DB::table('property_listing')->insert($insert);  
+            $insert[] = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
+        }
+        DB::table('property_listing')->insert($insert);
 
 
         return json_encode(['status' => 'success']);
@@ -930,10 +933,10 @@ class HomeController extends Controller
                         ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                         ->first();
 
-                return view('edit_tennant_review', 
+                return view('edit_tennant_review',
                     ['review' => $review]
                 );
-            
+
         }
 
         return view('bad_permissions');
@@ -1015,6 +1018,78 @@ class HomeController extends Controller
             }
             return json_encode(['status' => 'bad_input']);
         }
-        return json_encode(['status' => 'error']);        
+        return json_encode(['status' => 'error']);
+    }
+
+
+
+    /* Email stuff when logged in*/
+    public static function sendBookingApplicationEmail($propertyID, $startDate, $endDate)
+    {
+        $userEmail = DB::table('users AS u')
+                    ->select('email')
+                    ->where([ ['u.id', '=', Auth::id()], ])
+                    ->first();
+
+        $propName = DB::table('properties AS p')
+                    ->select('property_title')
+                    ->where([ ['p.property_id', '=', $propertyID], ])
+                    ->first();
+
+        $startDateStr = date("Y-m-d", $startDate);
+        $endDateStr = date("Y-m-d", $endDate);
+        $data = array('email' => $userEmail->email, 'propName' => $propName->property_title, 'startDate' => $startDateStr, 'endDate' => $endDateStr);
+        Mail::send('emails.booking_application', $data, function ($message) use ($userEmail)
+        {
+            $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
+            $message->to($userEmail->email);
+        });
+
+    }
+    /* Comparing 2 start and end dates to check if they overlap */
+    public function checkValidDates($startDate1, $endDate1, $prop_id)
+    {
+        $startDateNoYear1 = $startDate1 % 31622400;
+        $endDateNoYear1 = $endDate1 % 31622400;
+        $prop_listsings = DB::table('property_listing AS p')
+                    ->select('start_date', 'end_date', 'reccurring')
+                    ->where([
+                        ['p.property_id', '=', $prop_id],
+                        ['p.inactive', '=', '0']
+                    ])
+                    ->get();
+        foreach ($prop_listsings as $p) {
+            if ($p->reccurring == 1){
+                $startDateNoYear2 = $p->start_date % 31622400;
+                $endDateNoYear2 = $p->end_date % 31622400;
+                if ($startDateNoYear1 == $startDateNoYear2){
+                    return false;
+                } else if ($startDateNoYear1 < $startDateNoYear2) {
+                    if ($startDateNoYear2 <= $endDateNoYear1) {
+                        return false;
+                    }
+                } else {
+                    if ($startDateNoYear1 <= $endDateNoYear2){
+                        return false;
+                    }
+                }
+            } else{
+                $startDate2 = $p->start_date;
+                $endDate2 = $p->end_date;
+                if ($startDate1 == $startDate2){
+                    return false;
+                } else if ($startDate1 < $startDate2) {
+                    if ($startDate2 <= $endDate1) {
+                        return false;
+                    }
+                } else {
+                    if ($startDate1 <= $endDate2){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+
     }
 }
