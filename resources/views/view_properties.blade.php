@@ -116,6 +116,11 @@
                 </div>
             </div>
         </div>
+        @can('delete properties')
+            </div>
+                <label id="delete_property" class="btn btn-primary">✖ Delete Property</label>
+            <div>
+        @endcan
       @endforeach
     </div>
 </div>
@@ -277,6 +282,39 @@ $(document).ready(function() {
 
     $(document).on('click', '[name="view_property"]', function() {
         window.location.href = '/view_property/'+$(this).data('id');
+    });
+    $(document).on('click', '#delete_property', function(e) {
+        var logged = $('#user_logged').data('logged');
+        if(logged == 1) {
+            e.preventDefault();
+            var propertyID = {{$p->property_id}};
+
+            $.ajax({
+                url: '/delete_property',
+                method: 'POST',
+                dataType: 'JSON',
+                data: 'propertyID='+propertyID,
+                success: function(html) {
+                    if(html['status'] == "success") {
+                        swal({
+                            title:"Success!",
+                            text: "You have successfully deleted your property.",
+                            type:"success",
+                        }).then(function(){
+                            window.location.href = "/";
+                        });
+                    } else {
+                        Swal.fire("Error", "There was an error, please try again!", "error");
+                    }
+                },
+                error: function ( xhr, errorType, exception ) {
+                    var errorMessage = exception || xhr.statusText;
+                    Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+                }
+            });
+        } else {
+            Swal.fire("Error", "An error occurred!", "error");
+        }
     });
 
     $(document).on('click', '#search_props', function(e) {
