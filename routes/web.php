@@ -67,3 +67,6 @@ Route::post('/get_property_tags', 'GeneralController@get_property_tags');
 Route::post('delete_property', 'HomeController@delete_property');
 //  Where should this go?
 // Route::post('delete_listing', 'HomeContoller@delte_listing');
+
+//Admin functionality test
+Route::get('become_admin','HomeController@admin_test');
