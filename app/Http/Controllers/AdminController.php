@@ -22,8 +22,8 @@ class AdminController extends Controller{
     public function all_bookings(Request $request){
         $bookings = DB::table('bookings AS c')
                     ->select('c.*')
-                    ->where([['b.booking_inactive', 0],
-                            ['b.booking_endDate', '>', time()])
+                    ->where([['c.booking_inactive', 0],
+                            ['c.booking_endDate', '>', time()]])
                     ->get();
         $results = [];
         foreach($bookings as $booking){
@@ -31,17 +31,17 @@ class AdminController extends Controller{
             $username = DB::table('users as u')
                             ->select('u.name')
                             ->where('u.id', $booking->booking_userID)
-                            ->get();
+                            ->first();
             array_push($result,$username->name);
 
             $title = DB::table('properties as p')
-                            ->select('p.title')
+                            ->select('p.property_title')
                             ->where('p.property_id', $booking->booking_propertyID)
-                            ->get();
-            array_push($result,$title->title);
-            array_push($result,$booking->booking_id);
-            array_push($result,$booking->booking_startDate);
-            array_push($result,$booking->booking_endDate);
+                            ->first();
+            $result['property_title'] = $title->property_title;
+            $result['booking_id'] = $booking->booking_id;
+            $result['booking_startDate'] = $booking->booking_startDate;
+            $result['booking_endDate'] = $booking->booking_endDate;
 
             array_push($results,$result);
         }
