@@ -23,7 +23,8 @@ class GeneralController extends Controller
                         ->select('p.*',
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`'),
-                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`'),
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(pi.property_image_name) SEPARATOR ",") FROM property_images AS pi WHERE pi.property_id = p.property_id) AS `property_image_name`')
                         )
                         ->where([
                             ['property_inactive', '=', '0']
@@ -38,6 +39,7 @@ class GeneralController extends Controller
                 $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
             }
             $r->tags = explode(',', $r->tags);
+            $r->property_image_name = explode(',', $r->property_image_name);
         }
 
         $suburbs = DB::table('properties AS p')
@@ -382,7 +384,7 @@ class GeneralController extends Controller
                 }
             }
             $bad_ratings = array_unique($bad_ratings);
-        }        
+        }
 
         if(isset($name) && !empty($name) && !is_null($name)) {
             $props->where('p.property_title', 'LIKE', '%'.$name.'%');
@@ -519,12 +521,12 @@ class GeneralController extends Controller
           foreach($r->tags as $t) {
              $ret_str .= '<span class="badge badge-secondary">'.$t.'</span>';
           }
-                        
+
              $ret_str .= '</div>
                       <div><i class="fas fa-star';
                       if($r->scores > 2.5 && $r->scores != 'No Reviews Yet') {
                             $ret_str .= 'gold-star';
-                        } 
+                        }
 
                         $ret_str .= '"></i>&nbsp;'.$r->scores;
 

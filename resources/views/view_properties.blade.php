@@ -19,7 +19,7 @@
                 <div class="col-sm-4 col-md-4 col-lg-4">
                     <span>Property Address:&nbsp;</span>
                     <input id="prop_address" class="form-control" type="text" placeholder="E.g. 129 Holt Road">
-                </div>  
+                </div>
                 <div class="col-sm-2 col-md-2 col-lg-2">
                     <span>Property Suburb:&nbsp;</span>
                     <select id="prop_suburb" class="form-control" name="suburbs[]" multiple>
@@ -88,14 +88,18 @@
                 <div class="col-sm-6 col-md-6 float-right">
                     <span class="btn btn-xs btn-primary" id="search_props">Search</span>
                 </div>
-            </div>              
+            </div>
         </div>
     </div>
 
     <div id="prop_div">
       @foreach ($properties as $p)
-        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:0px; border:none;">
+        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:0px; border:none; width:50vw;">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
+
+                @if($p->property_image_name[0])
+                    <img class="float-right" height="160vh" src={{"https://turtle-database.s3-ap-southeast-2.amazonaws.com/".$p->property_image_name[0]}}>
+                @endif
                 <div class="card-title">
                   <h3>{{ $p->property_title }}</h3>
                 </div>
@@ -131,7 +135,7 @@
 $('.set-bg').each(function () {
     var bg = $(this).data('setbg');
     $(this).css('background-image', 'url(' + bg + ')');
-    $(this).css('background-size', 'cover');    
+    $(this).css('background-size', 'cover');
     $(this).css('height','50vh');
 });
 var hero_s = $(".hs-slider");
