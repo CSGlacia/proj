@@ -47,7 +47,7 @@ class AdminController extends Controller{
         }
         return view('view_all_bookings',
         [
-            'results' => $results,
+            'results' => $results
         ]);
     }
 
