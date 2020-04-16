@@ -40,8 +40,8 @@ class AdminController extends Controller{
                             ->first();
             $result['property_title'] = $title->property_title;
             $result['booking_id'] = $booking->booking_id;
-            $result['booking_startDate'] = $booking->booking_startDate;
-            $result['booking_endDate'] = $booking->booking_endDate;
+            $result['booking_startDate'] = date('d/m/Y', $booking->booking_startDate);
+            $result['booking_endDate'] = date('d/m/Y', $booking->booking_endDate);
 
             array_push($results,$result);
         }
@@ -49,6 +49,22 @@ class AdminController extends Controller{
         [
             'results' => $results
         ]);
+    }
+
+    public function admin_delete_bookings(Request $request){
+        $booking_id = $request->input('booking_id');
+        $changed = DB::table('bookings AS b')
+                    ->where([
+                        ['b.booking_id', $booking_id],
+                        ['b.booking_inactive', 0],
+
+                    ])
+                    ->update(['b.booking_inactive' => 1]);
+
+        if(!empty($changed)) {
+            return json_encode(['status' => 'success']);
+        }
+        return json_encode(['status' => 'error']);
     }
 
     public function all_reviews(Request $request){

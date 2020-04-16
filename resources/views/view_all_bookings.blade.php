@@ -28,15 +28,13 @@ $(document).ready(function() {
 
             booking_id = $(this).data('id');
             $.ajax({
-                url: '/cancel_booking',
+                url: '/admin_delete_bookings',
                 method: 'POST',
                 data: 'booking_id='+booking_id,
                 success: function(html) {
                     var data = JSON.parse(html);
                     if(data['status'] == "success") {
                         Swal.fire("Success", "Booking Cancelled Successfully", "success");
-                    } else if(data['status'] == 'date error') {
-                        Swal.fire("Warning", "You cannot cancel a booking scheduled in the next 2 weeks.", "warning");
                     } else {
                         Swal.fire("Error", "There was an error, please try again!", "error");
                     }
