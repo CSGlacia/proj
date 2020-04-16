@@ -6,11 +6,11 @@
       <hr>
       <div class="row">
           <div class="col-sm-12 col-md-12 col-lg-12">
-              <h3><b> {{ $r->booking_id }}</b></h3>
-              <div> {{ $w->wishlist_propertyAddress }}  </div>
-              <a class="btn btn-primary" name="view_property" href="/view_property/{{$w->wishlist_propertyID}}"> View property </a>
-            <!--  <a id="delete_wishlist <?php echo $w->wishlist_propertyID ?>" class="btn btn-primary">✖</a> -->
-              <input class ="delete_wishlist" type="button" id="<?php echo $w->wishlist_propertyID?>", value = "✖" </input>
+              <h3><b>Booking ID: {{ $r['booking_id'] }}</b></h3>
+              <h4> Property Name:  {{ $r['property_title'] }}  </h4>
+              <h5>Booking Start Date: {{ $r['booking_startDate'] }}</h5>
+              <h5>Booking Start Date: {{ $r['booking_endDate'] }}</h5>
+              <a class="btn btn-danger" name="delete_booking" data-id="{{$r['booking_id']}}"> Cancel booking</a>
           </div>
       </div>
     @endforeach
@@ -21,31 +21,29 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-    $(document).on('click', '.delete_wishlist', function(e) {
-        e.preventDefault();
-        var propertyID = $(this).get(0).id;
-        alert(propertyID);
+        var booking_id;
+        var start_date;
 
-        $.ajax({
-            url: '/delete_wishlist',
-            method: 'POST',
-            dataType: 'JSON',
-            data: 'propertyID='+propertyID,
-            success: function(html) {
-                var data = JSON.parse(html);
-                if(data['status'] == "success") {
-                  Swal.fire("Success", "Removed this item from your wishlist!", "success");
-                } else {
-                    Swal.fire("Error", "There was an error, please try again!", "error");
-                }
-            },
-            error: function ( xhr, errorType, exception ) {
-                var errorMessage = exception || xhr.statusText;
-                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
-            }
+        $(document).on('click', '[name="delete_booking"]', function(){
+
+            booking_id = $(this).data('id');
+            $.ajax({
+                url: '/cancel_booking',
+                method: 'POST',
+                data: 'booking_id='+booking_id,
+                success: function(html) {
+                    var data = JSON.parse(html);
+                    if(data['status'] == "success") {
+                        Swal.fire("Success", "Booking Cancelled Successfully", "success");
+                    } else if(data['status'] == 'date error') {
+                        Swal.fire("Warning", "You cannot cancel a booking scheduled in the next 2 weeks.", "warning");
+                    } else {
+                        Swal.fire("Error", "There was an error, please try again!", "error");
+                    }
+                    location.reload();
+                },
+            });
         });
-
-    });
 });
 </script>
 @endsection
