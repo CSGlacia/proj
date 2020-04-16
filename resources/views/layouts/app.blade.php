@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
-    
+
     <!-- Sweet Alert -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.css" rel="stylesheet" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.js"></script>
@@ -58,7 +58,7 @@
     .item-card:hover {
         background-color: #f6f6f6;
         box-shadow: inset 0 0 0 5px #85CB33;
-        transition: all 1s ease;  
+        transition: all 1s ease;
     }
     .item-card {
         background-color: #ffffff;
@@ -139,9 +139,7 @@
 @yield('style')
 
 
-
-
-<body>
+<body class="page-holder bg-cover nav-header">
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
 
@@ -176,9 +174,6 @@
     <main class="py-4">
         @yield('content')
     </main>
-
-
-
 
 
 

@@ -29,7 +29,7 @@
 
 
 .nav-header{
-    /*background: url("https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg") center fixed;*/
+    background: url("https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg") center fixed;
     position: relative;
     background-size: cover;
     -webkit-background-size: cover;
@@ -324,4 +324,14 @@
 .button:hover {
   background-color: #4CAF50; /* Green */
   color: white;
+}
+
+
+.page-holder {
+  min-height: 100vh;
+}
+
+.bg-cover {
+  background-size: cover !important;
+  background-attachment: fixed;
 }

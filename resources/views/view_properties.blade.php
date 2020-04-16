@@ -3,7 +3,7 @@
 @section('content')
 
 
-<div class="container col-sm-10 col-md-10 col-lg-10">
+<div class="container col-sm-10 col-md-10 col-lg-10 nav-header">
     <div class="search-container row card">
         <div class="card-title" style="margin:15px; margin-bottom:0px;">
             <h2>Search Properties</h2>
