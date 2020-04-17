@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     
     <!-- Sweet Alert -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.css" rel="stylesheet" type="text/css">
@@ -148,10 +149,23 @@
         <a class="navbar-brand" href="/">TURTLE</a>
             @if (Route::has('login'))
             @auth
+            
                 <ul class="navbar-nav">
-                    @can('delete bookings')
-                    <li class="nav-item"><a href="/list_bookings" class="nav-link">View All Bookings</a></li>
-                    @endcan
+                    @if(auth()->user()->can('delete bookings') || auth()->user()->can('delete reviews'))
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Admin
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            @can('delete bookings')
+                            <a class="dropdown-item" href="/list_bookings">View All Bookings</a>
+                            @endcan
+                            @can('delete reviews')
+                            <a class="dropdown-item " href="/list_reviews">View All Reviews</a>
+                            @endcan
+                        </div>
+                    </li>
+                    @endif
                     <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
                     <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
                     <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
