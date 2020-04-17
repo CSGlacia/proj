@@ -16,7 +16,8 @@ class AdminController extends Controller{
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin');
+        $this->middleware(['role:admin|super-admin']);
+
     }
 
     public function all_bookings(Request $request){
