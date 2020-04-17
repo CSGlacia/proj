@@ -1,5 +1,26 @@
 @extends('layouts.app')
 
+@section('style')
+<style>
+ul {
+    list-style: none outside none;
+    padding-left: 0;
+    margin-bottom:0;
+}
+li {
+    display: block;
+    float: left;
+    margin-right: 6px;
+    cursor:pointer;
+}
+img {
+    display: block;
+    height: auto;
+    max-width: 100%;
+}
+</style>
+@endsection
+
 @section('content')
 <div class="row" style="width:100%;">
     <div class="col-sm-8 col-md-8 col-lg-8">
@@ -14,13 +35,6 @@
                         <span><i class="fas fa-bed"></i>&nbsp;{{ $p->property_beds }} </span>
                         <span><i class="fas fa-bath"></i>&nbsp;{{ $p->property_baths }} </span>
                         <span><i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
-                    </div>
-                    <div class="gallery">
-                        @foreach ($images as $image)
-                        <div class="">
-                            <img src={{"https://turtle-database.s3-ap-southeast-2.amazonaws.com/".$image->property_image_name}}>
-                        </div>
-                        @endforeach
                     </div>
                     <div>{{$p->property_address}}</div>
                     <div style="margin:5px;"> {{ $p->property_desc }}  </div>
@@ -41,6 +55,29 @@
                 </div>
             </div>
         </div>
+
+    <!-- IMAGE START -->
+        @if(count($images) > 0)
+        <div class="row card">
+            <div class="gallery"  style="width:800px; margin:auto; margin-top:20px; margin-bottom:20px;">
+                <ul id="lightSlider">
+                @foreach ($images as $image)
+                    <li data-thumb='{{"https://turtle-database.s3-ap-southeast-2.amazonaws.com/".$image->property_image_name}}'>
+                        <img class="gallery_image" src='{{"https://turtle-database.s3-ap-southeast-2.amazonaws.com/".$image->property_image_name}}' />
+                    </li>
+                @endforeach
+                </ul>
+            </div>        
+        </div>
+
+        <div id="img_modal" class="modal">
+
+          <span class="close" id="modal_close">&times;</span>
+          <img class="modal-content" id="modal_img" style="width:100%;">
+        </div>
+        @endif
+
+    <!-- IMAGE END -->
 
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
@@ -204,6 +241,27 @@ function initMap() {
 }
 
 $(document).ready(function() {
+
+    var modal = $('#img_modal')
+
+    $(document).on('click', '#modal_close', function(e) {
+        e.preventDefault();
+        modal.hide();
+    });
+
+    $(document).on('click', '.gallery_image', function(e) {
+        var img = $(this).attr('src');
+        $('#modal_img').attr('src', img);
+        modal.show();
+        modal.css('display:block;')
+    });
+
+    $('#lightSlider').lightSlider({
+        gallery: true,
+        item: 1,
+        loop: true,
+
+    });
 
     $('#tags').select2({
         theme: "bootstrap"
