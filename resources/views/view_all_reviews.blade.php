@@ -2,18 +2,34 @@
 
 @section('content')
 <div class="container">
-    @foreach ($results as $r)
+    <h1>Property Reviews</h1>
+    <hr>
+    @foreach ($property_review as $r)
       <hr>
       <div class="row">
           <div class="col-sm-12 col-md-12 col-lg-12">
-                <h3><b>Booking ID: {{ $r['booking_id'] }}</b></h3>
-                <h4>Username: {{$r['username']}}</h4>
-                <h4> Property Name:  {{ $r['property_title'] }}  </h4>
-                <h5>Booking Start Date: {{ $r['booking_startDate'] }}</h5>
-                <h5>Booking Start Date: {{ $r['booking_endDate'] }}</h5>
-                <a class="btn btn-danger" name="delete_booking" data-id="{{$r['booking_id']}}"> Cancel booking</a>
+                <h3><b>Review ID: {{ $r['review_id'] }}</b></h3>
+                <h4>Reviewer Name: {{$r['reviewer_name']}}</h4>
+                <h4> Property Name:  {{ $r['property_name'] }}  </h4>
+                <h5>Booking ID: {{ $r['booking_id'] }}</h5>
+                <a class="btn btn-danger" name="delete_review" data-id="{{$r['review_id']}}"> Delete review</a>
           </div>
       </div>
+    @endforeach
+    <hr>
+    <h1>Tennant Reviews </h1>
+    <hr>
+    @foreach ($tennant_review as $r)
+        <hr>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <h3><b>Review ID: {{ $r['review_id'] }}</b></h3>
+                <h4>Reviewer Name: {{$r['reviewer_name']}}</h4>
+                <h4> Tennant Name:  {{ $r['property_name'] }}  </h4>
+                <h5>Booking ID: {{ $r['booking_id'] }}</h5>
+                <a class="btn btn-danger" name="delete_review" data-id="{{$r['review_id']}}"> Delete review</a>
+            </div>
+        </div>
     @endforeach
 
 </div>

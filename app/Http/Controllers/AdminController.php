@@ -32,7 +32,7 @@ class AdminController extends Controller{
                             ->select('u.name')
                             ->where('u.id', $booking->booking_userID)
                             ->first();
-            array_push($result,$username->name);
+            $result['username'] = $username->name;
 
             $title = DB::table('properties as p')
                             ->select('p.property_title')
@@ -68,7 +68,57 @@ class AdminController extends Controller{
     }
 
     public function all_reviews(Request $request){
+        $tennant_reviews = DB::table('tennant_reviews AS t')
+                    ->select('t.*')
+                    ->where('t.trs_inactive', 0)
+                    ->get();
+        $tennants = [];
+        foreach($tennant_reviews as $review){
+            $tennant = [];
+            $reviewer_name = DB::table('users as u')
+                            ->select('u.name')
+                            ->where('u.id', $review->trs_reviewer_id)
+                            ->first();
+            $tennant['reviewer_name'] = $reviewer_name->name;
 
+            $tennant_name = DB::table('users as u')
+                            ->select('u.name')
+                            ->where('u.id', $review->trs_tennant_id)
+                            ->first();
+            $result['tennant_name'] = $tennant_name->name;
+
+            $result['booking_id'] = $review->trs_booking_id;
+            $result['review_id'] = $review->trs_id;
+            array_push($tennant,$tennants);
+        }
+        $property_reviews = DB::table('property_reviews AS p')
+                    ->select('p.*')
+                    ->where('p.prs_inactive', 0)
+                    ->get();
+        $properties = [];
+        foreach($property_reviews as $review){
+            $property = [];
+            $reviewer_name = DB::table('users as u')
+                            ->select('u.name')
+                            ->where('u.id', $review->prs_reviewer_id)
+                            ->first();
+            $property['reviewer_name'] = $reviewer_name->name;
+
+            $property_name = DB::table('properties as p')
+                            ->select('p.property_title')
+                            ->where('p.property_id', $review->prs_property_id)
+                            ->first();
+            $result['property_name'] = $property_name->property_title;
+
+            $result['booking_id'] = $review->prs_booking_id;
+            $result['review_id'] = $review->prs_id;
+            array_push($property,$properties);
+        }
+        return view('view_all_reviews',
+        [
+            'property_review' => $properties,
+            'tennant_review' => $tennants,
+        ]);
     }
 }
 ?>

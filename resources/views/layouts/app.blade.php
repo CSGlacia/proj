@@ -149,7 +149,7 @@
             @if (Route::has('login'))
             @auth
                 <ul class="navbar-nav">
-                    @can('delete properties')
+                    @can('delete bookings')
                     <li class="nav-item"><a href="/list_bookings" class="nav-link">View All Bookings</a></li>
                     @endcan
                     <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
