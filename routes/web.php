@@ -24,6 +24,7 @@ Route::get('/home', 'GeneralController@home');
 Route::get('/create_property_page', 'HomeController@listing_page');
 Route::post('/create_property', 'HomeController@create_property');
 Route::get('/view_properties', 'GeneralController@view_property');
+//TODO: log view data
 Route::get('/view_property/{id?}', 'GeneralController@view_one_property')->where('id', '[0-9]+');
 Route::get('/create_property_listing','HomeController@create_property_listing');
 Route::post('/create_property_listing','HomeController@create_property_listing');
@@ -34,8 +35,11 @@ Route::post('/update_property_listing', 'HomeController@update_property_listing'
 Route::post('/remove_property_images/{property_id?}', 'HomeController@remove_property_images')->where('id', '[0-9]+');
 
 //property search
+//TODO log search data
 Route::post('/property_search', 'GeneralController@property_search');
-
+//map search
+//TODO log search data
+Route::post('/map_search', 'GeneralController@map_search');
 
 //booking functions
 Route::post('/create_booking', 'HomeController@create_booking');
