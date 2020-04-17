@@ -120,5 +120,33 @@ class AdminController extends Controller{
             'tennant_review' => $tennants,
         ]);
     }
+
+    public function admin_delete_tennant_review(Request $request){
+        $review_id = $request->input('review_id');
+        $changed = DB::table('tennant_reviews AS t')
+                    ->where([
+                        ['t.trs_id', $review_id],
+                    ])
+                    ->update(['t.trs_inactive' => 1]);
+
+        if(!empty($changed)) {
+            return json_encode(['status' => 'success']);
+        }
+        return json_encode(['status' => 'error']);
+    }
+    public function admin_delete_property_review(Request $request){
+        $review_id = $request->input('review_id');
+        $changed = DB::table('property_reviews AS p')
+                    ->where([
+                        ['p.prs_id', $review_id],
+                    ])
+                    ->update(['p.prs_inactive' => 1]);
+
+        if(!empty($changed)) {
+            return json_encode(['status' => 'success']);
+        }
+        return json_encode(['status' => 'error']);
+    }
 }
+
 ?>

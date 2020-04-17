@@ -76,6 +76,8 @@ Route::get('/become_admin','HomeController@admin_test');
 Route::get('/list_bookings','AdminController@all_bookings');
 Route::get('/list_reviews','AdminController@all_reviews');
 Route::post('/admin_delete_bookings','AdminController@admin_delete_bookings');
+Route::post('/admin_delete_tennant_review','AdminController@admin_delete_tennant_review');
+Route::post('/admin_delete_property_review','AdminController@admin_delete_property_review');
 
 // email
 Route::post('apply-two', ['uses'=>'NewsLetterController@autoMail', 'as'=>'apply-two']);

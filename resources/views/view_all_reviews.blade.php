@@ -12,7 +12,7 @@
                 <h4>Reviewer Name: {{$r['reviewer_name']}}</h4>
                 <h4> Property Name:  {{ $r['property_name'] }}  </h4>
                 <h4>Booking ID: {{ $r['booking_id'] }}</h4>
-                <a class="btn btn-danger" name="delete_review" data-id="{{$r['review_id']}}"> Delete review</a>
+                <a class="btn btn-danger" name="delete_property_review" data-id="{{$r['review_id']}}"> Delete review</a>
           </div>
       </div>
     @endforeach
@@ -27,7 +27,7 @@
                 <h4>Reviewer Name: {{$r['reviewer_name']}}</h4>
                 <h4> Tennant Name:  {{ $r['property_name'] }}  </h4>
                 <h4>Booking ID: {{ $r['booking_id'] }}</h4>
-                <a class="btn btn-danger" name="delete_review" data-id="{{$r['review_id']}}"> Delete review</a>
+                <a class="btn btn-danger" name="delete_tennant_review" data-id="{{$r['review_id']}}"> Delete review</a>
             </div>
         </div>
     @endforeach
@@ -38,20 +38,37 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-        var booking_id;
-        var start_date;
+        var review_id;
 
-        $(document).on('click', '[name="delete_booking"]', function(){
+        $(document).on('click', '[name="delete_tennant_review"]', function(){
 
-            booking_id = $(this).data('id');
+            review_id = $(this).data('id');
             $.ajax({
-                url: '/admin_delete_bookings',
+                url: '/admin_delete_tennant_review',
                 method: 'POST',
-                data: 'booking_id='+booking_id,
+                data: 'review_id='+review_id,
                 success: function(html) {
                     var data = JSON.parse(html);
                     if(data['status'] == "success") {
-                        Swal.fire("Success", "Booking Cancelled Successfully", "success");
+                        Swal.fire("Success", "Review Deleted Successfully", "success");
+                    } else {
+                        Swal.fire("Error", "There was an error, please try again!", "error");
+                    }
+                    location.reload();
+                },
+            });
+        });
+        $(document).on('click', '[name="delete_property_review"]', function(){
+
+            review_id = $(this).data('id');
+            $.ajax({
+                url: '/admin_delete_property_review',
+                method: 'POST',
+                data: 'review_id='+review_id,
+                success: function(html) {
+                    var data = JSON.parse(html);
+                    if(data['status'] == "success") {
+                        Swal.fire("Success", "Review Deleted Successfully", "success");
                     } else {
                         Swal.fire("Error", "There was an error, please try again!", "error");
                     }
