@@ -11,7 +11,7 @@
                 <h3><b>Review ID: {{ $r['review_id'] }}</b></h3>
                 <h4>Reviewer Name: {{$r['reviewer_name']}}</h4>
                 <h4> Property Name:  {{ $r['property_name'] }}  </h4>
-                <h5>Booking ID: {{ $r['booking_id'] }}</h5>
+                <h4>Booking ID: {{ $r['booking_id'] }}</h4>
                 <a class="btn btn-danger" name="delete_review" data-id="{{$r['review_id']}}"> Delete review</a>
           </div>
       </div>
@@ -26,7 +26,7 @@
                 <h3><b>Review ID: {{ $r['review_id'] }}</b></h3>
                 <h4>Reviewer Name: {{$r['reviewer_name']}}</h4>
                 <h4> Tennant Name:  {{ $r['property_name'] }}  </h4>
-                <h5>Booking ID: {{ $r['booking_id'] }}</h5>
+                <h4>Booking ID: {{ $r['booking_id'] }}</h4>
                 <a class="btn btn-danger" name="delete_review" data-id="{{$r['review_id']}}"> Delete review</a>
             </div>
         </div>

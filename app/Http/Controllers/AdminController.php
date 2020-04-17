@@ -108,11 +108,11 @@ class AdminController extends Controller{
                             ->select('p.property_title')
                             ->where('p.property_id', $review->prs_property_id)
                             ->first();
-            $result['property_name'] = $property_name->property_title;
+            $property['property_name'] = $property_name->property_title;
 
-            $result['booking_id'] = $review->prs_booking_id;
-            $result['review_id'] = $review->prs_id;
-            array_push($property,$properties);
+            $property['booking_id'] = $review->prs_booking_id;
+            $property['review_id'] = $review->prs_id;
+            array_push($properties,$property);
         }
         return view('view_all_reviews',
         [
