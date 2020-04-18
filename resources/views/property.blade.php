@@ -266,7 +266,7 @@ $(document).ready(function() {
     $('#tags').select2({
         theme: "bootstrap"
     });
-
+    console.log(@json($cal_listings));
     var startDate = $('#startDate').datepicker({
         format: 'dd/mm/yyyy',
         autoclose: true,
@@ -387,8 +387,9 @@ $(document).ready(function() {
                         Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                     } else if (html['status'] == 'time_booked'){
                         Swal.fire("Warning", "This booking date has already been taken!", "warning");
-                    }
-                    else {
+                    } else if (html['status'] == 'no_listings') {
+                        Swal.fire("Warning", "The property is not available for booking during these dates", "warning");
+                    } else {
                         Swal.fire("Error", "There was an error, please try again!", "error");
                     }
                 },
