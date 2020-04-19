@@ -237,6 +237,7 @@
                     </li>
                     @endif
                     <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
+                    <li class="nav-item"><a href="/create_property_listing" class="nav-link">Add Listing(s)</a></li>
                     <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
                     <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
 
