@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<link href="{{asset('css/create_property_listing.css')}}" rel="stylesheet">
 <div class="container">
-    <div class="card col-sm-12 col-md-12 col-lg-12">
+    <div class="card col-sm-12 col-md-12 col-lg-12" id="top">
         <br>
         <b><h3 style="text-align:center;">Create a New Property Listing</h3></b>
         <hr>
@@ -63,7 +64,6 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-
     $('#first_end_date').datepicker({
         format: 'dd/mm/yyyy',
         autoclose: true
@@ -142,24 +142,24 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    var listing_dates_arr = [];
-    $('.listing_dates').each(function (i) {
-            var start_date = $(this).find('input[name="start_date"]').val();
-            var end_date = $(this).find('input[name="end_date"]').val();
-            var recur = $(this).find('input[name="reccur_dates"]').prop('checked');
-
-            var add_arr = [];
-
-            add_arr.push(start_date);
-            add_arr.push(end_date);
-            add_arr.push(recur);
-            listing_dates_arr.push(add_arr);
-    });
 
     $(document).on('click', '#property_list_submit', function(e) {
         e.preventDefault();
+        var listing_dates_arr = [];
+        $('.listing_dates').each(function (i) {
+                var start_date = $(this).find('input[name="start_date"]').val();
+                var end_date = $(this).find('input[name="end_date"]').val();
+                var recur = $(this).find('input[name="reccur_dates"]').prop('checked');
+                var add_arr = [];
+
+                add_arr.push(start_date);
+                add_arr.push(end_date);
+                add_arr.push(recur);
+                listing_dates_arr.push(add_arr);
+        });
         var property = $('#form_select_property').val();
         var price = $('#price').val();
+        var count = 1;
         $.each(listing_dates_arr, function(i) {
             $.ajax({
                 url: '/create_property_listing',
@@ -168,18 +168,31 @@ $(document).ready(function() {
                 data: 'property='+property+'&price='+price+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
                 success: function(html) {
                     if(html['status'] == "success") {
-                        Swal.fire("Success", "Property Listing(s) Created Successfully", "success");
+                        $('<div class="alert alert-success" role="alert">Listing '+ count +': was created successfully' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                     } else if(html['status'] == 'bad_input'){
-                        Swal.fire("Error","Please check all fields are filled.","error");
+                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': Please check all fields are filled.' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                     } else if(html['status'] == 'price_low') {
-                        Swal.fire("Error","You must enter a price which is positive. You cannot charge negative amounts.","error");
+                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': You must enter a price which is positive. You cannot charge negative amounts.' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                     } else if(html['status'] == 'price_high'){
-                        Swal.fire("Error","There's a price limit of $999999.99 . Please enter a lower price per night.","error");
+                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': There\'s a price limit of $999999.99 . Please enter a lower price per night.' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                     } else if(html['status'] == 'overlapping_date'){
-                        Swal.fire("Error","A listing already exists within this time period.","error");
+                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': A listing already exists within this time period.' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                     } else {
-                        Swal.fire("Error","There was an error with creating your listings! Please try again on the Create Listing Page", "error");
+                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': There was an error with creating your listing!' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                     }
+                    count++;
                 },
                 error: function ( xhr, errorType, exception ) {
                     var errorMessage = exception || xhr.statusText;
@@ -187,7 +200,12 @@ $(document).ready(function() {
                 }
             });
         });
+
     });
 });
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 </script>
 @endsection
