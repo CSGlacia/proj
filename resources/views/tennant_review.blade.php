@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+<link href="{{asset('css/review.css')}}" rel="stylesheet">
 @section('content')
 <div class="container row">
     <div class="col-sm-6 col-md-6 col-lg-6">
@@ -18,7 +18,7 @@
                 <a class="btn btn-primary" name="review_tennant" href="/review_tennant?booking_id={{$b->booking_id}}&prop_id={{$b->property_id}}"> Review tenant</a>
             </div>
             @endforeach
-        @else 
+        @else
             <div>You have no tennants to review</div>
         @endif
     </div>
@@ -41,7 +41,7 @@
                 <a class="btn btn-warning" href="/edit_tennant_review/{{$p->trs_id}}">Edit Review</a>
             </div>
             @endforeach
-        @else 
+        @else
             <div>You have no tennants to review</div>
         @endif
     </div>

@@ -44,7 +44,7 @@
         <div class="col-sm-12 col-md-12 col-lg-12">
             <span class="btn btn-xs btn-primary" id="submit_review">Submit Review</span>
         </div>
-    </div>    
+    </div>
 </div>
 @endsection
 
