@@ -1196,9 +1196,17 @@ class HomeController extends Controller
                             $status = "DENIED";
                         }
 
+                        $tennant = DB::table('users AS u')
+                                        ->where('u.id' , $booking->booking_userID)
+                                        ->get();
+                        $tennant = $tennant[0];
+
+
                         return view('view_booking', [
                             'b' => $booking,
-                            'status' => $status
+                            'status' => $status,
+                            'tennant' => $tennant,
+                            'user_id' => $id
                         ]);
                     }
                 } else {
@@ -1297,7 +1305,7 @@ class HomeController extends Controller
                         ['b.booking_inactive', 0]
                     ])
                     ->update(['booking_denied' => 1]);
-
+                    //TODO: email denial notification
                 return json_encode(['status' => 'success']);
 
             }

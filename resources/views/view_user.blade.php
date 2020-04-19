@@ -9,8 +9,8 @@
     <span name="score-star"><i class="fas fa-star gold-star"></i></span>
 
     @if($page_owner)
-    <div class="row">
-        <b><h2>Bookings:</h2></b>
+    <div class="row card">
+        <b><h2>Your Unapproved Bookings:</h2></b>
         <div class="col-sm-12 col-md-12 col-lg-12">
             @foreach($bookings as $b)
                 <div class="row">
@@ -32,8 +32,76 @@
             @endforeach
         </div>
     </div>
-    @endif
+    <div class="row card">
+        <b><h2>Your Approved Bookings:</h2></b>
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            @foreach($abookings as $b)
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                        <div class="card-title">
+                            <h3>{{ $b->property_title }}</h3>
+                        </div>
+                        <div>
+                            <div>Address: {{$b->property_address}}</div>
+                            <div>Persons: {{$b->booking_persons}}</div>
+                        </div>
+                        <span>Start Date: {{$b->booking_startDate}}</span>
+                        <span>End Date: {{$b->booking_endDate}}</span>
+                        <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
+                        <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}"> Cancel booking</a>
+                    </div>
+                    <hr>
+                </div>
+            @endforeach
+        </div>
+    </div>
     <div class="row">
+        <b><h2>Your Past Bookings:</h2></b>
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            @foreach($pbookings as $b)
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                        <div class="card-title">
+                            <h3>{{ $b->property_title }}</h3>
+                        </div>
+                        <div>
+                            <div>Address: {{$b->property_address}}</div>
+                            <div>Persons: {{$b->booking_persons}}</div>
+                        </div>
+                        <span>Start Date: {{$b->booking_startDate}}</span>
+                        <span>End Date: {{$b->booking_endDate}}</span>
+                        <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
+                    </div>
+                    <hr>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    <div class="row">
+        <b><h2>Your Denied Bookings:</h2></b>
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            @foreach($dbookings as $b)
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                        <div class="card-title">
+                            <h3>{{ $b->property_title }}</h3>
+                        </div>
+                        <div>
+                            <div>Address: {{$b->property_address}}</div>
+                            <div>Persons: {{$b->booking_persons}}</div>
+                        </div>
+                        <span>Start Date: {{$b->booking_startDate}}</span>
+                        <span>End Date: {{$b->booking_endDate}}</span>
+                        <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
+                    </div>
+                    <hr>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    <div class="row card">
         <b><h2>Properties:</h2></b>
         <hr>
         <div class="col-sm-12 col-md-12 col-lg-12">
@@ -59,6 +127,114 @@
       @endforeach
         </div>
     </div>
+
+    @if($page_owner)
+        <div class="row card">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
+                    <h2>Bookings Awaiting Your Approval:</h2>
+                </div>
+                <hr>
+                <div class="card-text">
+                @if(count($aa_bookings) > 0)
+                    @foreach($aa_bookings as $b)
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-12">
+                                        <div>
+                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a>
+                                                @if($b->scores > 2.5)
+                                                    <i class="fas fa-star gold-star"></i>&nbsp;{{$b->scores}}
+                                                @elseif($b->scores == 0)
+                                                    <i class="fas fa-star"></i>&nbsp;No reviews yet
+                                                @else
+                                                    <i class="fas fa-star"></i>&nbsp;{{$b->scores}}
+                                                @endif
+                                            </div>
+                                            <div>Persons: {{$b->booking_persons}}</div>
+                                            <span>Start Date: {{$b->booking_startDate}}</span>
+                                            <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <div style="margin-top:5px;"><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
+                                            <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Bookying</span></div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                    @endforeach
+                @else
+                    <div>You have no bookings to approve</div>
+                @endif
+                </div>
+            </div>
+        </div>
+        <div class="row card">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
+                    <h2>Upcoming Approved Bookings:</h2>
+                </div>
+                <hr>
+                <div class="card-text">
+                @if(count($ua_bookings) > 0)
+                    @foreach($ua_bookings as $b)
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-12">
+                                        <div>
+                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
+                                                @if($b->scores > 2.5)
+                                                    <i class="fas fa-star gold-star"></i>
+                                                @else
+                                                    <i class="fas fa-star"></i>
+                                                @endif
+                                            </div>
+                                            <div>Persons: {{$b->booking_persons}}</div>
+                                            <span>Start Date: {{$b->booking_startDate}}</span>
+                                            <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <div><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                    @endforeach
+                @else
+                    <div>You have no upcoming approved bookings</div>
+                @endif
+                </div>
+            </div>
+        </div>
+        <div class="row card">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
+                    <h2>Past Approved Bookings:</h2>
+                </div>
+                <hr>
+                <div class="card-text">
+                @if(count($pa_bookings) > 0)
+                    @foreach($pa_bookings as $b)
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-12">
+                                        <div>
+                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
+                                                @if($b->scores > 2.5)
+                                                    <i class="fas fa-star gold-star"></i>
+                                                @else
+                                                    <i class="fas fa-star"></i>
+                                                @endif
+                                            </div>
+                                            <div>Persons: {{$b->booking_persons}}</div>
+                                            <span>Start Date: {{$b->booking_startDate}}</span>
+                                            <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <div><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                    @endforeach
+                @else
+                    <div>You have no past approved bookings</div>
+                @endif
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="row">
         <b><h2>User Reviews</h2></b>
@@ -110,6 +286,67 @@ $(document).ready(function() {
                 },
             });
         });
+
+        $(document).on('click', '[name="approve_booking"]', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+
+                $.ajax({
+                    url: '/approve_booking/'+id,
+                    method: 'GET',
+                    dataType: 'JSON',
+                    success: function(html) {
+                        if(html['status'] == "success") {
+                            swal({
+                                title:"Success!",
+                                text: "Booking approved successfully",
+                                type:"success",
+                            });
+                            setTimeout(function() {
+                                location.reload();
+                            }, 3000);
+                        } else if(html['status'] == 'overlapping_bookings') {
+                            Swal.fire("Warning", "An approved booking overlaps with this booking. This booking has been denied", "warning");
+                        } else {
+                            Swal.fire("Error", "There was an error, please try again!", "error");
+                        }
+                    },
+                    error: function ( xhr, errorType, exception ) {
+                        var errorMessage = exception || xhr.statusText;
+                        Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+                    }
+                });
+            });
+
+            $(document).on('click', '[name="deny_booking"]', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+
+                $.ajax({
+                    url: '/deny_booking/'+id,
+                    method: 'GET',
+                    dataType: 'JSON',
+                    success: function(html) {
+                        console.log(html);
+                        if(html['status'] == "success") {
+                            swal({
+                                title:"Success!",
+                                text: "Booking denied successfully",
+                                type:"success",
+                            });
+                            setTimeout(function() {
+                                location.reload();
+                            }, 3000);
+                        } else {
+                            Swal.fire("Error", "There was an error, please try again!", "error");
+                        }
+                    },
+                    error: function ( xhr, errorType, exception ) {
+                        var errorMessage = exception || xhr.statusText;
+                        Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+                    }
+                });
+            });
 });
 </script>
 @endsection

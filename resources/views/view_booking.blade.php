@@ -18,20 +18,86 @@
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6">
             <h3><b>Booking Details</b></h3>
+            <div>Tennant:&nbsp;<a href="/user_profile/{{$tennant->id}}">{{$tennant->name}}</a></div>
             <div>Start Date: {{$b->booking_startDate}}</div>
             <div>End Date: {{$b->booking_endDate}}</div>
             <div>Persons Booked: {{$b->booking_persons}}</div>
             <div>Status: {{$status}}</div>
         </div>
-
     </div>
+    @if($user_id == $b->id && $status == 'NOT APPROVED')
+        <div class="row" style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Bookying</span></div>
+    @endif
 </div>
 @endsection
 
 @section('scripts')
 <script>
 $(document).ready(function() {
-   
+
+    $(document).on('click', '[name="approve_booking"]', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        $.ajax({
+            url: '/approve_booking/'+id,
+            method: 'GET',
+            dataType: 'JSON',
+            success: function(html) {
+                if(html['status'] == "success") {
+                    swal({
+                        title:"Success!",
+                        text: "Booking approved successfully",
+                        type:"success",
+                    });
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);
+                } else if(html['status'] == 'overlapping_bookings') {
+                    Swal.fire("Warning", "An approved booking overlaps with this booking. This booking has been denied", "warning");
+                } else {
+                    Swal.fire("Error", "There was an error, please try again!", "error");
+                }
+            },
+            error: function ( xhr, errorType, exception ) {
+                var errorMessage = exception || xhr.statusText;
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+            }
+        });
+    });
+
+    $(document).on('click', '[name="deny_booking"]', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        $.ajax({
+            url: '/deny_booking/'+id,
+            method: 'GET',
+            dataType: 'JSON',
+            success: function(html) {
+                console.log(html);
+                if(html['status'] == "success") {
+                    swal({
+                        title:"Success!",
+                        text: "Booking denied successfully",
+                        type:"success",
+                    });
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);
+                } else {
+                    Swal.fire("Error", "There was an error, please try again!", "error");
+                }
+            },
+            error: function ( xhr, errorType, exception ) {
+                var errorMessage = exception || xhr.statusText;
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+            }
+        });
+    });
+
+
+
 });
 </script>
 @endsection
