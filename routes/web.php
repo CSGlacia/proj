@@ -43,6 +43,9 @@ Route::post('/map_search', 'GeneralController@map_search');
 
 //booking functions
 Route::post('/create_booking', 'HomeController@create_booking');
+Route::get('/view_booking/{booking_id?}', 'HomeController@view_booking')->where('booking_id', '[0-9]+');
+Route::get('/approve_booking/{booking_id?}', 'HomeController@approve_booking')->where('booking_id', '[0-9]+');
+Route::get('/deny_booking/{booking_id?}', 'HomeController@deny_booking')->where('booking_id', '[0-9]+');
 
 //user profile functions
 Route::get('/user_profile/{id?}', 'GeneralController@view_user')->where('id', '[0-9]+');

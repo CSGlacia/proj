@@ -303,7 +303,9 @@ class HomeController extends Controller
                                 ['b.booking_inactive', 0],
                                 ['b.booking_startDate', '<', time()],
                                 ['b.booking_endDate', '<', time()],
-                                ['b.booking_property_reviewed', 0]
+                                ['b.booking_property_reviewed', 0],
+                                ['b.booking_denied', 0],
+                                ['b.booking_approved', 1]
                             ])
                             ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                             ->join('users AS u', 'u.id', '=', 'p.property_user_id')
@@ -349,7 +351,9 @@ class HomeController extends Controller
                                 ['p.property_inactive', 0],
                                 ['b.booking_startDate', '<', time()],
                                 ['b.booking_endDate', '<', time()],
-                                ['b.booking_tennant_reviewed', 0]
+                                ['b.booking_tennant_reviewed', 0],
+                                ['b.booking_denied', 0],
+                                ['b.booking_approved', 1]
                             ])
                             ->join('bookings AS b', 'b.booking_propertyID', '=', 'p.property_id')
                             ->join('users AS u', 'u.id', '=', 'b.booking_userID')
@@ -473,21 +477,27 @@ class HomeController extends Controller
             $booking = DB::table('bookings AS b')
                             ->where([
                                 ['b.booking_id', $booking_id],
-                                ['b.booking_inactive', 0]
+                                ['b.booking_inactive', 0],
+                                ['b.booking_property_reviewed', 0]
                             ])
                             ->first();
 
-            $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
-            $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+            if(isset($booking) && !empty($booking) && !is_null($booking)) {
 
-            return view('review_property',
-                [
-                    'booking_id' => $booking_id,
-                    'property_id' => $property_id,
-                    'p' => $property,
-                    'b' => $booking
-                ]
-            );
+                $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
+                $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+
+                return view('review_property',
+                    [
+                        'booking_id' => $booking_id,
+                        'property_id' => $property_id,
+                        'p' => $property,
+                        'b' => $booking
+                    ]
+                );
+            } else {
+                return view('bad_permissions');
+            }
         } else {
             return view('error_page');
         }
@@ -509,22 +519,29 @@ class HomeController extends Controller
             $booking = DB::table('bookings AS b')
                             ->where([
                                 ['b.booking_id', $booking_id],
-                                ['b.booking_inactive', 0]
+                                ['b.booking_inactive', 0],
+                                ['b.booking_tennant_reviewed', 0]
                             ])
                             ->join('users AS u', 'u.id', '=', 'b.booking_userID')
                             ->first();
 
-            $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
-            $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+            if(isset($booking) && !empty($booking) && !is_null($booking)) {
 
-            return view('review_tennant',
-                [
-                    'booking_id' => $booking_id,
-                    'property_id' => $property_id,
-                    'p' => $property,
-                    'b' => $booking
-                ]
-            );
+
+                $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
+                $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+
+                return view('review_tennant',
+                    [
+                        'booking_id' => $booking_id,
+                        'property_id' => $property_id,
+                        'p' => $property,
+                        'b' => $booking
+                    ]
+                );
+            } else {
+                return view('bad_permissions');
+            }
         } else {
             return view('error_page');
         }
@@ -1128,8 +1145,164 @@ class HomeController extends Controller
         return true;
 
     }
+
     public function admin_test(Request $request){
         Auth::user()->assignRole('super-admin');
         return Auth::user()->roles;
+    }
+
+    public function view_booking(Request $request, $booking_id) {
+        $id = Auth::id();
+
+        if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id)) {
+            $booking = DB::table('bookings AS b')
+                            ->select('b.*', 'p.*', 'u.*',
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = b.booking_propertyID) AS `scores`'),
+                                DB::raw('(SELECT COUNT(r.prs_score) FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = b.booking_propertyID) AS `review_count`')
+                            )
+                            ->where('b.booking_id', $booking_id)
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+                            ->get();
+
+            if(count($booking) == 1) {
+                $booking = $booking[0];
+
+                if($booking->booking_userID == $id || $booking->property_user_id == $id) {
+
+
+                    if(isset($booking) && !empty($booking) && !is_null($booking)) {
+                        $past_check = $booking->booking_endDate;
+                        $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
+                        $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+
+                        if(isset($booking->scores) && !empty($booking->scores) && !is_null($booking->scores) && isset($booking->review_count) && !empty($booking->review_count) && !is_null($booking->review_count)) {
+                            $booking->scores = $booking->scores/$booking->review_count;
+                        } else {
+                            $booking->scores = -1;
+                        }
+
+                        $status = "NOT APPROVED";
+
+                        if($booking->booking_approved == 1) {
+                            $status = "APPROVED";
+                        }
+
+                        if($past_check < time()) {
+                            $status = "FINISHED";
+                        }
+
+                        if($booking->booking_denied == 1) {
+                            $status = "DENIED";
+                        }
+
+                        return view('view_booking', [
+                            'b' => $booking,
+                            'status' => $status
+                        ]);
+                    }
+                } else {
+                    return view('bad_permissions');
+                }
+            }
+        }
+
+        return view('error_page');
+    }
+
+    public function approve_booking(Request $request, $booking_id) {
+        $id = Auth::id();
+
+        if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id)) {
+            $booking = DB::table('bookings AS b')
+                            ->where([
+                                ['b.booking_id', $booking_id],
+                                ['b.booking_approved', 0],
+                                ['b.booking_denied', 0],
+                                ['p.property_user_id', $id]
+                            ])
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->first();
+
+            if(isset($booking) && !empty($booking) && !is_null($booking)) {
+                $check_bookings = DB::table('bookings AS b')
+                                    ->where([
+                                        ['b.booking_approved', 1],
+                                        ['b.booking_inactive', 0],
+                                        ['b.booking_propertyID', $booking->booking_propertyID]
+                                    ])
+                                    ->get();
+
+                $booking_overlap = false;
+
+                foreach($check_bookings as $cb) {
+                    if($cb->booking_startDate <= $booking->booking_endDate || $cb->booking_endDate >= $cb->booking_startDate) {
+                        $booking_overlap = true;
+                    }
+                }
+
+                if($booking_overlap == true) {
+                    //have to deny booking cause of overlap
+                    DB::table('bookings AS b')
+                        ->where([
+                            ['b.booking_id', $booking_id],
+                            ['b.booking_approved', 0],
+                            ['b.booking_inactive', 0]
+                        ])
+                        ->update(['booking_denied' => 1]);
+                    //TODO: email denial notification
+
+                    return json_encode(['status' => 'overlapping_bookings']);
+
+                } else {
+                    //approve booking 
+                    DB::table('bookings AS b')
+                        ->where([
+                            ['b.booking_id', $booking_id],
+                            ['b.booking_approved', 0],
+                            ['b.booking_inactive', 0]
+                        ])
+                        ->update(['booking_approved' => 1]);
+                    //TODO: email approval notification
+
+                    return json_encode(['status' => 'success']);
+
+                }
+            } else {
+                return json_encode(['status' => 'error']);
+            }
+        }
+    }
+
+    public function deny_booking(Request $request, $booking_id) {
+        $id = Auth::id();
+
+        if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id)) {
+
+            $booking = DB::table('bookings AS b')
+                            ->where([
+                                ['b.booking_id', $booking_id],
+                                ['b.booking_approved', 0],
+                                ['p.property_user_id', $id]
+                            ])
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->first();
+
+            if(isset($booking) && !empty($booking) && !is_null($booking)) {
+
+                DB::table('bookings AS b')
+                    ->where([
+                        ['b.booking_id', $booking_id],
+                        ['b.booking_approved', 0],
+                        ['b.booking_inactive', 0]
+                    ])
+                    ->update(['booking_denied' => 1]);
+
+                return json_encode(['status' => 'success']);
+
+            }
+        }
+
+        return json_encode(['status' => 'error']);
     }
 }

@@ -9,7 +9,7 @@
             <h3><b>Property Details</b></h3>
             <div>Property Name: {{$p->property_title}}</div>
             <div>Address: {{$p->property_address}}</div>
-            <span><i class="fas fa-bed"></i> {{$review->property_beds}}</span>&nbsp;<span><i class="fas fa-bath"></i> {{$review->property_baths}}</span>&nbsp;<span><i class="fas fa-car"></i> {{$review->property_cars}}</span>
+            <span><i class="fas fa-bed"></i> {{$p->property_beds}}</span>&nbsp;<span><i class="fas fa-bath"></i> {{$p->property_baths}}</span>&nbsp;<span><i class="fas fa-car"></i> {{$p->property_cars}}</span>
             <div>Description: {{$p->property_desc}}</div>
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6">
@@ -150,7 +150,7 @@ $(document).ready(function() {
                 if(html['status'] == "success") {
                     Swal.fire("Success", "Review Submitted Successfully", "success");
                     setTimeout(function() {
-                        window.location.href("/tennant_reviews")
+                        window.location.href = "/tennant_reviews";
                     }, 3000);
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");

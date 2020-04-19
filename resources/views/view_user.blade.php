@@ -24,7 +24,7 @@
                         </div>
                         <span>Start Date: {{$b->booking_startDate}}</span>
                         <span>End Date: {{$b->booking_endDate}}</span>
-                        <a class="btn btn-primary" name="view_booking" data-id="{{$b->booking_id}}"> View booking</a>
+                        <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
                         <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}"> Cancel booking</a>
                     </div>
                     <hr>

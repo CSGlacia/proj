@@ -146,7 +146,8 @@ $(document).ready(function() {
             method: 'POST',
             data: 'score='+score+'&review='+review+'&review_id='+{{$review->trs_id}},
             success: function(html) {
-                if(html['status'] == "success") {
+                html = JSON.parse(html);
+                if(html['status'] == 'success') {
                     Swal.fire("Success", "Review Edited Successfully", "success");
                     setTimeout(function() {
                         window.location.href = "/tennant_reviews";

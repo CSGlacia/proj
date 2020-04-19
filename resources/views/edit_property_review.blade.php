@@ -146,6 +146,7 @@ $(document).ready(function() {
             method: 'POST',
             data: 'score='+score+'&review='+review+'&review_id='+{{$review->prs_id}},
             success: function(html) {
+                html = JSON.parse(html);
                 if(html['status'] == "success") {
                     Swal.fire("Success", "Review Edited Successfully", "success");
                     setTimeout(function() {

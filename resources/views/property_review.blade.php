@@ -24,7 +24,7 @@
                   <span>{{$b->booking_persons}} Person(s) from {{$b->booking_startDate}} to {{$b->booking_endDate}}</span>
                 </div>
             </div>
-            <a class="btn btn-primary" name="review_property" href="/review_property?prop_id={{$b->property_id}}&booking_id={{$b->booking_id}}"> Review tenant</a>
+            <a class="btn btn-primary" name="review_property" href="/review_property?prop_id={{$b->property_id}}&booking_id={{$b->booking_id}}"> Review Property</a>
         </div>
         @endforeach
     @else

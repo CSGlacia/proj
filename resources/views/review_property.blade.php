@@ -147,10 +147,11 @@ $(document).ready(function() {
             dataType: 'JSON',
             data: 'score='+score+'&review='+review+'&booking_id='+{{$b->booking_id}}+'&property_id='+{{$p->property_id}},
             success: function(html) {
+                console.log(html);
                 if(html['status'] == "success") {
                     Swal.fire("Success", "Review Submitted Successfully", "success");
                     setTimeout(function() {
-                        window.location.href("/property_reviews")
+                        window.location.href = "/property_reviews";
                     }, 3000);
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");

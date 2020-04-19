@@ -182,17 +182,26 @@ class GeneralController extends Controller
         ]);
 
         $prop = DB::table('properties AS p')
-                    ->select('p.*')
+                    ->select('p.*',
+                        DB::raw('(SELECT SUM(r.prs_score) FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `ratings`'),
+                        DB::raw('(SELECT COUNT(r.prs_score) FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `num_ratings`')
+                    )
                     ->where([
                         ['p.property_id', $id],
                         ['p.property_inactive', 0]
                     ])
                     ->first();
 
+        if(isset($prop->ratings) && !is_null($prop->ratings) && !empty($prop->ratings) && $prop->num_ratings > 0) {
+            $avg_score = $prop->ratings/$prop->num_ratings;
+        } else {
+            $avg_score = 0;
+        }
+            
         $prop_images = DB::table('property_images AS p')
-                        ->select('p.property_image_name')
-                        ->where([['p.property_id',$id]])
-                        ->get();
+                    ->select('p.property_image_name')
+                    ->where([['p.property_id',$id]])
+                    ->get();
 
         /*foreach ($prop_images as $path) {
             try{
@@ -221,11 +230,34 @@ class GeneralController extends Controller
                                 ['b.booking_propertyID', $id],
                                 ['b.booking_inactive', 0],
                                 ['b.booking_startDate', '>', time()],
+                                ['b.booking_approved', 0]
                             ])
                             ->join('users AS u', 'u.id', '=', 'b.booking_userID') // gets user info for each of the people booking
                             ->get();
 
             foreach($bookings as $b) {
+                $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+
+                $scores = explode(',', $b->scores);
+                $scores = array_sum($scores)/count($scores);
+                $b->scores = $scores;
+            }
+
+            $abookings = DB::table('bookings as b')
+                            ->select('b.*', 'u.*',
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
+                            )
+                            ->where([
+                                ['b.booking_propertyID', $id],
+                                ['b.booking_inactive', 0],
+                                ['b.booking_startDate', '>', time()],
+                                ['b.booking_approved', 1]
+                            ])
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID') // gets user info for each of the people booking
+                            ->get();
+
+            foreach($abookings as $b) {
                 $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
                 $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
 
@@ -265,6 +297,7 @@ class GeneralController extends Controller
                                     ['b.booking_propertyID', $id],
                                     ['b.booking_inactive', 0],
                                     ['b.booking_startDate', '>', time()],
+                                    ['b.booking_approved', 1]
                                 ])
                                 ->get();
 
@@ -303,7 +336,6 @@ class GeneralController extends Controller
                 $tag_ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name];
             }
 
-
             return view('property',
                             ['p' => $prop,
                             'bookings' => $bookings,
@@ -312,7 +344,9 @@ class GeneralController extends Controller
                             'page_owner' => $page_owner,
                             'cal_bookings' => $cal_booking_arr,
                             'cal_listings' => $cal_listing_arr,
-                            'tags' => $tag_ret_arr
+                            'tags' => $tag_ret_arr,
+                            'abookings' => $abookings,
+                            'avg_score' => $avg_score
                         ]
                 );
         }

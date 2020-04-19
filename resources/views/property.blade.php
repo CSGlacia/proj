@@ -51,7 +51,15 @@ img {
                         <label id="add_to_wishlist" class="btn btn-primary">★ Add to my Wishlist</label>
                         @endauth
                     </div>
-
+                    <div>
+                        @if($avg_score > 2.5) 
+                            <i class="fas fa-star gold-star"></i>&nbsp;{{$avg_score}} ({{$p->num_ratings}} Review(s))
+                        @elseif($avg_score == 0)
+                            <i class="fas fa-star"></i>&nbsp;No reviews
+                        @else
+                            <i class="fas fa-star"></i>&nbsp;{{$avg_score}} ({{$p->num_ratings}} Review(s))
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -185,12 +193,48 @@ img {
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
-                    <h2>Current bookings:</h2>
+                    <h2>Bookings Awaiting Approval:</h2>
                 </div>
                 <hr>
                 <div class="card-text">
                 @if(count($bookings) > 0)
                     @foreach($bookings as $b)
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-12">
+                                        <div>
+                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a>
+                                                @if($b->scores > 2.5)
+                                                    <i class="fas fa-star gold-star"></i>&nbsp;{{$b->scores}}
+                                                @elseif($b->scores == 0)
+                                                    <i class="fas fa-star"></i>&nbsp;No reviews yet
+                                                @else
+                                                    <i class="fas fa-star"></i>&nbsp;{{$b->scores}}
+                                                @endif
+                                            </div>
+                                            <div>Persons: {{$b->booking_persons}}</div>
+                                            <span>Start Date: {{$b->booking_startDate}}</span>
+                                            <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <div><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a></div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                    @endforeach
+                @else
+                    <div>You have no bookings to approve</div>
+                @endif
+                </div>
+            </div>
+        </div>
+        <div class="row card">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
+                    <h2>Upcoming Approved Bookings:</h2>
+                </div>
+                <hr>
+                <div class="card-text">
+                @if(count($abookings) > 0)
+                    @foreach($abookings as $b)
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
@@ -204,13 +248,14 @@ img {
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <div><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a></div>
                                         </div>
                                     </div>
                                     <hr>
                                 </div>
                     @endforeach
                 @else
-                    <div>You have no tennants to review</div>
+                    <div>You have no upcoming approved bookings</div>
                 @endif
                 </div>
             </div>
@@ -266,7 +311,7 @@ $(document).ready(function() {
     $('#tags').select2({
         theme: "bootstrap"
     });
-    console.log(@json($cal_listings));
+
     var startDate = $('#startDate').datepicker({
         format: 'dd/mm/yyyy',
         autoclose: true,
