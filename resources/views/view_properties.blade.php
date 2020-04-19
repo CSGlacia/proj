@@ -150,7 +150,7 @@
 @endsection
 
 @section('scripts')
-<script async defer
+<script
 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPDGVcOB-lSlE4tKgMpQwUbz_2d55B6xE">
 </script>
 
