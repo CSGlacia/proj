@@ -445,7 +445,7 @@ class HomeController extends Controller
             $end = strtotime($end_date);
             $curr = time();
 
-            if ($start >= $end || $start <= $curr) {
+            if ($start > $end || $start < $curr) {
                 return json_encode(['status' => 'date_invalid']);
             }
             if ($this->checkValidDates($start, $end, $property) == false){

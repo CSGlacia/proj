@@ -3,30 +3,29 @@
 <link href="{{asset('css/view_property.css')}}" rel="stylesheet">
 @section('content')
 <div class="hs-slider owl-carousel">
-    <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg">
+    <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/home/carousel1b.png">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="hs-text">
                         <h2>Turtle</h2>
-                        <p>Would you like to book a place at turtle?
-                        <br /> Try it below!</p>
-                        <a type="button" href="/" class="btn btn-primary btn-lg">Click here to look at the available properties</a>
+                        <p>Looking for a new home for your holiday?
+                        <br />Try it below!</p>
+                        <a type="button" href="/" class="btn btn-primary btn-lg">Click here to view available properties</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/Houses_in_Sanctuary_Cove_seen_from_Coomera_River%2C_Queensland_09.jpg">
+    <div class="hs-item set-bg" data-setbg="https://turtle-database.s3-ap-southeast-2.amazonaws.com/home/carousel2b.png">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="hs-text">
                         <h2>Turtle</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                            incididunt ut labore et<br /> dolore magna aliqua. Quis ipsum suspendisse ultrices
-                            gravida accumsan lacus vel facilisis.</p>
-                        <a type="button" href="/" class="btn btn-primary btn-lg">Click here to look at the available properties</a>
+                        <p>There are so many properties to choose from
+                        <br />Find the perfect place for you!</p>
+                        <a type="button" href="/" class="btn btn-primary btn-lg">Click here to view available properties</a>
                     </div>
                 </div>
             </div>
@@ -38,26 +37,23 @@
         <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <div class="services-item">
-                    <img src="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg" alt="">
-                    <h3>Shooting</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                        magna aliqua. Quis ipsum suspendisse ultrices gravida.</p>
+                    <img src="https://turtle-database.s3-ap-southeast-2.amazonaws.com/home/120532991.png" alt="">
+                    <h3>Affordable</h3>
+                    <p>These prices are so much cheaper than any hotels and go straight to the property owner.</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <div class="services-item">
-                    <img src="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg" alt="">
-                    <h3>Videos</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                        magna aliqua. Quis ipsum suspendisse ultrices gravida.</p>
+                    <img src="https://turtle-database.s3-ap-southeast-2.amazonaws.com/home/comfortable-home-to-relax-in201.png" alt="">
+                    <h3>Reliable</h3>
+                    <p>After each stay, you can make a review so future tennants will know exactly what they're looking at.</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <div class="services-item">
-                    <img src="https://turtle-database.s3-ap-southeast-2.amazonaws.com/background/city-skyline-across-body-of-water-during-night-time-3586966.jpg" alt="">
-                    <h3>Editing</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                        magna aliqua. Quis ipsum suspendisse ultrices gravida.</p>
+                    <img src="https://turtle-database.s3-ap-southeast-2.amazonaws.com/home/unknown.png" alt="">
+                    <h3>Comfortable</h3>
+                    <p>Each property has to meet our standard of comfort before being approved - even your pets will love it!</p>
                 </div>
             </div>
         </div>
@@ -70,7 +66,8 @@
 $('.set-bg').each(function () {
     var bg = $(this).data('setbg');
     $(this).css('background-image', 'url(' + bg + ')');
-    $(this).css('background-size', 'cover');    
+    $(this).css('background-size', 'cover');
+    $(this).css('background-position','center');
     $(this).css('height','50vh');
 });
 var hero_s = $(".hs-slider");

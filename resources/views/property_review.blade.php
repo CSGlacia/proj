@@ -1,10 +1,10 @@
 @extends('layouts.app')
-
+<link href="{{asset('css/review.css')}}" rel="stylesheet">
 @section('content')
-<div class="container row">
-    <div class="col-sm-6 col-md-6 col-lg-6">
+<div class="container row" style="position:absolute;left:1vw">
+    <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(255,155,155,0.3)">
     <h1>Incomplete Property Reviews</h1>
-    @if(count($bookings) > 0)    
+    @if(count($bookings) > 0)
         @foreach($bookings as $b)
         <div class="row card item-card cursor-pointer" name="review_property" data-prop-id="{{$b->property_id}}" data-booking-id="{{$b->booking_id}}" style="margin:0px; border:none;">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
@@ -32,9 +32,9 @@
     @endif
     </div>
 
-    <div class="col-sm-6 col-md-6 col-lg-6">
+    <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(135,255,155,0.3);position:absolute;right:-1vw">
     <h1>Submitted Property Reviews</h1>
-    @if(count($reviews) > 0)    
+    @if(count($reviews) > 0)
         @foreach($reviews as $r)
         <div class="row card item-card cursor-pointer" name="edit_review" data-review-id="{{$r->prs_id}}" style="margin:0px; border:none;">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
@@ -77,4 +77,3 @@ $(document).ready(function() {
 });
 </script>
 @endsection
-

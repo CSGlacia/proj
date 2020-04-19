@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -64,7 +64,7 @@
     .item-card:hover {
         background-color: #f6f6f6;
         box-shadow: inset 0 0 0 5px #85CB33;
-        transition: all 1s ease;  
+        transition: all 1s ease;
     }
     .item-card {
         background-color: #ffffff;
@@ -212,9 +212,7 @@
 @yield('style')
 
 
-
-
-<body>
+<body class="page-holder bg-cover nav-header">
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
 
@@ -239,6 +237,7 @@
                     </li>
                     @endif
                     <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
+                    <li class="nav-item"><a href="/create_property_listing" class="nav-link">Add Listing(s)</a></li>
                     <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
                     <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
 
@@ -265,9 +264,6 @@
     <main class="py-4">
         @yield('content')
     </main>
-
-
-
 
 
 
