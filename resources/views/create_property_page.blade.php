@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="col-sm-8 col-md-8 col-lg-8">
                     <span>Listing Name:&nbsp;</span>
-                    <input id="l_name" class="form-control" type="text" placeholder="E.g. Grand Beachouse" required>
+                    <input id="l_name" class="form-control" type="text" placeholder="E.g. Grand Beachhouse" required>
                 </div>
             </div>
             <div class="row">
@@ -101,6 +101,12 @@
                 <input id="always_list" type="checkbox" />
                 <div class="state p-primary">
                     <label>List my property indefinitely</label>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-6 col-lg-6">
+                <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                    <input id="price" class="form-control" type="number" placeholder="$0" required>
                 </div>
             </div>
             <hr>
@@ -305,10 +311,11 @@ $(document).ready(function() {
         form_data.append('lat',lat);
         form_data.append('lng',lng);
         form_data.append('always_list',always_list);
+        
         var tags  = ($('#tags').val());
         form_data.append('tags', tags);
         var listing_dates_arr = [];
-
+        var price = $('#price').val();
         $('.listing_dates').each(function (i) {
             var start_date = $(this).find('input[name="start_date"]').val();
             var end_date = $(this).find('input[name="end_date"]').val();
@@ -337,26 +344,40 @@ $(document).ready(function() {
                     var prop_id = html['id'];
 
                     if(always_list == false) {
-                        $.each(listing_dates_arr, function(i) {
-                            $.ajax({
-                                url: '/create_property_listing',
-                                method: 'POST',
-                                dataType: 'JSON',
-                                data: 'property='+prop_id+'&price='+1+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
-                                success: function(html) {
-                                    if(html['status'] != "success") {
-                                        Swal.fire("Error", "There was an error, please try again!", "error");
+                        swal({
+                            title:"Success!",
+                            text: "Property Created Successfully",
+                            type:"success",
+                        }).then(function(){
+                            $.each(listing_dates_arr, function(i) {
+                                $.ajax({
+                                    url: '/create_property_listing',
+                                    method: 'POST',
+                                    dataType: 'JSON',
+                                    data: 'property='+prop_id+'&price='+price+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
+                                    success: function(html) {
+                                        if(html['status'] == "success") {
+                                            Swal.fire("Success", "Property Listing(s) Created Successfully", "success");
+                                        } else if(html['status'] == 'bad_input'){
+                                            Swal.fire("Error","Please check all fields are filled.","error");
+                                        } else if(html['status'] == 'price_low') {
+                                            Swal.fire("Error","You must enter a price which is positive. You cannot charge negative amounts.","error");
+                                        } else if(html['status'] == 'price_high'){
+                                            Swal.fire("Error","There's a price limit of $999999.99 . Please enter a lower price per night.","error");
+                                        } else if(html['status'] == 'overlapping_date'){
+                                            Swal.fire("Error","A listing already exists within this time period.","error");
+                                        } else {
+                                            Swal.fire("Error","There was an error with creating your listings! Please try again on the Create Listing Page", "error");
+                                        }
+                                    },
+                                    error: function ( xhr, errorType, exception ) {
+                                        var errorMessage = exception || xhr.statusText;
+                                        Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                                     }
-                                },
-                                error: function ( xhr, errorType, exception ) {
-                                    var errorMessage = exception || xhr.statusText;
-                                    Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
-                                }
+                                });
                             });
                         });
                     }
-                    Swal.fire("Success", "Property Created Successfully", "success");
-
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else if(html['status'] == 'wrong_state') {
