@@ -33,6 +33,30 @@
                     <input id="form_property_list_end_date" class="form-control" type="date" required>
                 </div>
             </div>
+            <h5>Listing Dates:&nbsp;</h5>
+            <span id="dates_start">
+                <div class="row listing_dates" name="listing_dates">
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <span>Start Date:&nbsp;</span>
+                        <input class="form-control" id="first_start_date" name="start_date" type="text" required>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <span>End Date:&nbsp;</span>
+                        <input class="form-control" id="first_end_date" name="end_date" type="text" required>
+                    </div>
+                    <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
+                        <div class="pretty p-default p-round p-smooth p-bigger">
+                            <input name="reccur_dates" type="checkbox" />
+                            <div class="state p-primary">
+                                <label>Set as reccuring dates</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </span>
+            <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
+                <label class="btn btn-primary float-right" id="add_dates"><i class="fas fa-plus"></i>&nbsp;Add Dates</label>
+            </div>
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
@@ -46,6 +70,85 @@
 
 @section('scripts')
 <script>
+$(document).ready(function() {
+
+    $('#first_end_date').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    });
+
+
+    $('#first_start_date').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+
+    });
+
+    $(document).on('change', '[name="start_date"]', function() {
+        var date = $(this).val();
+        date = date.split('/');
+        date = date[2]+'-'+date[1]+'-'+date[0];
+        date = new Date(date);
+        $(this).closest('.listing_dates').find('[name="end_date"]').datepicker("setStartDate",  date);
+    });
+
+    $(document).on('change', '[name="end_date"]', function() {
+        var date = $(this).val();
+        date = date.split('/');
+        date = date[2]+'-'+date[1]+'-'+date[0];
+        date = new Date(date);
+        $(this).closest('.listing_dates').find('[name="start_date"]').datepicker("setEndDate",  date);
+    });
+
+    var count = 1;
+
+    $(document).on('change', '#always_list', function(e) {
+        e.preventDefault();
+        var val = $(this).prop('checked');
+
+        if(val) {
+            $('[name="listing_dates"]').each(function(i) {
+                $(this).hide();
+            });
+        } else {
+            $('[name="listing_dates"]').each(function(i) {
+                $(this).show();
+            });
+        }
+    });
+
+    $(document).on('click', '#add_dates', function(e) {
+        if(count < 5) {
+            var elem = $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-3 col-md-3 col-lg-3"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="text" required></div><div class="col-sm-3 col-md-3 col-lg-3"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="text" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');
+
+
+            $('[name="start_date"]').each(function() {
+                $(this).datepicker({
+                    format: 'dd/mm/yyyy',
+                    autoclose: true
+                });
+            });
+
+            $('[name="end_date"]').each(function() {
+                $(this).datepicker({
+                    format: 'dd/mm/yyyy',
+                    autoclose: true
+                });
+            });
+
+            count++;
+        } else {
+            Swal.fire("Warning", "You can only have 5 listing periods maximum", "warning");
+        }
+    });
+
+    $(document).on('click', '[name="remove_dates"]', function(e) {
+        e.preventDefault();
+        $(this).parents(".row").remove();
+        count--;
+    });
+});
+
 $(document).ready(function() {
     $(document).on('click', '#property_list_submit', function(e) {
         e.preventDefault();
