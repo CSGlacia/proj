@@ -15,8 +15,9 @@
 @endsection
 
 @section('content')
+<link href="{{asset('css/create_property_listing.css')}}" rel="stylesheet">
 <div class="container">
-    <div class="card col-sm-12 col-md-12 col-lg-12">
+    <div class="card col-sm-12 col-md-12 col-lg-12" id='top'>
         <br>
         <b><h3 style="text-align:center;">Add a new property to your account</h3></b>
         <hr>
@@ -344,6 +345,7 @@ $(document).ready(function() {
                     var prop_id = html['id'];
 
                     if(always_list == false) {
+                        var count = 1;
                         swal({
                             title:"Success!",
                             text: "Property Created Successfully",
@@ -357,18 +359,31 @@ $(document).ready(function() {
                                     data: 'property='+prop_id+'&price='+price+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
                                     success: function(html) {
                                         if(html['status'] == "success") {
-                                            Swal.fire("Success", "Property Listing(s) Created Successfully", "success");
+                                            $('<div class="alert alert-success" role="alert">Listing '+ count +': was created successfully' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                                         } else if(html['status'] == 'bad_input'){
-                                            Swal.fire("Error","Please check all fields are filled.","error");
+                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': Please check all fields are filled.' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                                         } else if(html['status'] == 'price_low') {
-                                            Swal.fire("Error","You must enter a price which is positive. You cannot charge negative amounts.","error");
+                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': You must enter a price which is positive. You cannot charge negative amounts.' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                                         } else if(html['status'] == 'price_high'){
-                                            Swal.fire("Error","There's a price limit of $999999.99 . Please enter a lower price per night.","error");
+                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': There\'s a price limit of $999999.99 . Please enter a lower price per night.' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                                         } else if(html['status'] == 'overlapping_date'){
-                                            Swal.fire("Error","A listing already exists within this time period.","error");
+                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': A listing already exists within this time period.' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                                         } else {
-                                            Swal.fire("Error","There was an error with creating your listings! Please try again on the Create Listing Page", "error");
+                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': There was an error with creating your listing!' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                                         }
+                                        count++;
                                     },
                                     error: function ( xhr, errorType, exception ) {
                                         var errorMessage = exception || xhr.statusText;
