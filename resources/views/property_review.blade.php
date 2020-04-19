@@ -1,8 +1,8 @@
 @extends('layouts.app')
 <link href="{{asset('css/review.css')}}" rel="stylesheet">
 @section('content')
-<div class="container row">
-    <div class="col-sm-6 col-md-6 col-lg-6">
+<div class="container row" style="position:absolute;left:1vw">
+    <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(255,155,155,0.3)">
     <h1>Incomplete Property Reviews</h1>
     @if(count($bookings) > 0)
         @foreach($bookings as $b)
@@ -32,7 +32,7 @@
     @endif
     </div>
 
-    <div class="col-sm-6 col-md-6 col-lg-6">
+    <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(135,255,155,0.3);position:absolute;right:-1vw">
     <h1>Submitted Property Reviews</h1>
     @if(count($reviews) > 0)
         @foreach($reviews as $r)
