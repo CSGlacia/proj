@@ -558,4 +558,116 @@ class GeneralController extends Controller
         });
 
     }
+
+    public function map_search(Request $request) {
+        $lat = $request->input('lat');
+        $lng = $request->input('lng');
+        $radius = $request->input('radius');
+
+        if(isset($lat) && !empty($lat) && !is_null($lat) && isset($lng) && !empty($lng) && !is_null($lng) && isset($radius) && !empty($radius) && !is_null($radius)) {
+            $radius = $radius/1000;
+
+            $props = DB::table('properties AS p')
+                        ->where('p.property_inactive', 0)
+                        ->get();
+
+            $neg_props = [];
+
+            foreach($props as $p) {
+                $distance = $this->calculate_lat_lng_distance($lat, $lng, $p->property_lat, $p->property_lng);
+                if($distance > $radius) {
+                    $neg_props[] = $p->property_id;
+                }
+            }
+
+            $neg_props = array_unique($neg_props);
+            $results = DB::table('properties AS p')
+                    ->select('p.*',
+                        DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
+                        DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`'),
+                        DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
+                    )
+                    ->where([
+                        ['property_inactive', '=', '0']
+                    ])
+                    ->whereNotIn('p.property_id', $neg_props)
+                    ->get();
+
+            foreach($results as $r) {
+                if(is_null($r->scores)) {
+                    $r->scores = "No Reviews Yet";
+                    $r->review_count = 0;
+                } else {
+                    $r->review_count = count(explode(',', $r->review_count));
+                    $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
+                }
+                $r->tags = explode(',', $r->tags);
+            }
+
+            $ret_str = '';
+
+            foreach ($results as $r) {
+                $ret_str .= '
+                <div class="row card item-card cursor-pointer" name="view_property" data-id="'.$r->property_id.'" style="margin:0px; border:none;">
+                    <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
+                        <div class="card-title">
+                          <h3>'.$r->property_title.'</h3>
+                        </div>
+                        <div class="card-text">
+                          <div style="margin:5px;">
+                            <span><i class="fas fa-bed"></i>&nbsp;'.$r->property_beds.'</span>
+                            <span><i class="fas fa-bath"></i>&nbsp;'.$r->property_baths.'</span>
+                            <span><i class="fas fa-car"></i>&nbsp;'.$r->property_cars.'</span>
+                          </div>
+                          <div>'.$r->property_address.'</div>
+                          <div style="margin:5px;">'.$r->property_desc.'</div>
+                          <div>';
+
+              foreach($r->tags as $t) {
+                 $ret_str .= '<span class="badge badge-secondary">'.$t.'</span>';
+              }
+                            
+                 $ret_str .= '</div>
+                          <div><i class="fas fa-star';
+                          if($r->scores > 2.5 && $r->scores != 'No Reviews Yet') {
+                                $ret_str .= 'gold-star';
+                            } 
+
+                            $ret_str .= '"></i>&nbsp;'.$r->scores;
+
+                            if($r->scores != "No Reviews Yet") {
+                               $ret_str .= $r->review_count.' Review(s))';
+                            }
+                    $ret_str .= '</div>
+                        </div>
+                    </div>
+                </div>';
+            }
+
+            $status = 'success';
+
+            if($ret_str == '') {
+                $status = "no_results";
+            }
+
+            return json_encode(['status' => $status, 'data' => $ret_str]);
+
+        }
+
+        return json_encode(['status' => 'error']);
+    }
+
+    public function calculate_lat_lng_distance($to_lat, $to_lng, $from_lat, $from_lng) {
+        $latFrom = deg2rad($from_lat);
+        $lonFrom = deg2rad($from_lng);
+        $latTo = deg2rad($to_lat);
+        $lonTo = deg2rad($to_lng);
+
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+        cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+        return $angle * 6371;
+    }
 }

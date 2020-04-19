@@ -214,6 +214,39 @@ class HomeController extends Controller
         $s = strtotime($startDate);
         $e = strtotime($endDate);
 
+        $prop = DB::table('properties AS p')
+                    ->select('p.property_always_list')
+                    ->where([
+                        ['p.property_id', $propertyID],
+                        ['p.property_inactive', 0]
+                    ])
+                    ->first();
+
+        if($prop->property_always_list == 0) {
+            $listings = DB::table('property_listing AS l')
+                            ->where([
+                                ['l.property_id', $propertyID],
+                                ['l.inactive', 0]
+                            ])
+                            ->get();
+
+            if(count($listings) > 0) {
+                $listings_good = false;
+                foreach($listings as $l) {
+                    if($s >= $l->start_date && $e <= $l->end_date) {
+                        $listings_good = true;
+                    }
+                }
+
+                if($listings_good == false) {
+                    return json_encode(['status' => 'no_listings']);
+                }
+            } else {
+                return json_encode(['status' => 'no_listings']);
+
+            }
+        }
+
         // If the end date is before $s, fail. (You can't book for 1 day)
         if ($s >= $e) {
             return json_encode(["status" => "Time failure!"]);
@@ -222,7 +255,10 @@ class HomeController extends Controller
         // Pull from the database.
         $results = DB::table('bookings AS c')
                     ->select('c.*')
-                    ->where([ ['c.booking_propertyID', '=', $propertyID] ])
+                    ->where([ 
+                        ['c.booking_propertyID', '=', $propertyID],
+                        ['c.booking_inactive', 0]
+                    ])
                     ->get();
 
         $resultArr = [];
