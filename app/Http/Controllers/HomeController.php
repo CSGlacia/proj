@@ -692,7 +692,8 @@ class HomeController extends Controller
 
             $prop = DB::table('properties AS p')
                         ->select('p.*',
-                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_id) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_id) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`'),
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(a.animals_type) SEPARATOR ",") FROM property_animals AS pa LEFT JOIN animals as a ON a.animals_type = pa.property_animals_animalID WHERE pa.property_animals_propertyID = p.property_id AND pa.property_animals_inactive = 0) AS `animals`')
                         )
                         ->where([
                             ['p.property_id', $id],
@@ -701,6 +702,7 @@ class HomeController extends Controller
                         ->first();
 
             $selected_tags = explode(',' , $prop->tags);
+            $selected_animals = explode(',', $prop->animals);
 
             if($user_id != $prop->property_user_id) {
                 return view('bad_permissions');
@@ -733,7 +735,6 @@ class HomeController extends Controller
             $tags = DB::table('tags AS t')
                         ->get();
 
-
             $tag_ret_arr = [];
 
             foreach($tags as $r) {
@@ -746,12 +747,31 @@ class HomeController extends Controller
                 $tag_ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name, 'selected' => $is_selected];
             }
 
+            $animals = DB::table('animals AS a')
+                        ->get();
+
+
+            $ai = [];
+
+            foreach($animals as $r) {
+
+                if(in_array($r->animals_type, $selected_animals)) {
+                    $is_selected = true;
+                } else {
+                    $is_selected = false;
+                }
+
+                $ai[] = ['id' => $r->animals_id, 'text' => $r->animals_type, 'selected' => $is_selected];
+            }
+
+
             return view('edit_property',
                             ['p' => $prop,
                             'images' => $prop_images,
                             'listings' => $listings,
                             'image_count' => count($prop_images),
-                            'tags' => $tag_ret_arr
+                            'tags' => $tag_ret_arr,
+                            'animals' => $ai
                             ]
                 );
         }
@@ -771,6 +791,7 @@ class HomeController extends Controller
         $lng = $request->input('lng');
         $always_list = $request->input('always_list');
         $tags = $request->input('tags');
+        $animals = $request->input('animals');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
@@ -822,6 +843,27 @@ class HomeController extends Controller
 
                 DB::table('property_tags')
                     ->insert($tag_insert);
+
+                // Handle animals.
+                $animals = explode(',', $animals);
+
+                DB::table('property_animals')
+                        ->where([
+                            ['property_animals_propertyID', $prop_id],
+                            ['property_animals_inactive', 0]
+                        ])
+                        ->delete();
+
+                $tag_insert = [];
+
+                foreach($animals as $a) {
+                    $ai[] = ['property_animals_propertyID' => $prop_id, 'property_animals_animalID' => (int)$a, 'property_animals_inactive' => 0];
+                }
+
+                DB::table('property_animals')
+                    ->insert($ai);
+
+
 
                 return json_encode(['status' => 'success']);
 
@@ -1332,5 +1374,250 @@ class HomeController extends Controller
         }
 
         return json_encode(['status' => 'error']);
+    }
+
+    public function view_user(Request $request, $id) {
+        if(isset($id) && !is_null($id) && !empty($id) && is_numeric($id)) {
+            $results = DB::table('properties AS p')
+            ->select('p.*',
+                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
+                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`'),
+                DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`'),
+                DB::raw('(SELECT GROUP_CONCAT(CONCAT(pi.property_image_name) SEPARATOR ",") FROM property_images AS pi WHERE pi.property_id = p.property_id) AS `property_image_name`')
+            )
+            ->where([
+                ['property_inactive', '=', '0'],
+                ['property_user_id','=',$id]
+            ])
+            ->get();
+            foreach($results as $r) {
+                if(is_null($r->scores)) {
+                    $r->scores = "No Reviews Yet";
+                    $r->review_count = 0;
+                } else {
+                    $r->review_count = count(explode(',', $r->review_count));
+                    $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
+                }
+                $r->tags = explode(',', $r->tags);
+                $r->property_image_name = explode(',', $r->property_image_name);
+            }
+            $user = DB::table('users AS u')
+                        ->select('u.name', 'u.id', 'u.email',
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.booking_id) SEPARATOR ",") FROM bookings AS b LEFT JOIN properties AS p ON p.property_id=b.booking_propertyID WHERE b.booking_userID = u.id AND b.booking_inactive = 0) AS `bookings`'),
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(props.property_id) SEPARATOR ",") FROM properties AS props WHERE props.property_user_id = u.id) AS `properties`')
+                        )
+                        ->where([
+                            ['u.id', $id],
+                            ['u.inactive', 0]
+                        ])
+                        ->first();
+
+            if(isset($user) && !empty($user) && !is_null($user)) {
+
+                $bookings = DB::table('bookings AS b')
+                                ->select('b.*', 'p.*')
+                                ->where([
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_startDate', '>', time()],
+                                    ['b.booking_approved', 0],
+                                    ['b.booking_denied', 0]
+                                ])
+                                ->whereIn('b.booking_id', explode(',', $user->bookings))
+                                ->leftJoin('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                                ->get();
+
+                foreach($bookings as $b) {
+                    $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                    $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+                }
+
+
+                $abookings = DB::table('bookings AS b')
+                                ->select('b.*', 'p.*')
+                                ->where([
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_startDate', '>', time()],
+                                    ['b.booking_approved', 1],
+                                    ['b.booking_denied', 0]
+                                ])
+                                ->whereIn('b.booking_id', explode(',', $user->bookings))
+                                ->leftJoin('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                                ->get();
+
+                foreach($abookings as $b) {
+                    $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                    $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+                }
+
+                $pbookings = DB::table('bookings AS b')
+                                ->select('b.*', 'p.*')
+                                ->where([
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_endDate', '<', time()],
+                                    ['b.booking_approved', 1],
+                                    ['b.booking_denied', 0],
+                                    ['b..booking_userID', $user->id]
+                                ])
+                                ->leftJoin('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                                ->get();
+
+                foreach($pbookings as $b) {
+                    $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                    $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+                }
+
+                $dbookings = DB::table('bookings AS b')
+                                ->select('b.*', 'p.*')
+                                ->where([
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_approved', 0],
+                                    ['b.booking_denied', 1]
+                                ])
+                                ->whereIn('b.booking_id', explode(',', $user->bookings))
+                                ->leftJoin('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                                ->get();
+
+                foreach($dbookings as $b) {
+                    $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                    $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+                }
+
+                $listings = DB::table('property_listing AS l')
+                                ->join('project.properties AS p', 'l.property_id', '=', 'p.property_id')
+                                ->where('p.property_user_id', '=', $id)
+                                ->get();
+
+                $reviews = DB::table('tennant_reviews AS t')
+                                ->where([
+                                    ['trs_tennant_id', $id],
+                                    ['trs_inactive', 0]
+                                ])
+                                ->join('users AS u', 'u.id', '=', 'trs_reviewer_id')
+                                ->get();
+
+                $average_guest_score = 0;
+                $count = 0;
+
+                foreach($reviews as $r) {
+                    $r->trs_submitted_at = date('d/m/Y', $r->trs_submitted_at);
+                    $r->trs_edited_at = date('d/m/Y', $r->trs_edited_at);
+                    $count = $count + 1;
+                    $average_guest_score = $average_guest_score + $r->trs_score;
+                }
+
+                if ($count != 0) {
+                    $average_guest_score = $average_guest_score/$count;
+                } else {
+                    $average_guest_score = 'No reviews yet';
+                }
+
+                foreach($listings as $l) {
+                    $l->start_date = date('d/m/Y', $l->start_date);
+                    $l->end_date = date('d/m/Y', $l->end_date);
+                }
+
+                $page_owner = false;
+
+                $id = Auth::id();
+
+                if(is_null($id) || !isset($id) || empty($id)) {
+                    $page_owner = false;
+                } else if($id == $user->id) {
+                    $page_owner = true;
+                }
+
+
+                $aa_bookings = DB::table('bookings as b')
+                                ->select('b.*', 'u.*',
+                                    DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
+                                )
+                                ->where([
+                                    ['p.property_user_id', $id],
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_startDate', '>', time()],
+                                    ['b.booking_approved', 0],
+                                    ['b.booking_denied', 0]
+                                ])
+                                ->join('users AS u', 'u.id', '=', 'b.booking_userID') // gets user info for each of the people booking
+                                ->join('properties AS p', 'p.property_id', 'b.booking_propertyID')
+                                ->get();
+
+                foreach($aa_bookings as $b) {
+                    $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                    $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+
+                    $scores = explode(',', $b->scores);
+                    $scores = array_sum($scores)/count($scores);
+                    $b->scores = $scores;
+                }
+
+                $ua_bookings = DB::table('bookings as b')
+                                ->select('b.*', 'u.*',
+                                    DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
+                                )
+                                ->where([
+                                    ['p.property_user_id', $id],
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_startDate', '>', time()],
+                                    ['b.booking_approved', 1],
+                                    ['b.booking_denied', 0]
+                                ])
+                                ->join('users AS u', 'u.id', '=', 'b.booking_userID') // gets user info for each of the people booking
+                                ->join('properties AS p', 'p.property_id', 'b.booking_propertyID')
+                                ->get();
+
+                foreach($ua_bookings as $b) {
+                    $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                    $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+
+                    $scores = explode(',', $b->scores);
+                    $scores = array_sum($scores)/count($scores);
+                    $b->scores = $scores;
+                }
+
+                $pa_bookings = DB::table('bookings as b')
+                                ->select('b.*', 'u.*',
+                                    DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.trs_score) SEPARATOR ",") FROM tennant_reviews AS t WHERE t.trs_inactive = 0 AND t.trs_tennant_id = u.id) AS `scores`')
+                                )
+                                ->where([
+                                    ['p.property_user_id', $id],
+                                    ['b.booking_inactive', 0],
+                                    ['b.booking_endDate', '<', time()],
+                                    ['b.booking_approved', 1],
+                                    ['b.booking_denied', 0]
+                                ])
+                                ->join('users AS u', 'u.id', '=', 'b.booking_userID') // gets user info for each of the people booking
+                                ->join('properties AS p', 'p.property_id', 'b.booking_propertyID')
+                                ->get();
+
+                foreach($pa_bookings as $b) {
+                    $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
+                    $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
+
+                    $scores = explode(',', $b->scores);
+                    $scores = array_sum($scores)/count($scores);
+                    $b->scores = $scores;
+                }
+
+                return view('view_user',
+                    ['user' => $user,
+                    'bookings' => $bookings,
+                    'listings' => $listings,
+                    'properties' => $results,
+                    'page_owner' => $page_owner,
+                    'reviews' => $reviews,
+                    'guest_score' => $average_guest_score,
+                    'abookings' => $abookings,
+                    'pbookings' => $pbookings,
+                    'aa_bookings' => $aa_bookings,
+                    'ua_bookings' => $ua_bookings,
+                    'pa_bookings' => $pa_bookings,
+                    'dbookings' => $dbookings
+                    ]
+                );
+            }
+        }
+
+        return view('user_not_found');
     }
 }
