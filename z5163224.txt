@@ -17,3 +17,19 @@ Week 3:
 
 Week 4:
 - Added more user stories, worked on search issue during sprint 1
+
+Week 5:
+- Implemented basic search functionality, returning properties with matching address, suburb, and/or post code (based on selection)
+
+Week 6:
+- Fixed bugs regarding the search
+- Wrote more user stories
+
+Week 7:
+- Worked on front end
+- Displayed property listings on profile page
+- Fixed more stuff on the search
+
+Week 8:
+- Implemented email functionality on registration and booking
+- Prevented listings from overlapping

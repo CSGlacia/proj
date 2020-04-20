@@ -9,8 +9,6 @@
             <h3><b>Property Details</b></h3>
             <div>Property Name: {{$p->property_title}}</div>
             <div>Address: {{$p->property_address}}</div>
-            <div>Suburb: {{$p->property_suburb}}</div>
-            <div>Postcode: {{$p->property_postcode}}</div>
             <span>Beds: {{$p->property_beds}}</span>&nbsp;<span>Baths: {{$p->property_baths}}</span>&nbsp;<span>Cars: {{$p->property_cars}}</span>
             <div>Description: {{$p->property_desc}}</div>
             <div>Owner: <a href="/user_profile/{{$p->id}}">{{$p->name}}</a></div>
@@ -26,8 +24,14 @@
     <hr>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
-            <span>How would you rate your stay at the property?</span>
-            <input id="rating" class="form-control" style="width:25%;" type="number" placeholder="1 - 5" min="1" max="5" required>
+            <div>How would you rate your stay at the property?</div>
+            <span>
+                <span name="score-star"><i class="fas fa-star gold-star" id="s1" data-num="1"></i></span>
+                <span name="score-star"><i class="fas fa-star" id="s2" data-num="2"></i></span>
+                <span name="score-star"><i class="fas fa-star" id="s3" data-num="3"></i></span>
+                <span name="score-star"><i class="fas fa-star" id="s4" data-num="4"></i></span>
+                <span name="score-star"><i class="fas fa-star" id="s5" data-num="5"></i></span>
+            </span>
         </div>
     </div>
     <div class="row">
@@ -40,49 +44,124 @@
         <div class="col-sm-12 col-md-12 col-lg-12">
             <span class="btn btn-xs btn-primary" id="submit_review">Submit Review</span>
         </div>
-    </div>    
+    </div>
 </div>
 @endsection
 
 @section('scripts')
 <script>
 $(document).ready(function() {
-    $('#rating').on('input', function(e) {
-        var input = $(this).val();
-        if(input < 1) {
-            input = 1;
+    $(document).on('mouseover', '.fa-star', function() {
+        num = $(this).data("num");
+
+        if(num == 1) {
+            $('#s1').addClass('gold-star-temp');
         }
 
-        if(input > 5) {
-            input = 5;
+        if(num == 2) {
+            $('#s1').addClass('gold-star-temp');
+            $('#s2').addClass('gold-star-temp');
         }
 
-        $('#rating').val(input);
+        if(num == 3) {
+            $('#s1').addClass('gold-star-temp');
+            $('#s2').addClass('gold-star-temp');
+            $('#s3').addClass('gold-star-temp');
+        }
+
+        if(num == 4) {
+            $('#s1').addClass('gold-star-temp');
+            $('#s2').addClass('gold-star-temp');
+            $('#s3').addClass('gold-star-temp');
+            $('#s4').addClass('gold-star-temp');
+        }
+
+        if(num == 5) {
+            $('#s1').addClass('gold-star-temp');
+            $('#s2').addClass('gold-star-temp');
+            $('#s3').addClass('gold-star-temp');
+            $('#s4').addClass('gold-star-temp');
+            $('#s5').addClass('gold-star-temp');
+        }
     });
 
+    $(document).on('mouseout', '.fa-star', function() {
+        $('#s1').removeClass('gold-star-temp');
+        $('#s2').removeClass('gold-star-temp');
+        $('#s3').removeClass('gold-star-temp');
+        $('#s4').removeClass('gold-star-temp');
+        $('#s5').removeClass('gold-star-temp');
+
+    });
+
+    $(document).on('click', '[name="score-star"]', function() {
+        num = $(this).find("i").data("num");
+
+        $('#s1').removeClass('gold-star');
+        $('#s2').removeClass('gold-star');
+        $('#s3').removeClass('gold-star');
+        $('#s4').removeClass('gold-star');
+        $('#s5').removeClass('gold-star');
+
+        if(num == 1) {
+            $('#s1').addClass('gold-star');
+        }
+
+        if(num == 2) {
+            $('#s1').addClass('gold-star');
+            $('#s2').addClass('gold-star');
+        }
+
+        if(num == 3) {
+            $('#s1').addClass('gold-star');
+            $('#s2').addClass('gold-star');
+            $('#s3').addClass('gold-star');
+        }
+
+        if(num == 4) {
+            $('#s1').addClass('gold-star');
+            $('#s2').addClass('gold-star');
+            $('#s3').addClass('gold-star');
+            $('#s4').addClass('gold-star');
+        }
+
+        if(num == 5) {
+            $('#s1').addClass('gold-star');
+            $('#s2').addClass('gold-star');
+            $('#s3').addClass('gold-star');
+            $('#s4').addClass('gold-star');
+            $('#s5').addClass('gold-star');
+        }
+        star_score = num;
+    });
+
+    var star_score = 1;
+
     $(document).on('click', '#submit_review', function(e){
-        var score = $('#rating').val();
+        var score = star_score
         var review = $('#review_desc').val();
-        
+
         $.ajax({
             url: '/create_property_review',
             method: 'POST',
             dataType: 'JSON',
             data: 'score='+score+'&review='+review+'&booking_id='+{{$b->booking_id}}+'&property_id='+{{$p->property_id}},
             success: function(html) {
-                var data = JSON.parse(html);
-
-                if(data['status'] == "success") {
-                    alert("Review Submitted Successfully");
-                } else if(data['status'] == 'bad_input') {
-                    alert("Please double check all fields are filled!");
+                console.log(html);
+                if(html['status'] == "success") {
+                    Swal.fire("Success", "Review Submitted Successfully", "success");
+                    setTimeout(function() {
+                        window.location.href = "/property_reviews";
+                    }, 3000);
+                } else if(html['status'] == 'bad_input') {
+                    Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else {
-                    alert("There was an error, please try again!");
+                    Swal.fire("Error", "There was an error, please try again!", "error");
                 }
             },
             error: function ( xhr, errorType, exception ) {
                 var errorMessage = exception || xhr.statusText;
-                alert("There was a connectivity problem. Please try again.");
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
             }
         });
 

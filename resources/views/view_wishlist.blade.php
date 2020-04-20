@@ -25,7 +25,7 @@ $(document).ready(function() {
         e.preventDefault();
         var propertyID = $(this).get(0).id;
         alert(propertyID);
-        alert("Removed this item from your wishlist!");
+
         $.ajax({
             url: '/delete_wishlist',
             method: 'POST',
@@ -34,14 +34,14 @@ $(document).ready(function() {
             success: function(html) {
                 var data = JSON.parse(html);
                 if(data['status'] == "success") {
-                    alert("Success!");
+                  Swal.fire("Success", "Removed this item from your wishlist!", "success");
                 } else {
-                    alert("There was an error, please try again!");
+                    Swal.fire("Error", "There was an error, please try again!", "error");
                 }
             },
             error: function ( xhr, errorType, exception ) {
                 var errorMessage = exception || xhr.statusText;
-                alert("There was a connectivity problem. Please try again.");
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
             }
         });
 

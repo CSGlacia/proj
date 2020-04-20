@@ -1,0 +1,103 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h2><b>Booking</b></h2>
+    <hr>
+    <div class="row">
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <h3><b>Property Details</b></h3>
+            <div><i class="fas fa-home"></i>&nbsp;<a href="/view_property/{{$b->property_id}}">{{$b->property_title}}</a></div>
+            <div>{{$b->property_address}}</div>
+            <span><i class="fas fa-bed"></i> {{$b->property_beds}}</span>&nbsp;<span><i class="fas fa-bath"></i> {{$b->property_baths}}</span>&nbsp;<span><i class="fas fa-car"></i> {{$b->property_cars}}</span>
+            <div>Description: {{$b->property_desc}}</div>
+            <div>Owner: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a></div>
+            @if($b->scores != -1)
+            <div ><i class="fas fa-star @if($b->scores > 2.5) gold-star @endif"></i>{{$b->scores}}</div>
+            @endif
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <h3><b>Booking Details</b></h3>
+            <div>Tennant:&nbsp;<a href="/user_profile/{{$tennant->id}}">{{$tennant->name}}</a></div>
+            <div>Start Date: {{$b->booking_startDate}}</div>
+            <div>End Date: {{$b->booking_endDate}}</div>
+            <div>Persons Booked: {{$b->booking_persons}}</div>
+            <div>Status: {{$status}}</div>
+        </div>
+    </div>
+    @if($user_id == $b->id && $status == 'NOT APPROVED')
+        <div class="row" style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Bookying</span></div>
+    @endif
+</div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+
+    $(document).on('click', '[name="approve_booking"]', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        $.ajax({
+            url: '/approve_booking/'+id,
+            method: 'GET',
+            dataType: 'JSON',
+            success: function(html) {
+                if(html['status'] == "success") {
+                    swal({
+                        title:"Success!",
+                        text: "Booking approved successfully",
+                        type:"success",
+                    });
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);
+                } else if(html['status'] == 'overlapping_bookings') {
+                    Swal.fire("Warning", "An approved booking overlaps with this booking. This booking has been denied", "warning");
+                } else {
+                    Swal.fire("Error", "There was an error, please try again!", "error");
+                }
+            },
+            error: function ( xhr, errorType, exception ) {
+                var errorMessage = exception || xhr.statusText;
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+            }
+        });
+    });
+
+    $(document).on('click', '[name="deny_booking"]', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        $.ajax({
+            url: '/deny_booking/'+id,
+            method: 'GET',
+            dataType: 'JSON',
+            success: function(html) {
+                console.log(html);
+                if(html['status'] == "success") {
+                    swal({
+                        title:"Success!",
+                        text: "Booking denied successfully",
+                        type:"success",
+                    });
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);
+                } else {
+                    Swal.fire("Error", "There was an error, please try again!", "error");
+                }
+            },
+            error: function ( xhr, errorType, exception ) {
+                var errorMessage = exception || xhr.statusText;
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+            }
+        });
+    });
+
+
+
+});
+</script>
+@endsection

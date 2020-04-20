@@ -1,11 +1,16 @@
 <?php
-
 namespace App\Http\Controllers;
 
+// Include the SDK using the Composer autoloader
+require '../vendor/autoload.php';
+use \Aws\S3\S3Client;
+use \Aws\S3\Exception\S3Exception;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Auth;
 use DB;
-
+use App;
 class HomeController extends Controller
 {
     /**
@@ -29,35 +34,181 @@ class HomeController extends Controller
     }
 
     public function listing_page(Request $request) {
-        return view('create_property_page');
+        $tags = DB::table('tags AS t')
+                    ->get();
+
+
+        $ret_arr = [];
+
+        foreach($tags as $r) {
+            $ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name];
+        }
+
+        $animals = DB::table('animals AS a')
+                    ->get();
+
+
+        $animalsArray = [];
+
+        foreach($animals as $r) {
+            $animalsArray[] = ['id' => $r->animals_id, 'text' => $r->animals_type];
+        }
+
+
+        return view('create_property_page',
+            ['tags' => $ret_arr],
+            ['animals' => $animalsArray]
+        );
     }
 
     public function create_property(Request $request) {
         $user = Auth::id();
         $address = $request->input('address');
-        $suburb = $request->input('suburb');
-        $postcode = $request->input('postcode');
         $beds = $request->input('beds');
         $baths = $request->input('baths');
         $cars = $request->input('cars');
         $desc = $request->input('desc');
         $l_name = $request->input('l_name');
+        $images = $request->file('files');
+        $lat = $request->input('lat');
+        $lng = $request->input('lng');
+        $always_list = $request->input('always_list');
+        $tags = $request->input('tags');
+        $animals = $request->input('animals');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
-            if(isset($address) && !is_null($address) && !empty($address) && isset($suburb) && !is_null($suburb) && !empty($suburb) && isset($postcode) && !is_null($postcode) && !empty($postcode) && is_numeric($postcode) && isset($beds) && !is_null($beds) && !empty($beds) && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars) && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
+            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars)
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
 
-                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_suburb' => htmlspecialchars($suburb), 'property_postcode' => $postcode, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name];
+                if(strpos($address, 'NSW') === false) {
+                    return json_encode(['status' => 'wrong_state']);
+                }
 
-                DB::table('properties')
-                    ->insert($insert);
+                if($always_list != 'true' && $always_list != 'false') {
+                    $always_list = 0;
+                }
 
-                return json_encode(['status' => 'success']);
+                if($always_list == 'true') {
+                    $always_list = 1;
+                }
+
+                if($always_list == 'false') {
+                    $always_list = 0;
+                }
+
+                $suburb = explode(',' , $address);
+                $suburb = $suburb[1];
+                $suburb = explode(' ', $suburb);
+                $suburb = $suburb[1];
+
+                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list, 'property_suburb' => $suburb];
+
+                $property_id = DB::table('properties')
+                    ->insertGetId($insert);
+
+                $tags = explode(',', $tags);
+                $animals = explode(',', $animals);
+
+                $tag_insert = [];
+                $ai = [];
+
+                foreach($tags as $t) {
+                    $tag_insert[] = ['pt_property_id' => $property_id, 'pt_tag_id' => $t, 'pt_inactive' => 0];
+                }
+
+                foreach($animals as $a) {
+                    $ai[] = ['property_animals_propertyID' => $property_id, 'property_animals_animalID' => $a, 'property_animals_inactive' => 0];
+                }
+
+                DB::table('property_tags')
+                    ->insert($tag_insert);
+
+                DB::table('property_animals')
+                    ->insert($ai);
+
+                return json_encode(['status' => 'success', 'id' => $property_id]);
 
             } else {
                 return json_encode(['status' => 'bad_input']);
             }
         }
 
+        return json_encode(['status' => 'error']);
+    }
+
+    public function upload_property_images(Request $request, $property_id) {
+        $images = $request->file();
+        $bucket = 'turtle-database';
+        $directory = "images/";
+
+        $s3 = new \Aws\S3\S3Client([
+        'version' => 'latest',
+        'region'  => 'ap-southeast-2'
+        ]);
+
+        if(isset($property_id) && !is_null($property_id) && !empty($property_id) && is_numeric($property_id) && isset($images) && !empty($images) && !is_null($images)) {
+            foreach ($images['file'] as $key => $value) {
+                try {
+                    // Upload data.
+                    $path = $directory.$property_id.'/'.$key.'.'.$value->extension();
+                    $insert = ['property_id' => $property_id,'property_image_name'=> $path];
+
+                    DB::table('property_images')
+                        ->insert($insert);
+
+                    $result = $s3->putObject(array(
+                        'Bucket' => $bucket,
+                        'Key'    => $path,
+                        'Body'   => $value->get(),
+                        'ACL'    => 'public-read',
+
+                    ));
+                } catch (S3Exception $e) {
+                    return json_encode(['status' => 'bad_input']);
+                }
+            }
+            return json_encode(['status' => 'success']);
+        }
+        return json_encode(['status' => 'error']);
+    }
+
+    public function remove_property_images(Request $request, $property_id) {
+        $bucket = 'turtle-database';
+        $directory = "images/";
+        $remove_ids = $request->input('remove_ids');
+
+        $s3 = new \Aws\S3\S3Client([
+            'version' => 'latest',
+            'region'  => 'ap-southeast-2'
+        ]);
+
+        if(isset($property_id) && !is_null($property_id) && !empty($property_id) && is_numeric($property_id) &&isset($remove_ids) && !is_null($remove_ids) && !empty($remove_ids)) {
+            $ids = explode(',', $remove_ids);
+
+            $images = DB::table('property_images')
+                        ->where('property_id', $property_id)
+                        ->whereIn('image_id', $ids)
+                        ->get();
+
+            foreach ($images as $i) {
+                try {
+                    $result = $s3->deleteObject(array(
+                        'Bucket' => $bucket,
+                        'Key'    => $i->property_image_name,
+                    ));
+                } catch (S3Exception $e) {
+                    return json_encode(['status' => 'bad_input']);
+                }
+            }
+
+            DB::table('property_images')
+                        ->where('property_id', $property_id)
+                        ->whereIn('image_id', $ids)
+                        ->delete();
+            return json_encode(['status' => 'success']);
+        }
         return json_encode(['status' => 'error']);
     }
 
@@ -75,11 +226,48 @@ class HomeController extends Controller
         $persons = $request->input('persons');
 
 
-        // TODO: (?) User cannot book more than one property for themselves
-        // TODO: App crashes if unrecognised commands injected.
+        $startDate = explode('/', $startDate);
+        $startDate = $startDate[2].'-'.$startDate[1].'-'.$startDate[0];
+
+        $endDate = explode('/', $endDate);
+        $endDate = $endDate[2].'-'.$endDate[1].'-'.$endDate[0];
 
         $s = strtotime($startDate);
         $e = strtotime($endDate);
+
+        $prop = DB::table('properties AS p')
+                    ->select('p.property_always_list')
+                    ->where([
+                        ['p.property_id', $propertyID],
+                        ['p.property_inactive', 0]
+                    ])
+                    ->first();
+
+        if($prop->property_always_list == 0) {
+            $listings = DB::table('property_listing AS l')
+                            ->where([
+                                ['l.property_id', $propertyID],
+                                ['l.inactive', 0]
+                            ])
+                            ->get();
+
+            if(count($listings) > 0) {
+                $listings_good = false;
+                foreach($listings as $l) {
+                    if($s >= $l->start_date && $e <= $l->end_date) {
+                        $listings_good = true;
+                    }
+                }
+
+                if($listings_good == false) {
+                    return json_encode(['status' => 'no_listings']);
+                }
+            } else {
+                return json_encode(['status' => 'no_listings']);
+
+            }
+        }
+
         // If the end date is before $s, fail. (You can't book for 1 day)
         if ($s >= $e) {
             return json_encode(["status" => "Time failure!"]);
@@ -88,7 +276,10 @@ class HomeController extends Controller
         // Pull from the database.
         $results = DB::table('bookings AS c')
                     ->select('c.*')
-                    ->where([ ['booking_propertyID', '=', $propertyID] ])
+                    ->where([
+                        ['c.booking_propertyID', '=', $propertyID],
+                        ['c.booking_inactive', 0]
+                    ])
                     ->get();
 
         $resultArr = [];
@@ -98,7 +289,7 @@ class HomeController extends Controller
         // than the start of the booking time.
         foreach ($results as $r) {
             if ($r->booking_startDate <= $s && $s < $r->booking_endDate) {
-                return json_encode(["status" => "Someone has already booked that time!"]);
+                return json_encode(["status" => "time_booked"]);
             }
         }
 
@@ -107,7 +298,7 @@ class HomeController extends Controller
             $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
 
             DB::table('bookings')->insert($insert);
-
+            $this->sendBookingApplicationEmail($propertyID, $s, $e);
             return json_encode(['status' => 'success']);
         }
 
@@ -133,9 +324,12 @@ class HomeController extends Controller
                                 ['b.booking_inactive', 0],
                                 ['b.booking_startDate', '<', time()],
                                 ['b.booking_endDate', '<', time()],
-                                ['b.booking_property_reviewed', 0]
+                                ['b.booking_property_reviewed', 0],
+                                ['b.booking_denied', 0],
+                                ['b.booking_approved', 1]
                             ])
                             ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->join('users AS u', 'u.id', '=', 'p.property_user_id')
                             ->get();
 
 
@@ -144,9 +338,25 @@ class HomeController extends Controller
                 $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
             }
 
+            $reviews = DB::table('property_reviews AS r')
+                            ->where([
+                                ['r.prs_reviewer_id', $id],
+                                ['r.prs_inactive', 0]
+                            ])
+                            ->join('properties AS p', 'p.property_id', '=', 'r.prs_property_id')
+                            ->join('users AS u', 'u.id', '=', 'p.property_user_id')
+                            ->join('bookings AS b', 'b.booking_id', '=', 'r.prs_booking_id')
+                            ->get();
+
+            foreach($reviews as $r) {
+                $r->booking_startDate = date('d/m/Y', $r->booking_startDate);
+                $r->booking_endDate = date('d/m/Y', $r->booking_endDate);
+            }
+
             return view('property_review',
                     [
-                        'bookings' => $bookings
+                        'bookings' => $bookings,
+                        'reviews' => $reviews
                     ]);
         }
         return view('error_page');
@@ -162,7 +372,9 @@ class HomeController extends Controller
                                 ['p.property_inactive', 0],
                                 ['b.booking_startDate', '<', time()],
                                 ['b.booking_endDate', '<', time()],
-                                ['b.booking_tennant_reviewed', 0]
+                                ['b.booking_tennant_reviewed', 0],
+                                ['b.booking_denied', 0],
+                                ['b.booking_approved', 1]
                             ])
                             ->join('bookings AS b', 'b.booking_propertyID', '=', 'p.property_id')
                             ->join('users AS u', 'u.id', '=', 'b.booking_userID')
@@ -173,9 +385,26 @@ class HomeController extends Controller
                 $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
             }
 
+            $past_reviews = DB::table('tennant_reviews as t')
+                            ->where([
+                                ['t.trs_inactive', 0],
+                                ['t.trs_reviewer_id', $id]
+                            ])
+                            ->join('bookings AS b', 'b.booking_id', '=', 't.trs_booking_id')
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->get();
+
+            foreach($past_reviews as $p) {
+                $p->trs_submitted_at = date('d/m/Y', $p->trs_submitted_at);
+                $p->booking_startDate = date('d/m/Y', $p->booking_startDate);
+                $p->booking_endDate = date('d/m/Y', $p->booking_endDate);
+            }
+
             return view('tennant_review',
                     [
-                        'bookings' => $bookings
+                        'bookings' => $bookings,
+                        'past_reviews' => $past_reviews
                     ]);
         }
 
@@ -187,7 +416,8 @@ class HomeController extends Controller
             $id = Auth::id();
             $user_properties = DB::table('properties AS p')
             ->select('p.*')
-            ->where([ ['property_user_id', '=', $id] ])
+            ->where([ ['property_user_id', '=', $id],
+                        ['property_inactive',0] ])
             ->get();
 
             return view('create_property_listing',['properties' => $user_properties]);
@@ -198,6 +428,7 @@ class HomeController extends Controller
             $price = $request->input('price');
             $start_date = $request->input('start_date');
             $end_date = $request->input('end_date');
+            $reccurring = $request->input('recurr');
 
             if(!isset($price) || !isset($property) || !isset($start_date) || !isset($end_date)){
                 return json_encode(['status' => 'bad_input']);
@@ -208,16 +439,41 @@ class HomeController extends Controller
             } else if($price >= 1000000){
                 return json_encode(['status' => 'price_high']);
             }
+            if(isset($reccurring)){
+                if($reccurring != "false" && $reccurring != "true") {
+                    return json_encode(['status' => 'error']);
+                }
+
+                if($reccurring == "false") {
+                    $reccurring = 0;
+                }
+
+                if($reccurring == "true") {
+                    $reccurring = 1;
+                }
+            }
+            else{
+                $reccurring = 0;
+            }
+
+            $start_date = explode('/', $start_date);
+            $start_date = $start_date[2].'-'.$start_date[1].'-'.$start_date[0];
+
+            $end_date = explode('/', $end_date);
+            $end_date = $end_date[2].'-'.$end_date[1].'-'.$end_date[0];
 
             $start = strtotime($start_date);
             $end = strtotime($end_date);
             $curr = time();
 
-            if ($start >= $end || $start <= $curr) {
+            if ($start > $end || $start < $curr) {
                 return json_encode(['status' => 'date_invalid']);
             }
+            if ($this->checkValidDates($start, $end, $property) == false){
+                return json_encode(['status' => 'overlapping_date']);
+            }
 
-            $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property];
+            $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
 
             DB::table('property_listing')->insert($data);
 
@@ -242,21 +498,27 @@ class HomeController extends Controller
             $booking = DB::table('bookings AS b')
                             ->where([
                                 ['b.booking_id', $booking_id],
-                                ['b.booking_inactive', 0]
+                                ['b.booking_inactive', 0],
+                                ['b.booking_property_reviewed', 0]
                             ])
                             ->first();
 
-            $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
-            $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+            if(isset($booking) && !empty($booking) && !is_null($booking)) {
 
-            return view('review_property',
-                [
-                    'booking_id' => $booking_id,
-                    'property_id' => $property_id,
-                    'p' => $property,
-                    'b' => $booking
-                ]
-            );
+                $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
+                $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+
+                return view('review_property',
+                    [
+                        'booking_id' => $booking_id,
+                        'property_id' => $property_id,
+                        'p' => $property,
+                        'b' => $booking
+                    ]
+                );
+            } else {
+                return view('bad_permissions');
+            }
         } else {
             return view('error_page');
         }
@@ -278,22 +540,29 @@ class HomeController extends Controller
             $booking = DB::table('bookings AS b')
                             ->where([
                                 ['b.booking_id', $booking_id],
-                                ['b.booking_inactive', 0]
+                                ['b.booking_inactive', 0],
+                                ['b.booking_tennant_reviewed', 0]
                             ])
                             ->join('users AS u', 'u.id', '=', 'b.booking_userID')
                             ->first();
 
-            $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
-            $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+            if(isset($booking) && !empty($booking) && !is_null($booking)) {
 
-            return view('review_tennant',
-                [
-                    'booking_id' => $booking_id,
-                    'property_id' => $property_id,
-                    'p' => $property,
-                    'b' => $booking
-                ]
-            );
+
+                $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
+                $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+
+                return view('review_tennant',
+                    [
+                        'booking_id' => $booking_id,
+                        'property_id' => $property_id,
+                        'p' => $property,
+                        'b' => $booking
+                    ]
+                );
+            } else {
+                return view('bad_permissions');
+            }
         } else {
             return view('error_page');
         }
@@ -382,6 +651,250 @@ class HomeController extends Controller
         return json_encode(['status' => 'error']);
     }
 
+    public function cancel_booking(Request $request) {
+        $id = Auth::id();
+        $booking_id = $request->input('booking_id');
+        $curr = time();
+
+        $booking = DB::table('bookings AS b')
+                                ->where([
+                                    ['b.booking_id', $booking_id],
+                                    ['b.booking_userID', $id],
+                                    ['b.booking_property_reviewed', 0]
+                                ])
+                                ->first();
+
+        $time = strtotime('-14 days', $booking->booking_startDate);
+
+
+        if ($curr <= $time) {
+            $changed = DB::table('bookings AS b')
+                        ->where([
+                            ['b.booking_id', $booking_id],
+                            ['b.booking_inactive', 0],
+
+                        ])
+                        ->update(['b.booking_inactive' => 1]);
+
+            if(!empty($changed)) {
+                return json_encode(['status' => 'success']);
+            }
+        } else if ($curr > $time) {
+            return json_encode(['status' => 'date error']);
+        }
+        return json_encode(['status' => 'error']);
+    }
+
+    public function edit_property(Request $request, $id) {
+        $user_id = Auth::id();
+
+        if(isset($id) && !empty($id) && !is_null($id)) {
+
+            $prop = DB::table('properties AS p')
+                        ->select('p.*',
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_id) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
+                        )
+                        ->where([
+                            ['p.property_id', $id],
+                            ['p.property_inactive', 0]
+                        ])
+                        ->first();
+
+            $selected_tags = explode(',' , $prop->tags);
+
+            if($user_id != $prop->property_user_id) {
+                return view('bad_permissions');
+            }
+
+            $listings = DB::table('property_listing AS pl')
+                            ->where([
+                                ['pl.property_id', $id],
+                                ['pl.inactive', 0]
+                            ])
+                            ->get();
+
+            foreach($listings as $l) {
+                $l->start_date = date('d/m/Y', $l->start_date);
+                $l->end_date = date('d/m/Y', $l->end_date);
+            }
+
+            $bucket = 'turtle-database';
+
+            $s3 = new \Aws\S3\S3Client([
+            'version' => 'latest',
+            'region'  => 'ap-southeast-2'
+            ]);
+
+            $prop_images = DB::table('property_images AS p')
+                            ->select('p.*')
+                            ->where([['p.property_id',$id]])
+                            ->get();
+
+            $tags = DB::table('tags AS t')
+                        ->get();
+
+
+            $tag_ret_arr = [];
+
+            foreach($tags as $r) {
+                if(in_array($r->tag_id, $selected_tags)) {
+                    $is_selected = true;
+                } else {
+                    $is_selected = false;
+                }
+
+                $tag_ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name, 'selected' => $is_selected];
+            }
+
+            return view('edit_property',
+                            ['p' => $prop,
+                            'images' => $prop_images,
+                            'listings' => $listings,
+                            'image_count' => count($prop_images),
+                            'tags' => $tag_ret_arr
+                            ]
+                );
+        }
+    }
+
+    public function update_property(Request $request) {
+        $prop_id = $request->input('prop_id');
+        $user = Auth::id();
+        $address = $request->input('address');
+        $beds = $request->input('beds');
+        $baths = $request->input('baths');
+        $cars = $request->input('cars');
+        $desc = $request->input('desc');
+        $l_name = $request->input('l_name');
+        $images = $request->file('files');
+        $lat = $request->input('lat');
+        $lng = $request->input('lng');
+        $always_list = $request->input('always_list');
+        $tags = $request->input('tags');
+
+        if(isset($user) && !is_null($user) && is_numeric($user)) {
+            if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars)
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
+
+                if(strpos($address, 'NSW') === false) {
+                    return json_encode(['status' => 'wrong_state']);
+                }
+
+                if($always_list != 'true' && $always_list != 'false') {
+                    $always_list = 0;
+                }
+
+                if($always_list == 'true') {
+                    $always_list = 1;
+                }
+
+                if($always_list == 'false') {
+                    $always_list = 0;
+                }
+
+                $suburb = explode(',' , $address);
+                $suburb = $suburb[1];
+                $suburb = explode(' ', $suburb);
+                $suburb = $suburb[1];
+
+                $update = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list, 'property_suburb' => $suburb];
+
+                DB::table('properties')
+                    ->where('property_id', $prop_id)
+                    ->update($update);
+
+                $tags = explode(',', $tags);
+
+                DB::table('property_tags')
+                        ->where([
+                            ['pt_property_id', $prop_id],
+                            ['pt_inactive', 0]
+                        ])
+                        ->delete();
+
+                $tag_insert = [];
+
+                foreach($tags as $t) {
+                    $tag_insert[] = ['pt_property_id' => $prop_id, 'pt_tag_id' => (int)$t, 'pt_inactive' => 0];
+                }
+
+                DB::table('property_tags')
+                    ->insert($tag_insert);
+
+                return json_encode(['status' => 'success']);
+
+            } else {
+                return json_encode(['status' => 'bad_input']);
+            }
+        }
+
+        return json_encode(['status' => 'error']);
+    }
+
+    public function update_property_listing(Request $request) {
+        $user = Auth::id();
+        $property = $request->input('property'); //this is property id
+        $price = $request->input('price');
+        $data = $request->input('data');
+
+        //set current property listings to inactive
+        DB::table('property_listing')
+            ->where([
+                ['inactive', 0],
+                ['property_id', $property]
+            ])
+            ->update(['inactive' => 1]);
+
+        $data = explode(',', $data);
+        $listings = [];
+
+        foreach($data as $d) {
+            $listings[] = explode('~', $d);
+        }
+
+        if(!isset($price) || !isset($property)){
+            return json_encode(['status' => 'bad_input']);
+        }
+
+        if($price <=  0){
+            return json_encode(['status' => 'price_low']);
+        } else if($price >= 1000000){
+            return json_encode(['status' => 'price_high']);
+        }
+
+        $insert = [];
+
+        foreach($listings as $l) {
+            $start = explode('/', $l[0]);
+            $start = $start[2].'-'.$start[1].'-'.$start[0];
+
+            $end = explode('/', $l[1]);
+            $end = $end[2].'-'.$end[1].'-'.$end[0];
+
+            $start = strtotime($start);
+            $end = strtotime($end);
+            $curr = time();
+
+            if($l[2] == "false") {
+                $reccurring = 0;
+            } else {
+                $reccurring = 1;
+            }
+
+            if ($start >= $end || $start <= $curr) {
+                return json_encode(['status' => 'date_invalid']);
+            }
+
+            $insert[] = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
+        }
+        DB::table('property_listing')->insert($insert);
+
+
+        return json_encode(['status' => 'success']);
+    }
+
     public function add_to_wishlist(Request $request) {
         $userID = Auth::id();
         $propertyID = $request->input('propertyID');
@@ -391,13 +904,16 @@ class HomeController extends Controller
 
 
         // Pull from the database.
-        // $results = DB::table('wishlist AS w')
-        //             ->select('w.*')
-        //             ->where([
-        //                 ['wishlist_propertyID', '=', $propertyID]
-        //                 ['wishlist_userID', '=', $userID]
-        //             ])
-        //             ->get();
+        $results = DB::table('wishlist AS w')
+                    ->select('w.*')
+                    ->where([
+                        ['wishlist_propertyID', '=', $propertyID],
+                        ['wishlist_userID', '=', $userID]
+                    ])
+                    ->get();
+        if(isset($results)){
+            return json_encode(['status' => 'exists']);
+        }
         DB::table('wishlist')
                 ->updateOrInsert(
                         ['wishlist_userID' => $userID, 'wishlist_propertyID' => $propertyID],
@@ -471,8 +987,351 @@ class HomeController extends Controller
             ])
             ->update(['property_inactive' => 1]);
 
-            return json_encode(["status" => "Success!"]);
+            return json_encode(["status" => "success"]);
         }
-        return json_encode(["status" => "This property cannot be removed."]);
+        return json_encode(["status" => "property_remove_error"]);
+    }
+
+    public function edit_tennant_review(Request $request, $review_id) {
+        $id = Auth::id();
+
+        if(isset($id) && !is_null($id) && !empty($id) && isset($review_id) && !is_null($review_id) && !empty($review_id)) {
+            $review = DB::table('tennant_reviews AS t')
+                        ->where([
+                            ['t.trs_id', $review_id],
+                            ['t.trs_reviewer_id', $id],
+                            ['t.trs_inactive', 0]
+                        ])
+                        ->join('bookings AS b', 'b.booking_id', '=', 't.trs_booking_id')
+                        ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+                        ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                        ->first();
+
+                return view('edit_tennant_review',
+                    ['review' => $review]
+                );
+
+        }
+
+        return view('bad_permissions');
+    }
+
+    public function update_tennant_review(Request $request) {
+        $id = Auth::id();
+        $score = $request->input('score');
+        $review = $request->input('review');
+        $review_id = $request->input('review_id');
+
+        if(isset($id) && !is_null($id) && !empty($id)) {
+            if(isset($score) && !empty($score) && !is_null($score) && is_numeric($score) && isset($review) && !is_null($review)) {
+
+                $review_present = DB::table('tennant_reviews')
+                            ->where('trs_id', $review_id)
+                            ->first();
+
+                if(isset($review_present) && !is_null($review_present)) {
+                    $insert = ['trs_score' => $score, 'trs_review' => $review, 'trs_edited_at' => time(), 'trs_edited' => 1];
+
+                    $inserted = DB::table('tennant_reviews')
+                                    ->where('trs_id', $review_id)
+                                    ->update($insert);
+
+                    return json_encode(['status' => 'success']);
+                }
+            }
+            return json_encode(['status' => 'bad_input']);
+        }
+        return json_encode(['status' => 'error']);
+    }
+
+    public function edit_property_review(Request $request, $review_id) {
+        $id = Auth::id();
+
+        if(isset($review_id) && !empty($review_id) && !is_null($review_id) && isset($id) && !empty($id) && !is_null($id)) {
+            $review = DB::table('property_reviews AS r')
+                        ->where([
+                            ['r.prs_reviewer_id', $id],
+                            ['r.prs_id', $review_id]
+                        ])
+                        ->join('properties AS p', 'p.property_id', '=', 'r.prs_property_id')
+                        ->join('bookings AS b', 'b.booking_id', '=', 'r.prs_booking_id')
+                        ->join('users AS u', 'u.id', '=', 'p.property_user_id')
+                        ->first();
+
+            return view('edit_property_review',
+                [
+                    'review' => $review
+                ]
+            );
+        }
+        return view('bad_permissions');
+    }
+
+    public function update_property_review(Request $request) {
+        $id = Auth::id();
+        $score = $request->input('score');
+        $review = $request->input('review');
+        $review_id = $request->input('review_id');
+
+        if(isset($id) && !is_null($id) && !empty($id)) {
+            if(isset($score) && !empty($score) && !is_null($score) && is_numeric($score) && isset($review) && !is_null($review)) {
+
+                $review_present = DB::table('property_reviews')
+                            ->where('prs_id', $review_id)
+                            ->first();
+
+                if(isset($review_present) && !is_null($review_present)) {
+                    $insert = ['prs_score' => $score, 'prs_review' => $review, 'prs_edited_at' => time(), 'prs_edited' => 1];
+
+                    $inserted = DB::table('property_reviews')
+                                    ->where('prs_id', $review_id)
+                                    ->update($insert);
+
+                    return json_encode(['status' => 'success']);
+                }
+            }
+            return json_encode(['status' => 'bad_input']);
+        }
+        return json_encode(['status' => 'error']);
+    }
+
+
+
+    /* Email stuff when logged in*/
+    public static function sendBookingApplicationEmail($propertyID, $startDate, $endDate)
+    {
+        $userEmail = DB::table('users AS u')
+                    ->select('email')
+                    ->where([ ['u.id', '=', Auth::id()], ])
+                    ->first();
+
+        $propName = DB::table('properties AS p')
+                    ->select('property_title')
+                    ->where([ ['p.property_id', '=', $propertyID], ])
+                    ->first();
+
+        $startDateStr = date("Y-m-d", $startDate);
+        $endDateStr = date("Y-m-d", $endDate);
+        $data = array('email' => $userEmail->email, 'propName' => $propName->property_title, 'startDate' => $startDateStr, 'endDate' => $endDateStr);
+        Mail::send('emails.booking_application', $data, function ($message) use ($userEmail)
+        {
+            $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
+            $message->to($userEmail->email);
+        });
+
+    }
+    /* Comparing 2 start and end dates to check if they overlap */
+    public function checkValidDates($startDate1, $endDate1, $prop_id)
+    {
+        $startDateNoYear1 = $startDate1 % 31622400;
+        $endDateNoYear1 = $endDate1 % 31622400;
+        $prop_listsings = DB::table('property_listing AS p')
+                    ->select('start_date', 'end_date', 'reccurring')
+                    ->where([
+                        ['p.property_id', '=', $prop_id],
+                        ['p.inactive', '=', '0']
+                    ])
+                    ->get();
+        foreach ($prop_listsings as $p) {
+            if ($p->reccurring == 1){
+                $startDateNoYear2 = $p->start_date % 31622400;
+                $endDateNoYear2 = $p->end_date % 31622400;
+                if ($startDateNoYear1 == $startDateNoYear2){
+                    return false;
+                } else if ($startDateNoYear1 < $startDateNoYear2) {
+                    if ($startDateNoYear2 <= $endDateNoYear1) {
+                        return false;
+                    }
+                } else {
+                    if ($startDateNoYear1 <= $endDateNoYear2){
+                        return false;
+                    }
+                }
+            } else{
+                $startDate2 = $p->start_date;
+                $endDate2 = $p->end_date;
+                if ($startDate1 == $startDate2){
+                    return false;
+                } else if ($startDate1 < $startDate2) {
+                    if ($startDate2 <= $endDate1) {
+                        return false;
+                    }
+                } else {
+                    if ($startDate1 <= $endDate2){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+
+    }
+
+    public function admin_test(Request $request){
+        Auth::user()->assignRole('super-admin');
+        return Auth::user()->roles;
+    }
+
+    public function view_booking(Request $request, $booking_id) {
+        $id = Auth::id();
+
+        if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id)) {
+            $booking = DB::table('bookings AS b')
+                            ->select('b.*', 'p.*', 'u.*',
+                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = b.booking_propertyID) AS `scores`'),
+                                DB::raw('(SELECT COUNT(r.prs_score) FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = b.booking_propertyID) AS `review_count`')
+                            )
+                            ->where('b.booking_id', $booking_id)
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+                            ->get();
+
+            if(count($booking) == 1) {
+                $booking = $booking[0];
+
+                if($booking->booking_userID == $id || $booking->property_user_id == $id) {
+
+
+                    if(isset($booking) && !empty($booking) && !is_null($booking)) {
+                        $past_check = $booking->booking_endDate;
+                        $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
+                        $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
+
+                        if(isset($booking->scores) && !empty($booking->scores) && !is_null($booking->scores) && isset($booking->review_count) && !empty($booking->review_count) && !is_null($booking->review_count)) {
+                            $booking->scores = $booking->scores/$booking->review_count;
+                        } else {
+                            $booking->scores = -1;
+                        }
+
+                        $status = "NOT APPROVED";
+
+                        if($booking->booking_approved == 1) {
+                            $status = "APPROVED";
+                        }
+
+                        if($past_check < time()) {
+                            $status = "FINISHED";
+                        }
+
+                        if($booking->booking_denied == 1) {
+                            $status = "DENIED";
+                        }
+
+                        $tennant = DB::table('users AS u')
+                                        ->where('u.id' , $booking->booking_userID)
+                                        ->get();
+                        $tennant = $tennant[0];
+
+
+                        return view('view_booking', [
+                            'b' => $booking,
+                            'status' => $status,
+                            'tennant' => $tennant,
+                            'user_id' => $id
+                        ]);
+                    }
+                } else {
+                    return view('bad_permissions');
+                }
+            }
+        }
+
+        return view('error_page');
+    }
+
+    public function approve_booking(Request $request, $booking_id) {
+        $id = Auth::id();
+
+        if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id)) {
+            $booking = DB::table('bookings AS b')
+                            ->where([
+                                ['b.booking_id', $booking_id],
+                                ['b.booking_approved', 0],
+                                ['b.booking_denied', 0],
+                                ['p.property_user_id', $id]
+                            ])
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->first();
+
+            if(isset($booking) && !empty($booking) && !is_null($booking)) {
+                $check_bookings = DB::table('bookings AS b')
+                                    ->where([
+                                        ['b.booking_approved', 1],
+                                        ['b.booking_inactive', 0],
+                                        ['b.booking_propertyID', $booking->booking_propertyID]
+                                    ])
+                                    ->get();
+
+                $booking_overlap = false;
+
+                foreach($check_bookings as $cb) {
+                    if($cb->booking_startDate <= $booking->booking_endDate || $cb->booking_endDate >= $cb->booking_startDate) {
+                        $booking_overlap = true;
+                    }
+                }
+
+                if($booking_overlap == true) {
+                    //have to deny booking cause of overlap
+                    DB::table('bookings AS b')
+                        ->where([
+                            ['b.booking_id', $booking_id],
+                            ['b.booking_approved', 0],
+                            ['b.booking_inactive', 0]
+                        ])
+                        ->update(['booking_denied' => 1]);
+                    //TODO: email denial notification
+
+                    return json_encode(['status' => 'overlapping_bookings']);
+
+                } else {
+                    //approve booking
+                    DB::table('bookings AS b')
+                        ->where([
+                            ['b.booking_id', $booking_id],
+                            ['b.booking_approved', 0],
+                            ['b.booking_inactive', 0]
+                        ])
+                        ->update(['booking_approved' => 1]);
+                    //TODO: email approval notification
+
+                    return json_encode(['status' => 'success']);
+
+                }
+            } else {
+                return json_encode(['status' => 'error']);
+            }
+        }
+    }
+
+    public function deny_booking(Request $request, $booking_id) {
+        $id = Auth::id();
+
+        if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id)) {
+
+            $booking = DB::table('bookings AS b')
+                            ->where([
+                                ['b.booking_id', $booking_id],
+                                ['b.booking_approved', 0],
+                                ['p.property_user_id', $id]
+                            ])
+                            ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
+                            ->first();
+
+            if(isset($booking) && !empty($booking) && !is_null($booking)) {
+
+                DB::table('bookings AS b')
+                    ->where([
+                        ['b.booking_id', $booking_id],
+                        ['b.booking_approved', 0],
+                        ['b.booking_inactive', 0]
+                    ])
+                    ->update(['booking_denied' => 1]);
+                    //TODO: email denial notification
+                return json_encode(['status' => 'success']);
+
+            }
+        }
+
+        return json_encode(['status' => 'error']);
     }
 }
