@@ -125,8 +125,8 @@
         <hr>
         <div class="col-sm-12 col-md-12 col-lg-12">
       @foreach ($properties as $p)
-        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:0px; border:none; width:50vw;">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
+        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:5px; border:none; width:50vw;">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body" align="left">
 
                 @if($p->property_image_name[0])
                     <img class="float-right" height="160vh" src={{"https://turtle-database.s3-ap-southeast-2.amazonaws.com/".$p->property_image_name[0]}}>
@@ -231,7 +231,7 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="width:26vw">
+        <div class="row" style="width:25vw">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
                     <h4> Past Approved Bookings:</h4>
