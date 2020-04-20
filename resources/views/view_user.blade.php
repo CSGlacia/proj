@@ -125,22 +125,32 @@
         <hr>
         <div class="col-sm-12 col-md-12 col-lg-12">
       @foreach ($properties as $p)
-        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin-top:0px; border:none;">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:0px; border:none; width:50vw;">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
+
+                @if($p->property_image_name[0])
+                    <img class="float-right" height="160vh" src={{"https://turtle-database.s3-ap-southeast-2.amazonaws.com/".$p->property_image_name[0]}}>
+                @endif
                 <div class="card-title">
-                  <h3>{{ $p->property_title }}</h3>
+                <h3>{{ $p->property_title }}</h3>
                 </div>
                 <div class="card-text">
-                  <div style="margin:5px;">
+                <div style="margin:5px;">
                     <span><i class="fas fa-bed"></i>&nbsp;{{ $p->property_beds }} </span>
                     <span><i class="fas fa-bath"></i>&nbsp;{{ $p->property_baths }} </span>
                     <span><i class="fas fa-car"></i>&nbsp;{{ $p->property_cars }} </span>
-                  </div>
-                  <div>{{ $p->property_address }}</div>
-                  <div style="margin:5px;"> {{ $p->property_desc }}  </div>
+                </div>
+                <div>{{ $p->property_address }}</div>
+                <div style="margin:5px;"> {{ $p->property_desc }}  </div>
+                <div>
+                    @foreach($p->tags as $t)
+                        <span class="badge badge-secondary">{{$t}}</span>
+                    @endforeach
+                </div>
+                    <div><i class="fas fa-star @if($p->scores > 2.5 && $p->scores != 'No Reviews Yet') gold-star @endif"></i>&nbsp;{{$p->scores}}@if($p->scores != "No Reviews Yet")({{$p->review_count}} Review(s))@endif</div>
                 </div>
                 <a class="btn btn-primary" name="view_property" href="/view_property/{{$p->property_id}}"> View property </a>
-                    <a class="btn btn-info" name="edit_property" href="/edit_property/{{$p->property_id}}" style="color:white"> Edit property </a>
+                <a class="btn btn-info" name="edit_property" href="/edit_property/{{$p->property_id}}" style="color:white"> Edit property </a>
             </div>
         </div>
       @endforeach

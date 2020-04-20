@@ -1345,6 +1345,29 @@ class HomeController extends Controller
 
     public function view_user(Request $request, $id) {
         if(isset($id) && !is_null($id) && !empty($id) && is_numeric($id)) {
+            $results = DB::table('properties AS p')
+            ->select('p.*',
+                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
+                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`'),
+                DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`'),
+                DB::raw('(SELECT GROUP_CONCAT(CONCAT(pi.property_image_name) SEPARATOR ",") FROM property_images AS pi WHERE pi.property_id = p.property_id) AS `property_image_name`')
+            )
+            ->where([
+                ['property_inactive', '=', '0'],
+                ['property_user_id','=',$id]
+            ])
+            ->get();
+            foreach($results as $r) {
+                if(is_null($r->scores)) {
+                    $r->scores = "No Reviews Yet";
+                    $r->review_count = 0;
+                } else {
+                    $r->review_count = count(explode(',', $r->review_count));
+                    $r->scores = array_sum(explode(',', $r->scores))/count(explode(',', $r->scores));
+                }
+                $r->tags = explode(',', $r->tags);
+                $r->property_image_name = explode(',', $r->property_image_name);
+            }
             $user = DB::table('users AS u')
                         ->select('u.name', 'u.id', 'u.email',
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.booking_id) SEPARATOR ",") FROM bookings AS b LEFT JOIN properties AS p ON p.property_id=b.booking_propertyID WHERE b.booking_userID = u.id AND b.booking_inactive = 0) AS `bookings`'),
@@ -1425,12 +1448,6 @@ class HomeController extends Controller
                     $b->booking_startDate = date('d/m/Y', $b->booking_startDate);
                     $b->booking_endDate = date('d/m/Y', $b->booking_endDate);
                 }
-
-
-                $properties = DB::table('properties AS p')
-                                ->where('p.property_inactive', 0)
-                                ->whereIn('p.property_id', explode(',', $user->properties))
-                                ->get();
 
                 $listings = DB::table('property_listing AS l')
                                 ->join('project.properties AS p', 'l.property_id', '=', 'p.property_id')
@@ -1553,7 +1570,7 @@ class HomeController extends Controller
                     ['user' => $user,
                     'bookings' => $bookings,
                     'listings' => $listings,
-                    'properties' => $properties,
+                    'properties' => $results,
                     'page_owner' => $page_owner,
                     'reviews' => $reviews,
                     'guest_score' => $average_guest_score,
