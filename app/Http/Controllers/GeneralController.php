@@ -458,19 +458,35 @@ class GeneralController extends Controller
         }
 
         if(isset($suburbs) && !empty($suburbs) && !is_null($suburbs)) {
-            $insert_arr['search_suburb'] = $suburbs;
             $suburbs = explode(',' ,$suburbs);
             $props->whereIn('p.property_suburb', $suburbs);
+
+            $suburbs = implode('~', $suburbs);
+            $insert_arr['search_suburb'] = $suburbs;
+
             
         }
 
         if(isset($tags) && !empty($tags) && !is_null($tags)) {
-            $insert_arr['search_tags'] = $tags;                     // insert before explode to save as csv string
             $tags = explode(',', $tags);
 
             $props->join('property_tags AS pt', 'pt.pt_property_id', '=', 'p.property_id')
                     ->whereIn('pt.pt_tag_id', $tags)
                     ->groupBy('p.property_id');
+
+            $selected_tags = DB::table('tags')
+                                ->whereIn('tag_id', $tags)
+                                ->get();
+
+            $tag_arr = [];
+
+            foreach($selected_tags as $t) {
+                $tag_arr[] = $t->tag_name;
+            }
+
+            $tag_str = implode('~', $tag_arr);
+
+            $insert_arr['search_tags'] = $tag_str;
         }
 
         if(isset($beds) && !empty($beds) && !is_null($beds)) {
