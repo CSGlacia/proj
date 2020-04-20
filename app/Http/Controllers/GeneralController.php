@@ -421,14 +421,14 @@ class GeneralController extends Controller
             $start_date = strtotime($start_date);
 
             $start_dates = DB::table('properties AS p')
-                            ->select('p.property_id', 'p.property_always_list',
+                            ->select('p.property_id',
                                 DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.booking_startDate, "," , b.booking_endDate) SEPARATOR "~") FROM bookings AS b WHERE b.booking_inactive = 0 AND p.property_id=b.booking_propertyID AND '.$start_date.' >= b.booking_startDate AND '.$start_date.' <= b.booking_endDate) AS `bookings`'),
                                 DB::raw('(SELECT GROUP_CONCAT(CONCAT(l.start_date, "," , l.end_date) SEPARATOR "~") FROM property_listing AS l WHERE l.inactive = 0 AND p.property_id=l.property_id AND '.$start_date.' >= l.start_date AND '.$start_date.' <= l.end_date) AS `listings`')
                             )
                             ->get();
 
             foreach($start_dates AS $s) {
-                if(!is_null($s->bookings) || (is_null($s->listings) && $s->property_always_list == 0)) {
+                if(!is_null($s->bookings) || (is_null($s->listings))) {
                     $bad_start_dates[] = $s->property_id;
                 }
             }
@@ -443,14 +443,14 @@ class GeneralController extends Controller
             $end_date = strtotime($end_date);
 
             $end_dates = DB::table('properties AS p')
-                            ->select('p.property_id', 'p.property_always_list',
+                            ->select('p.property_id',
                                 DB::raw('(SELECT GROUP_CONCAT(CONCAT(b.booking_startDate, "," , b.booking_endDate) SEPARATOR "~") FROM bookings AS b WHERE b.booking_inactive = 0 AND p.property_id=b.booking_propertyID AND '.$end_date.' >= b.booking_startDate AND '.$end_date.' <= b.booking_endDate) AS `bookings`'),
                                 DB::raw('(SELECT GROUP_CONCAT(CONCAT(l.start_date, "," , l.end_date) SEPARATOR "~") FROM property_listing AS l WHERE l.inactive = 0 AND p.property_id=l.property_id AND '.$end_date.' >= l.start_date AND '.$end_date.' <= l.end_date) AS `listings`')
                             )
                             ->get();
 
             foreach($end_dates AS $e) {
-                if(!is_null($e->bookings) || (is_null($e->listings) && $e->property_always_list == 0)) {
+                if(!is_null($e->bookings) || (is_null($e->listings))) {
                     $bad_end_dates[] = $e->property_id;
                 }
             }

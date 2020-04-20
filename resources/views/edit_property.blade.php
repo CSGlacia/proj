@@ -162,12 +162,6 @@
             <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
                 <label class="btn btn-primary float-right" id="add_dates"><i class="fas fa-plus"></i>&nbsp;Add Dates</label>
             </div>
-            <div class="pretty p-default p-round p-smooth p-bigger" style="margin-bottom:20px;">
-                <input id="always_list" type="checkbox" @if($p->property_always_list) checked @endif/>
-                <div class="state p-primary">
-                    <label>List my property indefinitely</label>
-                </div>
-            </div>
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
@@ -252,16 +246,6 @@ $(document).ready(function() {
     var image_count = {{$image_count}};
     var removed_images = [];
 
-    if({{$p->property_always_list}} == 0) {
-        $('[name="listing_dates"]').each(function(i) {
-            $(this).show();
-        });
-    } else {
-        $('[name="listing_dates"]').each(function(i) {
-            $(this).hide();
-        });
-    }
-
     $(document).on('click', '[name="delete_image"]', function(e){
         var removed_id = $(this).prev().data('id');
         removed_images.push(removed_id);
@@ -292,20 +276,6 @@ $(document).ready(function() {
         }
     }
 
-    $(document).on('change', '#always_list', function(e) {
-        e.preventDefault();
-        var val = $(this).prop('checked');
-
-        if(val) {
-            $('[name="listing_dates"]').each(function(i) {
-                $(this).hide();
-            });
-        } else {
-            $('[name="listing_dates"]').each(function(i) {
-                $(this).show();
-            });
-        }
-    });
 
     $(document).on('change', '[name="start_date"]', function() {
         var date = $(this).val();
