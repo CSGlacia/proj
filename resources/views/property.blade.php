@@ -647,27 +647,27 @@ $(document).ready(function() {
                 dataType: 'JSON',
                 data: 'propertyID='+propertyID+'&propertyTitle='+propertyTitle+'&propertyAddress='+propertyAddress,
                 success: function(html) {
-                    if(html['status'] == "success") {.
+                    if(html['status'] == "success") {
                         let timerInterval
                         Swal.fire({
-                            title: 'Adding this property to your wishlist',
-                            html: 'You will be redirected in <b></b> seconds.',
-                            timer: 3000,
-                            timerProgressBar: true,
-                            type: "success",
-                            onBeforeOpen: () => {
-                                Swal.showLoading()
-                                timerInterval = setInterval(() => {
-                                    swal.getContent().querySelector('b')
-                                    .textContent = Math.ceil(swal.getTimerLeft() / 1000)
-                                }, 100)
-                            },
-                            onClose: () => {
-                                location.reload();
-                            }
-                            }).then((result) => {
-                                location.reload();
-                            })
+                        title: 'Adding this property to your wishlist',
+                        html: 'You will be redirected in <b></b> seconds.',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        type: "success",
+                        onBeforeOpen: () => {
+                            Swal.showLoading()
+                            timerInterval = setInterval(() => {
+                                swal.getContent().querySelector('b')
+                                .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                            }, 100)
+                        },
+                        onClose: () => {
+                            location.reload();
+                        }
+                        }).then((result) => {
+                            location.reload();
+                        })
                     } else if(html['status'] == "exists"){
                         Swal.fire("Error","You have already added this property to your wishlist","error");
                     }
