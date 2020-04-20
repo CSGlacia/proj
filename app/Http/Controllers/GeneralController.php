@@ -310,6 +310,10 @@ class GeneralController extends Controller
     }
 
     public function view_one_property(Request $request, $id) {
+
+        //TODO: insert into table:view_property_data
+        // $insert = ['vp_user_id' => Auth::id() (if it is set and not null and numeric, otherwise dont include vp_user_id), 'vp_property_id' => $id, 'vp_viewed_at' => time()]
+
         $bucket = 'turtle-database';
 
         $s3 = new \Aws\S3\S3Client([
@@ -551,6 +555,29 @@ class GeneralController extends Controller
         $props = DB::table('properties AS p')
                     ->select('p.property_id');
 
+
+        /*
+        TODO: We want to record the search terms and insert into table: search_data
+
+            Hint: set $insert_arr = [];
+
+            Then to add a column e.g. search_name do: $insert_arr['search_name'] = $name
+
+            Also for search_data_searched_at use time();
+
+            IMPORTANT: For tags and suburbs we want to insert as a csv string so insert into $insert_arr before we do the explode();
+            i.e. $insert_arr['search_tags'] => $tags;
+                $tags = explode(',', $tags);
+
+            You can check the data types for the column using sql workbench
+
+            1. check if user id exists using $user_id = Auth::id(); and validate that  $user_id exists, isnt null and is numeric (if it doesnt exists dont insert the user_id into table (it will just show as null))
+            2. For each of the above search terms you will see where we validate if they exist. In each if() statement below, youll need to add the search term to our insert array (these terms are guarenteed to exist inside the if statements)
+            3. After all of the if (~line 677) statements do DB::table('search_data')->insert($insert_arr);
+
+        
+        */
+
         //results that do not meet rating requirement are placed in this array
         $bad_ratings = [];
         if(isset($rating) && !empty($rating) && !is_null($rating) && isset($include_unrated) && !empty($include_unrated) && !is_null($include_unrated)) {
@@ -758,6 +785,10 @@ class GeneralController extends Controller
         $radius = $request->input('radius');
 
         if(isset($lat) && !empty($lat) && !is_null($lat) && isset($lng) && !empty($lng) && !is_null($lng) && isset($radius) && !empty($radius) && !is_null($radius)) {
+            //you can get $user_id by doing Auth::id() but you need to check if it is not null and numeric because we are in general controller
+            //TODO: insert into table: search_map_data ['search_map_data_user_id' => $user_id (if it exists otherwise dont insert this column), 'search_map_data_searched_at' => time(), 'search_lat' => $lat, 'search_lng' => $lng, 'search_radius' => $radius]
+
+
             $radius = $radius/1000;
 
             $props = DB::table('properties AS p')
