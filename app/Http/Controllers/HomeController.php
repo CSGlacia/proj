@@ -1289,7 +1289,6 @@ class HomeController extends Controller
                             ['b.booking_inactive', 0]
                         ])
                         ->update(['booking_denied' => 1]);
-                    //TODO: email denial notification
                     $this->sendBookingStatusEmail($booking_id, 'denied');
                     return json_encode(['status' => 'overlapping_bookings']);
 
@@ -1302,7 +1301,6 @@ class HomeController extends Controller
                             ['b.booking_inactive', 0]
                         ])
                         ->update(['booking_approved' => 1]);
-                    //TODO: email approval notification
                     $this->sendBookingStatusEmail($booking_id, 'approved');
                     return json_encode(['status' => 'success']);
 
@@ -1336,7 +1334,6 @@ class HomeController extends Controller
                         ['b.booking_inactive', 0]
                     ])
                     ->update(['booking_denied' => 1]);
-                    //TODO: email denial notification
                     $this->sendBookingStatusEmail($booking_id, 'denied');
                 return json_encode(['status' => 'success']);
 
