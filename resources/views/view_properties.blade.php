@@ -88,6 +88,29 @@
                     <span class="btn btn-xs btn-primary" id="search_props">Search</span>
                 </div>
             </div>
+            <hr>	
+            <h4 style="margin-left:15px;">Search by area</h4>	
+            <div class="row col-sm-12 col-md-12 col-lg-12">	
+                <div class="col-md-2 col-sm-2 col-lg-2"></div>	
+                <div id='map_canvas' class="col-sm-8 col-md-8 col-lg-8" style="width:100%;height:700px;"></div>	
+                <div class="col-md-2 col-sm-2 col-lg-2"></div>
+            </div>
+            <div class="row col-sm-12 col-md-12 col-lg-12">	
+                <div class="col-sm-5 col-md-5 col-lg-5"></div>	
+                <div class="col-sm-2 col-md-2 col-lg-2">	
+                    <div>Circle Radius:&nbsp;</div>	
+                    <select id="circle_radius" class="form-control" name="circle_radius">	
+                        <option value="1000">1 km</option>	
+                        <option value="5000" selected>5 km</option>	
+                        <option value="10000">10 km</option>	
+                        <option value="15000">15 km</option>	
+                    </select>	
+                    <div style="margin-top:15px;text-align:center;">	
+                        <span class="btn btn-xs btn-primary" id="map_search">Search via map</span>	
+                    </div>	
+                </div>	
+                <div class="col-sm-5 col-md-5 col-lg-5"></div>	
+            </div>  
         </div>
     </div>
 
@@ -160,7 +183,85 @@ hero_s.owlCarousel({
     autoplay: true
 });
 $(document).ready(function() {
-
+    $('#circle_radius').select2();	
+    var map = new google.maps.Map(document.getElementById('map_canvas'), {	
+        zoom: 11,	
+        center: new google.maps.LatLng(-33.873029, 151.20812),	
+        mapTypeId: google.maps.MapTypeId.ROADMAP	
+    });	
+    var myMarker = new google.maps.Marker({	
+        position: new google.maps.LatLng(-33.873029, 151.20812),	
+        draggable: true	
+    });	
+    var circle = new google.maps.Circle({	
+        strokeColor: '#85CB33',	
+        strokeOpacity: 0.8,	
+        strokeWeight: 2,	
+        fillColor: '#85CB33',	
+        fillOpacity: 0.35,	
+        map: map,	
+        center: {lat: -33.873029, lng:151.20812},	
+        radius: 5000    	
+    });	
+    google.maps.event.addListener(myMarker, 'dragend', function(evt){	
+        circle.setMap(null);	
+        var lat = parseFloat(evt.latLng.lat().toFixed(6));	
+        var lng = parseFloat(evt.latLng.lng().toFixed(6));	
+        var  radius = parseInt($('#circle_radius').val());	
+        circle = new google.maps.Circle({	
+            strokeColor: '#85CB33',	
+            strokeOpacity: 0.8,	
+            strokeWeight: 2,	
+            fillColor: '#85CB33',	
+            fillOpacity: 0.35,	
+            map: map,	
+            center: {lat: lat, lng: lng},	
+            radius: radius    	
+        });	
+    });	
+    $(document).on('change', '#circle_radius', function(e) {	
+        circle.setMap(null);	
+        var lat = parseFloat(myMarker.getPosition().lat().toFixed(6));	
+        var lng = parseFloat(myMarker.getPosition().lng().toFixed(6));	
+        var  radius = parseInt($('#circle_radius').val());	
+        circle = new google.maps.Circle({	
+            strokeColor: '#85CB33',	
+            strokeOpacity: 0.8,	
+            strokeWeight: 2,	
+            fillColor: '#85CB33',	
+            fillOpacity: 0.35,	
+            map: map,	
+            center: {lat: lat, lng: lng},	
+            radius: radius    	
+        })	
+    });	
+    map.setCenter(myMarker.position);	
+    myMarker.setMap(map);	
+    $(document).on('click', '#map_search', function(e) {	
+        e.preventDefault();	
+        var search_lat = parseFloat(myMarker.getPosition().lat().toFixed(6));	
+        var search_lng = parseFloat(myMarker.getPosition().lng().toFixed(6));	
+        var search_radius = $('#circle_radius').val();	
+        $.ajax({	
+            url: '/map_search',	
+            method: 'POST',	
+            dataType: 'JSON',	
+            data: 'lat='+search_lat+'&lng='+search_lng+'&radius='+search_radius,	
+            success: function(html) {	
+                if(html['status'] == 'success') {	
+                    data = html['data'];	
+                    $('#prop_div').empty();	
+                    $('#prop_div').append(data);	
+                } else {	
+                    swal('No Results', 'No properties were found inside the search area', 'warning');	
+                }	
+            },	
+            error: function ( xhr, errorType, exception ) {	
+                var errorMessage = exception || xhr.statusText;	
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");	
+            }	
+        });
+    });        
     $('#start_date').datepicker({
         format: 'dd/mm/yyyy',
         autoclose: true
