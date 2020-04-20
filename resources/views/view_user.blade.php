@@ -1,20 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container"align="center">
     <div class="card" style="background:rgba(240,255,248,0.6)">
-        <span class="display-4" style="text-transform:uppercase; left:1vw;position:relative; font-family:'arial';"> {{$user->name}} </span>
-        <div style="left:1vw;position:relative;">
-            <a class="label" style="display:flex">Email: {{$user->email}}</a>
-            <a class="label" >Guest rating: </a>
-            <a>{{$guest_score}}</a>
-            <a name="score-star"><i class="fas fa-star gold-star"></i></a>
+        <span class="display-4" style="text-transform:uppercase; font-family:'arial';"> {{$user->name}} </span>
+        <div>
+            <a class="label" >Email: {{$user->email}}</a>
+            <div>
+                <a class="label" >Guest rating: </a>
+                <a>{{$guest_score}}</a>
+                <a name="score-star"><i class="fas fa-star gold-star"></i></a>
+            </div>
         </div>
     </div>
     @if($page_owner)
-    <div class="container row" style="position:relative;left:1vw;">
+    <div class="container row">
         <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(255,155,155,0.3)">
             <b><h2>Your Unapproved Bookings:</h2></b>
+            <hr>
             <div class="col-sm-12 col-md-12 col-lg-12">
                 @foreach($bookings as $b)
                     <div class="row">
@@ -40,6 +43,7 @@
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(135,255,155,0.3)">
             <b><h2>Your Approved Bookings:</h2></b>
+            <hr>
             <div class="col-sm-12 col-md-12 col-lg-12">
                 @foreach($abookings as $b)
                     <div class="row">
@@ -64,12 +68,13 @@
             </div>
         </div>
     </div>
-    <div class="container row" style="position:relative;left:1vw">
-        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(255,155,155,0.3)">
+    <div class="container row">
+        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(0,191,255,0.25)">
             <b><h2>Your Past Bookings:</h2></b>
+            <hr>
             <div class="col-sm-12 col-md-12 col-lg-12">
                 @foreach($pbookings as $b)
-                    <div class="row">
+                    <div class="row card">
                         <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                             <div class="card-title">
                                 <h3>{{ $b->property_title }}</h3>
@@ -80,18 +85,20 @@
                             </div>
                             <span>Start Date: {{$b->booking_startDate}}</span>
                             <span>End Date: {{$b->booking_endDate}}</span>
-                            <button class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</button>
+                            <div>
+                                <button class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</button>
+                            </div>
                         </div>
-                        <hr>
                     </div>
                 @endforeach
             </div>
         </div>
-        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(135,255,155,0.3)">
+        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(0,91,155,0.8)">
             <b><h2>Your Denied Bookings:</h2></b>
+            <hr>
             <div class="col-sm-12 col-md-12 col-lg-12">
                 @foreach($dbookings as $b)
-                    <div class="row">
+                    <div class="row card">
                         <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                             <div class="card-title">
                                 <h3>{{ $b->property_title }}</h3>
@@ -102,9 +109,10 @@
                             </div>
                             <span>Start Date: {{$b->booking_startDate}}</span>
                             <span>End Date: {{$b->booking_endDate}}</span>
-                            <button class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</button>
+                            <div>
+                                <button class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</button>
+                            </div>
                         </div>
-                        <hr>
                     </div>
                 @endforeach
             </div>
@@ -112,7 +120,7 @@
     </div>
     @endif
 
-    <div class="row card">
+    <div class="card" style="background:rgba(240,255,248,0.6)">
         <b><h2>Properties:</h2></b>
         <hr>
         <div class="col-sm-12 col-md-12 col-lg-12">
@@ -132,7 +140,7 @@
                   <div style="margin:5px;"> {{ $p->property_desc }}  </div>
                 </div>
                 <a class="btn btn-primary" name="view_property" href="/view_property/{{$p->property_id}}"> View property </a>
-                    <a class="btn btn-warning" name="edit_property" href="/edit_property/{{$p->property_id}}"> Edit property </a>
+                    <a class="btn btn-info" name="edit_property" href="/edit_property/{{$p->property_id}}" style="color:white"> Edit property </a>
             </div>
         </div>
       @endforeach
@@ -140,13 +148,14 @@
     </div>
 
     @if($page_owner)
-        <div class="row card">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+    <div class="container row" style="background:rgba(240,255,248,0.6);">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body" style="width:22vw">
                 <div class="card-title" style="text-align:center;">
-                    <h2>Bookings Awaiting Your Approval:</h2>
+                    <h2>Bookings Awaiting Approval:</h2>
                 </div>
                 <hr>
-                <div class="card-text">
+                <div class="card-text card">
                 @if(count($aa_bookings) > 0)
                     @foreach($aa_bookings as $b)
                                 <div class="row">
@@ -165,25 +174,26 @@
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
                                             <div style="margin-top:5px;"><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
-                                            <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Bookying</span></div>
+                                            <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span></div>
+                                            <div style="margin-top:5px;"><span class="btn btn-danger" name="deny_booking" data-id="{{$b->booking_id}}" style="color:white">Deny Bookying</span></div>
                                         </div>
                                     </div>
                                     <hr>
                                 </div>
                     @endforeach
                 @else
-                    <div>You have no bookings to approve</div>
+                    <div>You have no bookings to approve.</div>
                 @endif
                 </div>
             </div>
         </div>
-        <div class="row card">
+        <div class="row" style="width:22vw">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
                     <h2>Upcoming Approved Bookings:</h2>
                 </div>
                 <hr>
-                <div class="card-text">
+                <div class="card-text card">
                 @if(count($ua_bookings) > 0)
                     @foreach($ua_bookings as $b)
                                 <div class="row">
@@ -206,18 +216,18 @@
                                 </div>
                     @endforeach
                 @else
-                    <div>You have no upcoming approved bookings</div>
+                    <div>You have no upcoming approved bookings.</div>
                 @endif
                 </div>
             </div>
         </div>
-        <div class="row card">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12" style="width:22vw">
                 <div class="card-title" style="text-align:center;">
                     <h2>Past Approved Bookings:</h2>
                 </div>
                 <hr>
-                <div class="card-text">
+                <div class="card-text card">
                 @if(count($pa_bookings) > 0)
                     @foreach($pa_bookings as $b)
                                 <div class="row">
@@ -240,11 +250,12 @@
                                 </div>
                     @endforeach
                 @else
-                    <div>You have no past approved bookings</div>
+                    <div>You have no past approved bookings.</div>
                 @endif
                 </div>
             </div>
         </div>
+    </div>
     @endif
 
     <div class="row">
