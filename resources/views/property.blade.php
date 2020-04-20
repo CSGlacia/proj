@@ -338,16 +338,47 @@ $(document).ready(function() {
             dataType: 'JSON',
             success: function(html) {
                 if(html['status'] == "success") {
-                    swal({
-                        title:"Success!",
-                        text: "Booking approved successfully",
-                        type:"success",
-                    });
-                    setTimeout(function() {
-                        location.reload();
-                    }, 3000);
+                    let timerInterval
+                            Swal.fire({
+                            title: 'Booking approved successfully',
+                            html: 'You will be redirected in <b></b> seconds.',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            type: "success",
+                            onBeforeOpen: () => {
+                                Swal.showLoading()
+                                timerInterval = setInterval(() => {
+                                    swal.getContent().querySelector('b')
+                                    .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                                }, 100)
+                            },
+                            onClose: () => {
+                                location.reload();
+                            }
+                            }).then((result) => {
+                                location.reload();
+                            })
                 } else if(html['status'] == 'overlapping_bookings') {
-                    Swal.fire("Warning", "An approved booking overlaps with this booking. This booking has been denied", "warning");
+                    let timerInterval
+                            Swal.fire({
+                            title: 'An approved booking overlaps with this booking. This booking has been denied',
+                            html: 'You will be redirected in <b></b> seconds.',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            type: "warning",
+                            onBeforeOpen: () => {
+                                Swal.showLoading()
+                                timerInterval = setInterval(() => {
+                                    swal.getContent().querySelector('b')
+                                    .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                                }, 100)
+                            },
+                            onClose: () => {
+                                location.reload();
+                            }
+                            }).then((result) => {
+                                location.reload();
+                            })
                 } else {
                     Swal.fire("Error", "There was an error, please try again!", "error");
                 }
@@ -634,7 +665,26 @@ $(document).ready(function() {
                 data: 'propertyID='+propertyID+'&propertyTitle='+propertyTitle+'&propertyAddress='+propertyAddress,
                 success: function(html) {
                     if(html['status'] == "success") {
-                        Swal.fire("Success", "Added this listing to your wishlist!", "success");
+                        let timerInterval
+                        Swal.fire({
+                        title: 'Adding this property to your wishlist',
+                        html: 'You will be redirected in <b></b> seconds.',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        type: "success",
+                        onBeforeOpen: () => {
+                            Swal.showLoading()
+                            timerInterval = setInterval(() => {
+                                swal.getContent().querySelector('b')
+                                .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                            }, 100)
+                        },
+                        onClose: () => {
+                            location.reload();
+                        }
+                        }).then((result) => {
+                            location.reload();
+                        })
                     } else if(html['status'] == "exists"){
                         Swal.fire("Error","You have already added this property to your wishlist","error");
                     }

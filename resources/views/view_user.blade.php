@@ -308,7 +308,26 @@ $(document).ready(function() {
                 success: function(html) {
                     var data = JSON.parse(html);
                     if(data['status'] == "success") {
-                        Swal.fire("Success", "Booking Cancelled Successfully", "success");
+                        let timerInterval
+                        Swal.fire({
+                        title: 'Booking deleted successfully',
+                        html: 'You will be redirected to your profile in <b></b> seconds.',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        type: "success",
+                        onBeforeOpen: () => {
+                            Swal.showLoading()
+                            timerInterval = setInterval(() => {
+                                swal.getContent().querySelector('b')
+                                .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                            }, 100)
+                        },
+                        onClose: () => {
+                            location.reload();
+                        }
+                        }).then((result) => {
+                            location.reload();
+                        })
                     } else if(data['status'] == 'date error') {
                         Swal.fire("Warning", "You cannot cancel a booking scheduled in the next 2 weeks.", "warning");
                     } else {
@@ -329,16 +348,29 @@ $(document).ready(function() {
                     dataType: 'JSON',
                     success: function(html) {
                         if(html['status'] == "success") {
-                            swal({
-                                title:"Success!",
-                                text: "Booking approved successfully",
-                                type:"success",
-                            });
-                            setTimeout(function() {
+                            let timerInterval
+                            Swal.fire({
+                            title: 'Booking approved successfully',
+                            html: 'You will be redirected to your profile in <b></b> seconds.',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            type: "success",
+                            onBeforeOpen: () => {
+                                Swal.showLoading()
+                                timerInterval = setInterval(() => {
+                                    swal.getContent().querySelector('b')
+                                    .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                                }, 100)
+                            },
+                            onClose: () => {
                                 location.reload();
-                            }, 3000);
+                            }
+                            }).then((result) => {
+                                location.reload();
+                            })
                         } else if(html['status'] == 'overlapping_bookings') {
                             Swal.fire("Warning", "An approved booking overlaps with this booking. This booking has been denied", "warning");
+                            location.reload();
                         } else {
                             Swal.fire("Error", "There was an error, please try again!", "error");
                         }
@@ -361,14 +393,26 @@ $(document).ready(function() {
                     success: function(html) {
                         console.log(html);
                         if(html['status'] == "success") {
-                            swal({
-                                title:"Success!",
-                                text: "Booking denied successfully",
-                                type:"success",
-                            });
-                            setTimeout(function() {
+                            let timerInterval
+                            Swal.fire({
+                            title: 'Booking denied successfully',
+                            html: 'You will be redirected to your profile in <b></b> seconds.',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            type: "success",
+                            onBeforeOpen: () => {
+                                Swal.showLoading()
+                                timerInterval = setInterval(() => {
+                                    swal.getContent().querySelector('b')
+                                    .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                                }, 100)
+                            },
+                            onClose: () => {
                                 location.reload();
-                            }, 3000);
+                            }
+                            }).then((result) => {
+                                location.reload();
+                            })
                         } else {
                             Swal.fire("Error", "There was an error, please try again!", "error");
                         }

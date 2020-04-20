@@ -1,16 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container" style="background:rgba(240,255,248,0.6)">
+    <h1>Your Wishlist</h1>
+    <hr>
     @foreach ($wishlist as $w)
-      <hr>
-      <div class="row">
+      <div class="row card card-text" style="margin:5px">
           <div class="col-sm-12 col-md-12 col-lg-12">
               <h3><b> {{ $w->wishlist_propertyTitle }}</b></h3>
               <div> {{ $w->wishlist_propertyAddress }}  </div>
               <a class="btn btn-primary" name="view_property" href="/view_property/{{$w->wishlist_propertyID}}"> View property </a>
             <!--  <a id="delete_wishlist <?php echo $w->wishlist_propertyID ?>" class="btn btn-primary">✖</a> -->
-              <input class ="delete_wishlist" type="button" id="<?php echo $w->wishlist_propertyID?>", value = "✖" </input>
+              <input class ="delete_wishlist btn btn-danger" type="" id="<?php echo $w->wishlist_propertyID?>", value = "Remove from wishlist" </input>
           </div>
       </div>
     @endforeach
@@ -24,7 +25,6 @@ $(document).ready(function() {
     $(document).on('click', '.delete_wishlist', function(e) {
         e.preventDefault();
         var propertyID = $(this).get(0).id;
-        alert(propertyID);
 
         $.ajax({
             url: '/delete_wishlist',
@@ -32,9 +32,27 @@ $(document).ready(function() {
             dataType: 'JSON',
             data: 'propertyID='+propertyID,
             success: function(html) {
-                var data = JSON.parse(html);
-                if(data['status'] == "success") {
-                  Swal.fire("Success", "Removed this item from your wishlist!", "success");
+                if(html['status'] == "success") {
+                    let timerInterval
+                    Swal.fire({
+                    title: 'Property has been removed',
+                    html: 'You will be redirected in <b></b> seconds.',
+                    timer: 5000,
+                    timerProgressBar: true,
+                    type: "success",
+                    onBeforeOpen: () => {
+                        Swal.showLoading()
+                        timerInterval = setInterval(() => {
+                            swal.getContent().querySelector('b')
+                            .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                        }, 100)
+                    },
+                    onClose: () => {
+                        location.reload()
+                    }
+                    }).then((result) => {
+                        location.reload()
+                    })
                 } else {
                     Swal.fire("Error", "There was an error, please try again!", "error");
                 }
