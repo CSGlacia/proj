@@ -25,7 +25,6 @@ $(document).ready(function() {
     $(document).on('click', '.delete_wishlist', function(e) {
         e.preventDefault();
         var propertyID = $(this).get(0).id;
-        alert(propertyID);
 
         $.ajax({
             url: '/delete_wishlist',
@@ -33,12 +32,11 @@ $(document).ready(function() {
             dataType: 'JSON',
             data: 'propertyID='+propertyID,
             success: function(html) {
-                var data = JSON.parse(html);
-                if(data['status'] == "success") {
+                if(html['status'] == "success") {
                     let timerInterval
                     Swal.fire({
                     title: 'Property has been removed',
-                    html: 'You will be redirected to your booking in <b></b> seconds.',
+                    html: 'You will be redirected in <b></b> seconds.',
                     timer: 5000,
                     timerProgressBar: true,
                     type: "success",

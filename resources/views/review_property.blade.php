@@ -149,10 +149,26 @@ $(document).ready(function() {
             success: function(html) {
                 console.log(html);
                 if(html['status'] == "success") {
-                    Swal.fire("Success", "Review Submitted Successfully", "success");
-                    setTimeout(function() {
-                        window.location.href = "/property_reviews";
-                    }, 3000);
+                    let timerInterval
+                    Swal.fire({
+                            title: 'Review Submitted Successfully',
+                            html: 'You will be redirected in <b></b> seconds.',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            type: "success",
+                            onBeforeOpen: () => {
+                                Swal.showLoading()
+                                timerInterval = setInterval(() => {
+                                    swal.getContent().querySelector('b')
+                                    .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                                }, 100)
+                            },
+                            onClose: () => {
+                                window.location.href = "/property_reviews";
+                            }
+                            }).then((result) => {
+                                window.location.href = "/property_reviews";
+                            })
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else {

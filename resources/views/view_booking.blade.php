@@ -48,7 +48,7 @@ $(document).ready(function() {
                     let timerInterval
                             Swal.fire({
                             title: 'Booking approved successfully',
-                            html: 'You will be redirected to your profile in <b></b> seconds.',
+                            html: 'You will be redirected in <b></b> seconds.',
                             timer: 3000,
                             timerProgressBar: true,
                             type: "success",

@@ -828,7 +828,8 @@ class HomeController extends Controller
                     ->select('w.*')
                     ->where([
                         ['wishlist_propertyID', '=', $propertyID],
-                        ['wishlist_userID', '=', $userID]
+                        ['wishlist_userID', '=', $userID],
+                        ['wishlist_inactive',0]
                     ])
                     ->first();
         if(isset($results)){
