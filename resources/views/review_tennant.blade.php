@@ -5,7 +5,7 @@
     <div><h2><b>Tennant Review</b></h2>
     <hr>
     <div class="row">
-        <div class="col-sm-6 col-md-6 col-lg-6">
+        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(240,255,248,0.6)">
             <h3><b>Property Details</b></h3>
             <div>Property Name: {{$p->property_title}}</div>
             <div>Address: {{$p->property_address}}</div>
@@ -42,9 +42,9 @@
     </div>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
-            <span class="btn btn-xs btn-primary" id="submit_review">Submit Review</span>
+            <span class="btn btn-xs btn-primary"style="margin-bottom:5px" id="submit_review">Submit Review</span>
         </div>
-    </div>    
+    </div>
 </div>
 @endsection
 
@@ -140,7 +140,7 @@ $(document).ready(function() {
     $(document).on('click', '#submit_review', function(e){
         var score = star_score
         var review = $('#review_desc').val();
-        
+
         $.ajax({
             url: '/create_tennant_review',
             method: 'POST',

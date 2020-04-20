@@ -3,7 +3,7 @@
 @section('content')
 <link href="{{asset('css/create_property_listing.css')}}" rel="stylesheet">
 <div class="container">
-    <div class="card col-sm-12 col-md-12 col-lg-12" id="top">
+    <div class="card col-sm-12 col-md-12 col-lg-12" id="top" style="background:rgba(240,255,248,0.6)">
         <br>
         <b><h3 style="text-align:center;">Create a New Property Listing</h3></b>
         <hr>

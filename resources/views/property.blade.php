@@ -93,7 +93,7 @@ img {
         <div id="user_logged" data-logged="0" hidden></div>
         @endif
 
-        <div class="row card">
+        <div class="row card" align="center">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
                     <h3>Make a Booking</h3>
@@ -117,7 +117,7 @@ img {
                 <hr>
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12">
-                        <a id="book_submit" class="btn btn-primary">Book</a>
+                        <a id="book_submit" style="color:white" class="btn btn-primary">Book</a>
                     </div>
                 </div>
             </div>
@@ -176,7 +176,7 @@ img {
     </div>
 
     @if($page_owner == true)
-    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">
+    <div class="col-sm-4 col-md-4 col-lg-4 pull-right" align="center">
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
@@ -481,7 +481,7 @@ $(document).ready(function() {
                 }
             }
 
-            
+
             if(epoch < {{time()}}) {
                 return false;
             }

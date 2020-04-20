@@ -17,7 +17,7 @@
 @section('content')
 <link href="{{asset('css/create_property_listing.css')}}" rel="stylesheet">
 <div class="container">
-    <div class="card col-sm-12 col-md-12 col-lg-12" id='top'>
+    <div class="card col-sm-12 col-md-12 col-lg-12" id='top' style="background:rgba(240,255,248,0.6)">
         <br>
         <b><h3 style="text-align:center;">Add a new property to your account</h3></b>
         <hr>
@@ -28,7 +28,7 @@
                     <span>Address:&nbsp;</span>
                     <input id="address" class="form-control" type="text" placeholder="E.g. 6/5 George Street" required>
                     <input type="hidden" id="lat" name="lat" />
-                    <input type="hidden" id="lng" name="lng" />  
+                    <input type="hidden" id="lng" name="lng" />
                 </div>
             </div>
             <hr>
@@ -57,7 +57,7 @@
                 <div class="col-sm-12 col-md-12 col-lg-12">
                     <textarea id="property_desc" class="form-control" rows="5" placeholder="Please enter a brief description of the property." required></textarea>
                 </div>
-            </div>  
+            </div>
             <div class="row">
                 <div class="col-sm-4 col-md-4 col-lg-4">
                     <span>Tags:</span>
@@ -289,7 +289,7 @@ $(document).ready(function() {
         form_data.append('l_name',l_name);
         form_data.append('lat',lat);
         form_data.append('lng',lng);
-        
+
         var tags  = ($('#tags').val());
         form_data.append('tags', tags);
         var listing_dates_arr = [];
@@ -305,7 +305,7 @@ $(document).ready(function() {
             add_arr.push(end_date);
             add_arr.push(recur);
             listing_dates_arr.push(add_arr);
-        }); 
+        });
 
         $.ajax({
             url: '/create_property',
@@ -371,9 +371,9 @@ $(document).ready(function() {
                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                             '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                         $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/' + html['id'] +
-                        '"class="alert-link"> property</a></div>').hide().appendTo("#top").fadeIn(1000);                            
+                        '"class="alert-link"> property</a></div>').hide().appendTo("#top").fadeIn(1000);
                     });
- 
+
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else if(html['status'] == 'wrong_state') {
