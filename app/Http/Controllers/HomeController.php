@@ -889,7 +889,7 @@ class HomeController extends Controller
                         ['wishlist_propertyID', '=', $propertyID],
                         ['wishlist_userID', '=', $userID]
                     ])
-                    ->get();
+                    ->first();
         if(isset($results)){
             return json_encode(['status' => 'exists']);
         }
