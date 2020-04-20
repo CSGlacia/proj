@@ -1290,7 +1290,7 @@ class HomeController extends Controller
                         ])
                         ->update(['booking_denied' => 1]);
                     //TODO: email denial notification
-                    $this->sendBookingStatusEmail($bookingID, 'denied');
+                    $this->sendBookingStatusEmail($booking_id, 'denied');
                     return json_encode(['status' => 'overlapping_bookings']);
 
                 } else {
@@ -1303,7 +1303,7 @@ class HomeController extends Controller
                         ])
                         ->update(['booking_approved' => 1]);
                     //TODO: email approval notification
-                    $this->sendBookingStatusEmail($bookingID, 'approved');
+                    $this->sendBookingStatusEmail($booking_id, 'approved');
                     return json_encode(['status' => 'success']);
 
                 }
@@ -1337,7 +1337,7 @@ class HomeController extends Controller
                     ])
                     ->update(['booking_denied' => 1]);
                     //TODO: email denial notification
-                    $this->sendBookingStatusEmail($bookingID, 'denied');
+                    $this->sendBookingStatusEmail($booking_id, 'denied');
                 return json_encode(['status' => 'success']);
 
             }
