@@ -441,6 +441,10 @@ $(document).ready(function() {
                     bool = false;
                 }
             }
+
+            if(epoch < {{time()}}) {
+                return false;
+            }
             return bool;
         },
     });
@@ -476,6 +480,11 @@ $(document).ready(function() {
                 if(epoch >= bookings[i]['start'] && epoch <= bookings[i]['end']) {
                     bool = false;
                 }
+            }
+
+            
+            if(epoch < {{time()}}) {
+                return false;
             }
             return bool;
         }
