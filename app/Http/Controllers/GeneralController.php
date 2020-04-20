@@ -112,6 +112,50 @@ class GeneralController extends Controller
                     ])
                     ->first();
 
+        $prop_view_count = DB::table('view_property_data AS p')
+        ->select('p.*'
+        )
+        ->where([
+            ['p.vp_property_id', $id],
+        ])
+        ->get();
+        
+        $view_count = 0;
+        foreach($prop_view_count as $p) {
+            $view_count = $view_count + 1;
+        }
+
+        $prop_data = DB::table('bookings AS b')
+        ->select('b.*', 'u.*'
+        )
+        ->where([
+            ['b.booking_propertyID', $id],
+        ])
+        ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+        ->get();
+
+        $total_age = 0;
+        $total_persons = 0;
+        $row_count = 0;
+        foreach($prop_data as $d) {
+            // calc avg age
+            $total_age += $d->age;
+
+            // average tennant count
+            $total_persons += $d->booking_persons;
+            $row_count++;
+        }
+
+        if ($row_count != 0) {
+            $average_age = $total_age/$row_count;
+            $average_persons = $total_persons/$row_count;
+        } else {
+            $average_age = 'No age data available';
+            $average_persons = 'No tennant count data available';
+        }
+        
+
+
         if(isset($prop->ratings) && !is_null($prop->ratings) && !empty($prop->ratings) && $prop->num_ratings > 0) {
             $avg_score = $prop->ratings/$prop->num_ratings;
         } else {
@@ -291,7 +335,10 @@ class GeneralController extends Controller
                             'tags' => $tag_ret_arr,
                             'abookings' => $abookings,
                             'avg_score' => $avg_score,
-                            'pa_bookings' => $pa_bookings
+                            'pa_bookings' => $pa_bookings,
+                            'page_count' => $view_count,
+                            'avg_age' => $average_age,
+                            'avg_persons' => $average_persons,
                         ]
                 );
         }

@@ -52,7 +52,7 @@ img {
                         @endauth
                     </div>
                     <div>
-                        @if($avg_score > 2.5) 
+                        @if($avg_score > 2.5)
                             <i class="fas fa-star gold-star"></i>&nbsp;{{$avg_score}} ({{$p->num_ratings}} Review(s))
                         @elseif($avg_score == 0)
                             <i class="fas fa-star"></i>&nbsp;No reviews
@@ -75,7 +75,7 @@ img {
                     </li>
                 @endforeach
                 </ul>
-            </div>        
+            </div>
         </div>
 
         <div id="img_modal" class="modal">
@@ -87,19 +87,6 @@ img {
 
     <!-- IMAGE END -->
 
-    <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            <h2><b>Current Availabilities</b></h2>
-            <hr>
-            {{-- @if(count($avail) > 0)
-                @foreach ($avail as $a)
-                    <h4> {{ $a->booking_startDate }} - {{$a->booking_endDate}} </h4>
-                @endforeach
-            @else
-                <h4> Everything is available!</h4>
-            @endif --}}
-        </div>
-    </div>
         @auth
         <div id="user_logged" data-logged="1" hidden></div>
         @else
@@ -293,6 +280,23 @@ img {
                     <div>You have no past approved bookings</div>
                 @endif
                 </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($page_owner == true)
+    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">
+        <div class="row card">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
+                    <h2>Property Statistics:</h2>
+                </div>
+                <hr>
+                Total page visits: {{$page_count}} <br>
+                Average age: {{$avg_age}} <br>
+                Average # tennants: {{$avg_persons}} <br>
+                
             </div>
         </div>
     </div>
@@ -536,20 +540,15 @@ $(document).ready(function() {
                         let timerInterval
                         Swal.fire({
                         title: 'Booking created successfully',
-                        html: 'You will be redirected to your booking in <b></b> milliseconds.',
+                        html: 'You will be redirected to your booking in <b></b> seconds.',
                         timer: 5000,
                         timerProgressBar: true,
                         type: "success",
                         onBeforeOpen: () => {
                             Swal.showLoading()
                             timerInterval = setInterval(() => {
-                            const content = Swal.getContent()
-                            if (content) {
-                                const b = content.querySelector('b')
-                                if (b) {
-                                b.textContent = Swal.getTimerLeft()
-                                }
-                            }
+                                swal.getContent().querySelector('b')
+                                .textContent = Math.ceil(swal.getTimerLeft() / 1000)
                             }, 100)
                         },
                         onClose: () => {
