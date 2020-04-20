@@ -497,21 +497,28 @@ class GeneralController extends Controller
 
         foreach ($results as $r) {
             $ret_str .= '
-            <div class="row card item-card cursor-pointer" name="view_property" data-id="'.$r->property_id.'" style="margin:0px; border:none;">
-                <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
-                    <div class="card-title">
-                      <h3>'.$r->property_title.'</h3>
-                    </div>
-                    <div class="card-text">
-                      <div style="margin:5px;">
-                        <span><i class="fas fa-bed"></i>&nbsp;'.$r->property_beds.'</span>
-                        <span><i class="fas fa-bath"></i>&nbsp;'.$r->property_baths.'</span>
-                        <span><i class="fas fa-car"></i>&nbsp;'.$r->property_cars.'</span>
-                      </div>
-                      <div>'.$r->property_address.'</div>
-                      <div style="margin:5px;">'.$r->property_desc.'</div>
-                      <div>';
-
+            <div class="row card item-card cursor-pointer" name="view_property" data-id="'.$r->property_id.'" style="margin:0px; border:none; width:50vw;">
+                <div class="col-sm-12 col-md-12 col-lg-12 card-body" >';
+            $prop_images = DB::table('property_images AS p')
+                            ->select('p.property_image_name')
+                            ->where([['p.property_id',$r->property_id]])
+                            ->first();
+            if(isset($prop_images)){
+                $ret_str .= '<img class="float-right" height="160vh" src="https://turtle-database.s3-ap-southeast-2.amazonaws.com/'.$prop_images->property_image_name.'">';
+            }
+            $ret_str .= '<div class="card-title">
+                            <h3>'.$r->property_title.'</h3>
+                        </div>
+                        <div class="card-text">
+                            <div style="margin:5px;">
+                                <span><i class="fas fa-bed"></i>&nbsp;'.$r->property_beds.'</span>
+                                <span><i class="fas fa-bath"></i>&nbsp;'.$r->property_baths.'</span>
+                                <span><i class="fas fa-car"></i>&nbsp;'.$r->property_cars.'</span>
+                            </div>
+                            <div>'.$r->property_address.'</div>
+                            <div style="margin:5px;">'.$r->property_desc.'</div>
+                        <div>';
+                          
           foreach($r->tags as $t) {
              $ret_str .= '<span class="badge badge-secondary">'.$t.'</span>';
           }
@@ -606,20 +613,27 @@ class GeneralController extends Controller
 
             foreach ($results as $r) {
                 $ret_str .= '
-                <div class="row card item-card cursor-pointer" name="view_property" data-id="'.$r->property_id.'" style="margin:0px; border:none;">
-                    <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
-                        <div class="card-title">
-                          <h3>'.$r->property_title.'</h3>
-                        </div>
-                        <div class="card-text">
-                          <div style="margin:5px;">
-                            <span><i class="fas fa-bed"></i>&nbsp;'.$r->property_beds.'</span>
-                            <span><i class="fas fa-bath"></i>&nbsp;'.$r->property_baths.'</span>
-                            <span><i class="fas fa-car"></i>&nbsp;'.$r->property_cars.'</span>
-                          </div>
-                          <div>'.$r->property_address.'</div>
-                          <div style="margin:5px;">'.$r->property_desc.'</div>
-                          <div>';
+                <div class="row card item-card cursor-pointer" name="view_property" data-id="'.$r->property_id.'" style="margin:0px; border:none; width:50vw;">
+                    <div class="col-sm-12 col-md-12 col-lg-12 card-body" >';
+                $prop_images = DB::table('property_images AS p')
+                                ->select('p.property_image_name')
+                                ->where([['p.property_id',$r->property_id]])
+                                ->first();
+                if(isset($prop_images)){
+                    $ret_str .= '<img class="float-right" height="160vh" src="https://turtle-database.s3-ap-southeast-2.amazonaws.com/'.$prop_images->property_image_name.'">';
+                }
+                $ret_str .= '<div class="card-title">
+                                <h3>'.$r->property_title.'</h3>
+                            </div>
+                            <div class="card-text">
+                            <div style="margin:5px;">
+                                <span><i class="fas fa-bed"></i>&nbsp;'.$r->property_beds.'</span>
+                                <span><i class="fas fa-bath"></i>&nbsp;'.$r->property_baths.'</span>
+                                <span><i class="fas fa-car"></i>&nbsp;'.$r->property_cars.'</span>
+                            </div>
+                            <div>'.$r->property_address.'</div>
+                            <div style="margin:5px;">'.$r->property_desc.'</div>
+                            <div>';
 
               foreach($r->tags as $t) {
                  $ret_str .= '<span class="badge badge-secondary">'.$t.'</span>';

@@ -276,9 +276,9 @@ class HomeController extends Controller
 
             $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
 
-            DB::table('bookings')->insert($insert);
+            $booking_id = DB::table('bookings')->insertGetId($insert);
             $this->sendBookingApplicationEmail($propertyID, $s, $e);
-            return json_encode(['status' => 'success']);
+            return json_encode(['status' => 'success','id' => $booking_id]);
         }
 
         return json_encode(['status' => 'bad_input']);
@@ -889,7 +889,7 @@ class HomeController extends Controller
                         ['wishlist_propertyID', '=', $propertyID],
                         ['wishlist_userID', '=', $userID]
                     ])
-                    ->get();
+                    ->first();
         if(isset($results)){
             return json_encode(['status' => 'exists']);
         }

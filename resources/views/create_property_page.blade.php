@@ -343,7 +343,6 @@ $(document).ready(function() {
                     fileDrop.options.url = "/upload_property_images/"+html['id']
                     fileDrop.processQueue();
                     var prop_id = html['id'];
-
                     if(always_list == false) {
                         var count = 1;
                         swal({
@@ -387,12 +386,22 @@ $(document).ready(function() {
                                     },
                                     error: function ( xhr, errorType, exception ) {
                                         var errorMessage = exception || xhr.statusText;
+                                        var response = JSON.parse(xhr.responseText);
                                         Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                                     }
                                 });
                             });
+                            $('<div class="alert alert-danger" role="alert">There might have been errors in your listing creation. Please fix this before clicking the link below to your property.' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                            $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/' + html['id'] +
+                            '"class="alert-link"> property</a></div>').hide().appendTo("#top").fadeIn(1000);                            
                         });
+
                     }
+                    Swal.fire("Success", "Property created successfully!", "success");
+                    $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/' + html['id'] +
+                    '"class="alert-link"> property</a></div>').hide().appendTo("#top").fadeIn(1000);       
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else if(html['status'] == 'wrong_state') {
