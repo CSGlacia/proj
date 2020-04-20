@@ -264,14 +264,33 @@ $(document).ready(function() {
     });        
     $('#start_date').datepicker({
         format: 'dd/mm/yyyy',
-        autoclose: true
+        autoclose: true,
+        beforeShowDay: function(date) {
+            var dateStr = (parseInt(date.getYear())+1900)+'-'+(parseInt(date.getMonth())+1)+'-'+date.getDate();
+            var epoch = moment(dateStr).unix();
+            var bool = true;
+            
+            if(epoch < {{time()}}) {
+                return false;
+            }
+            return bool;
+        }
     });
 
 
     $('#end_date').datepicker({
         format: 'dd/mm/yyyy',
         autoclose: true,
-
+        beforeShowDay: function(date) {
+            var dateStr = (parseInt(date.getYear())+1900)+'-'+(parseInt(date.getMonth())+1)+'-'+date.getDate();
+            var epoch = moment(dateStr).unix();
+            var bool = true;
+            
+            if(epoch < {{time()}}) {
+                return false;
+            }
+            return bool;
+        }
     });
 
     $(document).on('change', '[name="start_date"]', function() {

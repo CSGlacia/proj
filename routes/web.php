@@ -87,3 +87,12 @@ Route::post('/admin_delete_property_review','AdminController@admin_delete_proper
 
 // email
 Route::post('apply-two', ['uses'=>'NewsLetterController@autoMail', 'as'=>'apply-two']);
+
+
+//exports
+Route::get('/exports', 'AdvertiserController@exports');
+Route::get('/download_search_data', 'AdvertiserController@download_search_data');
+Route::get('/download_georgraphical_search_data', 'AdvertiserController@download_georgraphical_search_data');
+Route::get('/download_booking_data', 'AdvertiserController@download_booking_data');
+Route::get('/download_personal_data', 'AdvertiserController@download_personal_data');
+Route::get('/download_viewing_data', 'AdvertiserController@download_viewing_data');
