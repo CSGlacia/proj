@@ -343,7 +343,7 @@ $(document).ready(function() {
                     fileDrop.options.url = "/upload_property_images/"+html['id']
                     fileDrop.processQueue();
                     var prop_id = html['id'];
-
+                    var errors = false;
                     if(always_list == false) {
                         var count = 1;
                         swal({
@@ -351,7 +351,7 @@ $(document).ready(function() {
                             text: "Property Created Successfully",
                             type:"success",
                         }).then(function(){
-                            $.each(listing_dates_arr, function(i) {
+                            $.when($.each(listing_dates_arr, function(i) {
                                 $.ajax({
                                     url: '/create_property_listing',
                                     method: 'POST',
@@ -366,22 +366,27 @@ $(document).ready(function() {
                                             $('<div class="alert alert-danger" role="alert">Listing '+ count +': Please check all fields are filled.' +
                                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                                             '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                            errors = true;
                                         } else if(html['status'] == 'price_low') {
                                             $('<div class="alert alert-danger" role="alert">Listing '+ count +': You must enter a price which is positive. You cannot charge negative amounts.' +
                                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                                             '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                            errors = true;
                                         } else if(html['status'] == 'price_high'){
                                             $('<div class="alert alert-danger" role="alert">Listing '+ count +': There\'s a price limit of $999999.99 . Please enter a lower price per night.' +
                                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                                             '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                            errors = true;
                                         } else if(html['status'] == 'overlapping_date'){
                                             $('<div class="alert alert-danger" role="alert">Listing '+ count +': A listing already exists within this time period.' +
                                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                                             '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                            errors = true;
                                         } else {
                                             $('<div class="alert alert-danger" role="alert">Listing '+ count +': There was an error with creating your listing!' +
                                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                                             '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                            errors = true;
                                         }
                                         count++;
                                     },
@@ -390,7 +395,43 @@ $(document).ready(function() {
                                         Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                                     }
                                 });
+                            })).done(function(){
+                                if(errors == false){
+                                    let timerInterval
+                                    Swal.fire({
+                                    title: 'Property and listings successfully created',
+                                    html: 'You will be redirected in <b></b> milliseconds.',
+                                    timer: 5000,
+                                    timerProgressBar: true,
+                                    onBeforeOpen: () => {
+                                        Swal.showLoading()
+                                        timerInterval = setInterval(() => {
+                                        const content = Swal.getContent()
+                                        if (content) {
+                                            const b = content.querySelector('b')
+                                            if (b) {
+                                            b.textContent = Swal.getTimerLeft()
+                                            }
+                                        }
+                                        }, 100)
+                                    },
+                                    onClose: () => {
+                                        window.location.href = "/view_property/"+html['id'];
+                                    }
+                                    }).then((result) => {
+                                        window.location.href = "/view_property/"+html['id'];
+                                    })
+                                }
+                                else{
+                                    $('<div class="alert alert-danger" role="alert">There were errors in your property creation. Please fix this before clicking the link below to your property.' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                    $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/"'+html['id']+
+                                    ' class="alert-link"> property</a>. Give it a click if you like.</div>').hide().append("#top").fadeIn(1000);
+                                }
                             });
+
+                            
                         });
                     }
                 } else if(html['status'] == 'bad_input') {
