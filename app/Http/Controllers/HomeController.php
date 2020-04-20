@@ -410,7 +410,7 @@ class HomeController extends Controller
             $reccurring = $request->input('recurr');
 
             if(!isset($price) || !isset($property) || !isset($start_date) || !isset($end_date)){
-                return json_encode(['status' => 'bad_input']);
+                return response()->json(['error' => 'bad_input'], 412);
             }
 
             if($price <=  0){
