@@ -125,8 +125,8 @@
         <hr>
         <div class="col-sm-12 col-md-12 col-lg-12">
       @foreach ($properties as $p)
-        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:0px; border:none;">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
+        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin-top:0px; border:none;">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title">
                   <h3>{{ $p->property_title }}</h3>
                 </div>
@@ -150,9 +150,9 @@
     @if($page_owner)
     <div class="container row" style="background:rgba(240,255,248,0.6);">
         <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body" style="width:22vw">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body" style="width:25vw">
                 <div class="card-title" style="text-align:center;">
-                    <h2>Bookings Awaiting Approval:</h2>
+                    <h4>Bookings Awaiting Approval:</h4>
                 </div>
                 <hr>
                 <div class="card-text card">
@@ -163,7 +163,7 @@
                                         <div>
                                             <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a>
                                                 @if($b->scores > 2.5)
-                                                    <i class="fas fa-star gold-star"></i>&nbsp;{{$b->scores}}
+                                                    <i class="fas fa-star gold-stpar"></i>&nbsp;{{$b->scores}}
                                                 @elseif($b->scores == 0)
                                                     <i class="fas fa-star"></i>&nbsp;No reviews yet
                                                 @else
@@ -187,10 +187,10 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="width:22vw">
+        <div class="row" style="width:25vw">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
-                    <h2>Upcoming Approved Bookings:</h2>
+                    <h4>Upcoming Approved Bookings:</h4>
                 </div>
                 <hr>
                 <div class="card-text card">
@@ -221,10 +221,10 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-12" style="width:22vw">
+        <div class="row" style="width:26vw">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
-                    <h2>Past Approved Bookings:</h2>
+                    <h4> Past Approved Bookings:</h4>
                 </div>
                 <hr>
                 <div class="card-text card">
@@ -258,13 +258,13 @@
     </div>
     @endif
 
-    <div class="row">
-        <b><h2>User Reviews</h2></b>
+    <div class="container row" style="background:rgba(240,255,248,0.6)">
         <div class="col-sm-12 col-md-12 col-lg-12">
+            <b><h2>User Reviews</h2></b><hr>
             @if(count($reviews) > 0)
                 @foreach($reviews as $r)
-                <div class="row">
-                    <div class="col-sm-6 col-md-6 col-lg-6">
+                <div class="row card card-text" align="left">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
                         <div>Score: {{$r->trs_score}}</div>
                         <div>Review: {{$r->trs_review}}</div>
                         <div>Submitted At: {{$r->trs_submitted_at}}</div>
