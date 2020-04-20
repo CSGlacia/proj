@@ -399,6 +399,9 @@ $(document).ready(function() {
                         });
 
                     }
+                    Swal.fire("Success", "Property created successfully!", "success");
+                    $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/' + html['id'] +
+                    '"class="alert-link"> property</a></div>').hide().appendTo("#top").fadeIn(1000);       
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else if(html['status'] == 'wrong_state') {
