@@ -24,7 +24,6 @@ $(document).ready(function() {
     $(document).on('click', '.delete_wishlist', function(e) {
         e.preventDefault();
         var propertyID = $(this).get(0).id;
-        alert(propertyID);
 
         $.ajax({
             url: '/delete_wishlist',
@@ -44,7 +43,7 @@ $(document).ready(function() {
                 Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
             }
         });
-
+      location.reload(true);
     });
 });
 </script>

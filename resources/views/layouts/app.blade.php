@@ -14,7 +14,7 @@
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    
+
     <!-- Sweet Alert -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.css" rel="stylesheet" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.js"></script>
@@ -219,7 +219,7 @@
         <a class="navbar-brand" href="/">TURTLE</a>
             @if (Route::has('login'))
             @auth
-            
+
                 <ul class="navbar-nav">
                     @if(auth()->user()->can('delete bookings') || auth()->user()->can('delete reviews'))
                     <li class="nav-item dropdown">
@@ -244,6 +244,7 @@
 
 
                     <li class="nav-item"><a href="" id="user_profile" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="/view_wishlist" id="view_wishlist" class="nav-link">★</a></li>
                     <li class="nav-item"><a href="{{ url('/logout') }}" class="nav-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a></li>
                     <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}

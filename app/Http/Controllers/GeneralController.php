@@ -82,8 +82,6 @@ class GeneralController extends Controller
         );
     }
 
-
-
     public function get_user_id(Request $request) {
         $id = Auth::id();
         if(is_null($id)){
@@ -482,11 +480,11 @@ class GeneralController extends Controller
         // Animals.
 
         if(isset($animals) && !empty($animals) && !is_null($animals)) {
-            error_log("Sup99");
+            $insert_arr['search_animals'] = $animals;
             $animals = explode(',', $animals);
 
             $props->join('property_animals AS pa', 'pa.property_animals_propertyID', '=', 'p.property_id')
-                    ->whereIn('pa.property_animals_animalsID', $animals)
+                    ->whereIn('pa.property_animals_animalID', $animals)
                     ->groupBy('p.property_id');
         }
 
@@ -563,23 +561,18 @@ class GeneralController extends Controller
         foreach($props as $p) {
             $grab_ids[] = $p->property_id;
         }
-
-        error_log("Sup29");
         $results = DB::table('properties AS p')
                 ->select('p.*',
                     DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
                     DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`'),
                     DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`'),
-                    DB::raw('(SELECT GROUP_CONCAT(CONCAT(a.animal_type) SEPARATOR ",") FROM property_animals AS pa LEFT JOIN animals as a ON a.animals_id = pa.property_animals_animalID WHERE pa.property_animals_propertyID = p.property_id AND pa.property_animals_inactive = 0) AS `animals`')
+                    DB::raw('(SELECT GROUP_CONCAT(CONCAT(a.animals_type) SEPARATOR ",") FROM property_animals AS pa LEFT JOIN animals as a ON a.animals_id = pa.property_animals_animalID WHERE pa.property_animals_propertyID = p.property_id AND pa.property_animals_inactive = 0) AS `animals`')
                 )
                 ->where([
                     ['property_inactive', '=', '0']
                 ])
                 ->whereIn('p.property_id', $grab_ids)
                 ->get();
-
-        error_log("Sup89");
-
 
         foreach($results as $r) {
             if(is_null($r->scores)) {
@@ -608,8 +601,7 @@ class GeneralController extends Controller
             $ret_str .= '<div class="card-title">
                             <h3>'.$r->property_title.'</h3>
                         </div>
-                        <div class="card-text">                    error_log("Sup!");
-                    error_log($a);
+                        <div class="card-text">
                             <div style="margin:5px;">
                                 <span><i class="fas fa-bed"></i>&nbsp;'.$r->property_beds.'</span>
                                 <span><i class="fas fa-bath"></i>&nbsp;'.$r->property_baths.'</span>

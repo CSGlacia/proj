@@ -224,7 +224,7 @@ class HomeController extends Controller
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
         $persons = $request->input('persons');
-
+        // $animals = $request->input('animals');
 
         $startDate = explode('/', $startDate);
         $startDate = $startDate[2].'-'.$startDate[1].'-'.$startDate[0];
@@ -908,10 +908,11 @@ class HomeController extends Controller
                     ->select('w.*')
                     ->where([
                         ['wishlist_propertyID', '=', $propertyID],
-                        ['wishlist_userID', '=', $userID]
+                        ['wishlist_userID', '=', $userID],
+                        ['wishlist_inactive', '=', 0]
                     ])
                     ->get();
-        if(isset($results)){
+        if(is_null($results)) {
             return json_encode(['status' => 'exists']);
         }
         DB::table('wishlist')
@@ -1094,8 +1095,6 @@ class HomeController extends Controller
         }
         return json_encode(['status' => 'error']);
     }
-
-
 
     /* Email stuff when logged in*/
     public static function sendBookingApplicationEmail($propertyID, $startDate, $endDate)
