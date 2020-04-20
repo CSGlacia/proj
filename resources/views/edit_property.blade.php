@@ -16,7 +16,7 @@
 
 @section('content')
 <div class="container">
-    <div class="card col-sm-12 col-md-12 col-lg-12">
+    <div class="card col-sm-12 col-md-12 col-lg-12"id="top">
         <br>
         <b><h3 style="text-align:center;">Edit Property</h3></b>
         <hr>
@@ -247,7 +247,6 @@ $(document).ready(function() {
     $('#tags').select2({
         theme: "bootstrap"
     });
-    console.log(@json($listings));
     var count = 1;
     var image_count = {{$image_count}};
     var removed_images = [];
@@ -378,7 +377,6 @@ $(document).ready(function() {
         var l_name = $('#l_name').val();
         var lat = $('#lat').val();
         var lng = $('#lng').val();
-        var always_list = $('#always_list').prop('checked');
 
         var form_data = new FormData();
 
@@ -391,7 +389,6 @@ $(document).ready(function() {
         form_data.append('l_name',l_name);
         form_data.append('lat',lat);
         form_data.append('lng',lng);
-        form_data.append('always_list',always_list);
 
         var tags = $('#tags').val();
         form_data.append('tags', tags);
@@ -437,24 +434,43 @@ $(document).ready(function() {
                             }
                         });
                     }
-
-                    if(always_list == false) {
-                        $.ajax({
-                            url: '/update_property_listing',
-                            method: 'POST',
-                            dataType: 'JSON',
-                            data: 'property='+prop_id+'&price='+1+'&data='+encodeURIComponent(listing_dates_arr),
-                            success: function(html) {
-                                if(html['status'] != "success") {
-                                    Swal.fire("Error", "There was an error, please try again!", "error");
-                                }
-                            },
-                            error: function ( xhr, errorType, exception ) {
-                                var errorMessage = exception || xhr.statusText;
-                                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+                    $.ajax({
+                        url: '/update_property_listing',
+                        method: 'POST',
+                        dataType: 'JSON',
+                        data: 'property='+prop_id+'&price='+1+'&data='+encodeURIComponent(listing_dates_arr),
+                        success: function(html) {
+                            if(html['status'] == "success") {
+                                $('<div class="alert alert-success" role="alert">Listing: was created successfully' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                            } else if(html['status'] == 'bad_input'){
+                                $('<div class="alert alert-danger" role="alert">Listing: Please check all fields are filled.' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                            } else if(html['status'] == 'price_low') {
+                                $('<div class="alert alert-danger" role="alert">Listing: You must enter a price which is positive. You cannot charge negative amounts.' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                            } else if(html['status'] == 'price_high'){
+                                $('<div class="alert alert-danger" role="alert">Listing: There\'s a price limit of $999999.99 . Please enter a lower price per night.' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                            } else if(html['status'] == 'overlapping_date'){
+                                $('<div class="alert alert-danger" role="alert">Listing: A listing already exists within this time period.' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                            } else {
+                                $('<div class="alert alert-danger" role="alert">Listing: There was an error with creating your listing!' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                             }
-                        });
-                    }
+                        },
+                        error: function ( xhr, errorType, exception ) {
+                            var errorMessage = exception || xhr.statusText;
+                            Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+                        }
+                    });
                     Swal.fire("Success", "Property Updated Successfully", "success");
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");
