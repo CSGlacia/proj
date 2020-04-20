@@ -351,7 +351,7 @@ $(document).ready(function() {
                             text: "Property Created Successfully",
                             type:"success",
                         }).then(function(){
-                            $.when($.each(listing_dates_arr, function(i) {
+                            $.each(listing_dates_arr, function(i) {
                                 $.ajax({
                                     url: '/create_property_listing',
                                     method: 'POST',
@@ -395,8 +395,8 @@ $(document).ready(function() {
                                         Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
                                     }
                                 });
-                            })).done(function(){
-                                if(errors == false){
+                            });
+                            if(errors == false){
                                     let timerInterval
                                     Swal.fire({
                                     title: 'Property and listings successfully created',
@@ -429,8 +429,6 @@ $(document).ready(function() {
                                     $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/"'+html['id']+
                                     ' class="alert-link"> property</a>. Give it a click if you like.</div>').hide().append("#top").fadeIn(1000);
                                 }
-                            });
-
                             
                         });
                     }
