@@ -38,6 +38,7 @@ $(document).ready(function() {
                 } else {
                     Swal.fire("Error", "There was an error, please try again!", "error");
                 }
+                location.reload();
             },
             error: function ( xhr, errorType, exception ) {
                 var errorMessage = exception || xhr.statusText;
