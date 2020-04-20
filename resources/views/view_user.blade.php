@@ -160,7 +160,7 @@
     @if($page_owner)
     <div class="container row" style="background:rgba(240,255,248,0.6);">
         <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-12 card-body" style="width:25vw">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body" style="width:20vw">
                 <div class="card-title" style="text-align:center;">
                     <h4>Bookings Awaiting Approval:</h4>
                 </div>
@@ -197,7 +197,7 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="width:25vw">
+        <div class="row" style="width:20vw">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
                     <h4>Upcoming Approved Bookings:</h4>
@@ -231,7 +231,7 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="width:25vw">
+        <div class="row" style="width:20.5vw">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
                     <h4> Past Approved Bookings:</h4>
