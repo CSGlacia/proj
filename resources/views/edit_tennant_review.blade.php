@@ -148,10 +148,26 @@ $(document).ready(function() {
             success: function(html) {
                 html = JSON.parse(html);
                 if(html['status'] == 'success') {
-                    Swal.fire("Success", "Review Edited Successfully", "success");
-                    setTimeout(function() {
+                    let timerInterval
+                    Swal.fire({
+                    title: 'Review Edited Successfully',
+                    html: 'You will be redirected to your reviews in <b></b> seconds.',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    type: "success",
+                    onBeforeOpen: () => {
+                        Swal.showLoading()
+                        timerInterval = setInterval(() => {
+                            swal.getContent().querySelector('b')
+                            .textContent = Math.ceil(swal.getTimerLeft() / 1000)
+                        }, 100)
+                    },
+                    onClose: () => {
                         window.location.href = "/tennant_reviews";
-                    }, 3000);
+                    }
+                    }).then((result) => {
+                        window.location.href = "/tennant_reviews";
+                    })
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else {
