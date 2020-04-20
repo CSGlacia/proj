@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div><h2><b>Property Review</b></h2>
+<div class="container" style="background:rgba(240,255,248,0.6)">
+    <div><h2><b>Edit Property Review</b></h2>
     <hr>
     <div class="row">
         <div class="col-sm-6 col-md-6 col-lg-6">
@@ -42,9 +42,9 @@
     </div>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
-            <span class="btn btn-xs btn-primary" id="submit_review">Save Review</span>
+            <span class="btn btn-xs btn-primary" style="margin-bottom:5px" id="submit_review">Save Review</span>
         </div>
-    </div>    
+    </div>
 </div>
 @endsection
 
