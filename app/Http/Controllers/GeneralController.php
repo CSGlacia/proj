@@ -84,10 +84,15 @@ class GeneralController extends Controller
     }
 
     public function view_one_property(Request $request, $id) {
+        $insert_arr = [];
+        $user_id = Auth::id();
+        if (!is_null($user_id) && isset($user_id)) {
+            $insert_arr['vp_user_id'] = $user_id;
+        }
 
-        //TODO: insert into table:view_property_data
-        // $insert = ['vp_user_id' => Auth::id() (if it is set and not null and numeric, otherwise dont include vp_user_id), 
-        // 'vp_property_id' => $id, 'vp_viewed_at' => time()]
+        $insert_arr['vp_property_id'] = $id;
+        $insert_arr['vp_viewed_at'] = time();
+        DB::table('view_property_data')->insert($insert_arr);
 
         $bucket = 'turtle-database';
 
@@ -595,7 +600,17 @@ class GeneralController extends Controller
         if(isset($lat) && !empty($lat) && !is_null($lat) && isset($lng) && !empty($lng) && !is_null($lng) && isset($radius) && !empty($radius) && !is_null($radius)) {
             //you can get $user_id by doing Auth::id() but you need to check if it is not null and numeric because we are in general controller
             //TODO: insert into table: search_map_data ['search_map_data_user_id' => $user_id (if it exists otherwise dont insert this column), 'search_map_data_searched_at' => time(), 'search_lat' => $lat, 'search_lng' => $lng, 'search_radius' => $radius]
+            $insert_arr = [];
+            $user_id = Auth::id();
+            if (!is_null($user_id) && isset($user_id)) {
+                $insert_arr['search_map_data_user_id'] = $user_id;
+            }
 
+            $insert_arr['search_map_data_searched_at'] = time();
+            $insert_arr['search_lat'] = $lat;
+            $insert_arr['search_lng'] = $lng;
+            $insert_arr['search_radius'] = $radius;
+            DB::table('search_map_data')->insert($insert_arr);
 
             $radius = $radius/1000;
 
