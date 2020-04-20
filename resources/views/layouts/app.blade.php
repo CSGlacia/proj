@@ -241,9 +241,8 @@
                     <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
                     <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
 
-
-
                     <li class="nav-item"><a href="" id="user_profile" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="/view_wishlist" class="nav-link">Wishlist</a></li>
                     <li class="nav-item"><a href="{{ url('/logout') }}" class="nav-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a></li>
                     <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
