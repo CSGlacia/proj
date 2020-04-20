@@ -536,20 +536,15 @@ $(document).ready(function() {
                         let timerInterval
                         Swal.fire({
                         title: 'Booking created successfully',
-                        html: 'You will be redirected to your booking in <b></b> milliseconds.',
+                        html: 'You will be redirected to your booking in <b></b> seconds.',
                         timer: 5000,
                         timerProgressBar: true,
                         type: "success",
                         onBeforeOpen: () => {
                             Swal.showLoading()
                             timerInterval = setInterval(() => {
-                            const content = Swal.getContent()
-                            if (content) {
-                                const b = content.querySelector('b')
-                                if (b) {
-                                b.textContent = Swal.getTimerLeft()
-                                }
-                            }
+                                swal.getContent().querySelector('b')
+                                .textContent = Math.ceil(swal.getTimerLeft() / 1000)
                             }, 100)
                         },
                         onClose: () => {
