@@ -94,21 +94,6 @@ $(document).ready(function() {
 
     var count = 1;
 
-    $(document).on('change', '#always_list', function(e) {
-        e.preventDefault();
-        var val = $(this).prop('checked');
-
-        if(val) {
-            $('[name="listing_dates"]').each(function(i) {
-                $(this).hide();
-            });
-        } else {
-            $('[name="listing_dates"]').each(function(i) {
-                $(this).show();
-            });
-        }
-    });
-
     $(document).on('click', '#add_dates', function(e) {
         if(count < 5) {
             var elem = $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-2 col-md-2 col-lg-2"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="text" required></div><div class="col-sm-2 col-md-2 col-lg-2"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="text" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');

@@ -215,7 +215,7 @@ img {
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
                                             <div style="margin-top:5px;"><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
-                                            <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Bookying</span></div>
+                                            <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Booking</span></div>
                                         </div>
                                     </div>
                                     <hr>
@@ -524,7 +524,31 @@ $(document).ready(function() {
                 data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons,
                 success: function(html) {
                     if(html['status'] == "success") {
-                        Swal.fire("Success", "Booking created successfully", "success");
+                        let timerInterval
+                        Swal.fire({
+                        title: 'Booking created successfully',
+                        html: 'You will be redirected to your booking in <b></b> milliseconds.',
+                        timer: 5000,
+                        timerProgressBar: true,
+                        type: "success",
+                        onBeforeOpen: () => {
+                            Swal.showLoading()
+                            timerInterval = setInterval(() => {
+                            const content = Swal.getContent()
+                            if (content) {
+                                const b = content.querySelector('b')
+                                if (b) {
+                                b.textContent = Swal.getTimerLeft()
+                                }
+                            }
+                            }, 100)
+                        },
+                        onClose: () => {
+                            window.location.href = "/view_booking/"+html['id'];
+                        }
+                        }).then((result) => {
+                            window.location.href = "/view_booking/"+html['id'];
+                        })
                     } else if(html['status'] == 'bad_input') {
                         Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                     } else if (html['status'] == 'time_booked'){

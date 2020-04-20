@@ -60,7 +60,6 @@ class HomeController extends Controller
         $images = $request->file('files');
         $lat = $request->input('lat');
         $lng = $request->input('lng');
-        $always_list = $request->input('always_list');
         $tags = $request->input('tags');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
@@ -72,25 +71,12 @@ class HomeController extends Controller
                 if(strpos($address, 'NSW') === false) {
                     return json_encode(['status' => 'wrong_state']);
                 }
-
-                if($always_list != 'true' && $always_list != 'false') {
-                    $always_list = 0;
-                }
-
-                if($always_list == 'true') {
-                    $always_list = 1;
-                }
-
-                if($always_list == 'false') {
-                    $always_list = 0;
-                }
-
                 $suburb = explode(',' , $address);
                 $suburb = $suburb[1];
                 $suburb = explode(' ', $suburb);
                 $suburb = $suburb[1];
 
-                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list, 'property_suburb' => $suburb];
+                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_suburb' => $suburb];
 
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
@@ -214,38 +200,6 @@ class HomeController extends Controller
         $s = strtotime($startDate);
         $e = strtotime($endDate);
 
-        $prop = DB::table('properties AS p')
-                    ->select('p.property_always_list')
-                    ->where([
-                        ['p.property_id', $propertyID],
-                        ['p.property_inactive', 0]
-                    ])
-                    ->first();
-
-        if($prop->property_always_list == 0) {
-            $listings = DB::table('property_listing AS l')
-                            ->where([
-                                ['l.property_id', $propertyID],
-                                ['l.inactive', 0]
-                            ])
-                            ->get();
-
-            if(count($listings) > 0) {
-                $listings_good = false;
-                foreach($listings as $l) {
-                    if($s >= $l->start_date && $e <= $l->end_date) {
-                        $listings_good = true;
-                    }
-                }
-
-                if($listings_good == false) {
-                    return json_encode(['status' => 'no_listings']);
-                }
-            } else {
-                return json_encode(['status' => 'no_listings']);
-
-            }
-        }
 
         // If the end date is before $s, fail. (You can't book for 1 day)
         if ($s >= $e) {
@@ -276,9 +230,9 @@ class HomeController extends Controller
 
             $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
 
-            DB::table('bookings')->insert($insert);
+            $booking_id = DB::table('bookings')->insertGetId($insert);
             $this->sendBookingApplicationEmail($propertyID, $s, $e);
-            return json_encode(['status' => 'success']);
+            return json_encode(['status' => 'success','id' => $booking_id]);
         }
 
         return json_encode(['status' => 'bad_input']);
@@ -748,7 +702,6 @@ class HomeController extends Controller
         $images = $request->file('files');
         $lat = $request->input('lat');
         $lng = $request->input('lng');
-        $always_list = $request->input('always_list');
         $tags = $request->input('tags');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
@@ -761,24 +714,12 @@ class HomeController extends Controller
                     return json_encode(['status' => 'wrong_state']);
                 }
 
-                if($always_list != 'true' && $always_list != 'false') {
-                    $always_list = 0;
-                }
-
-                if($always_list == 'true') {
-                    $always_list = 1;
-                }
-
-                if($always_list == 'false') {
-                    $always_list = 0;
-                }
-
                 $suburb = explode(',' , $address);
                 $suburb = $suburb[1];
                 $suburb = explode(' ', $suburb);
                 $suburb = $suburb[1];
 
-                $update = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_always_list' => $always_list, 'property_suburb' => $suburb];
+                $update = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_suburb' => $suburb];
 
                 DB::table('properties')
                     ->where('property_id', $prop_id)
@@ -889,7 +830,7 @@ class HomeController extends Controller
                         ['wishlist_propertyID', '=', $propertyID],
                         ['wishlist_userID', '=', $userID]
                     ])
-                    ->get();
+                    ->first();
         if(isset($results)){
             return json_encode(['status' => 'exists']);
         }

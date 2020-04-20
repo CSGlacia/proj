@@ -98,12 +98,6 @@
             <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
                 <label class="btn btn-primary float-right" id="add_dates"><i class="fas fa-plus"></i>&nbsp;Add Dates</label>
             </div>
-            <div class="pretty p-default p-round p-smooth p-bigger" style="margin-bottom:20px;">
-                <input id="always_list" type="checkbox" />
-                <div class="state p-primary">
-                    <label>List my property indefinitely</label>
-                </div>
-            </div>
             <div class="col-sm-6 col-md-6 col-lg-6">
                 <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
                 <div class="col-sm-3 col-md-3 col-lg-3">
@@ -221,21 +215,6 @@ $(document).ready(function() {
 
     var count = 1;
 
-    $(document).on('change', '#always_list', function(e) {
-        e.preventDefault();
-        var val = $(this).prop('checked');
-
-        if(val) {
-            $('[name="listing_dates"]').each(function(i) {
-                $(this).hide();
-            });
-        } else {
-            $('[name="listing_dates"]').each(function(i) {
-                $(this).show();
-            });
-        }
-    });
-
     $(document).on('click', '#add_dates', function(e) {
         if(count < 5) {
             var elem = $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-3 col-md-3 col-lg-3"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="text" required></div><div class="col-sm-3 col-md-3 col-lg-3"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="text" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');
@@ -292,7 +271,6 @@ $(document).ready(function() {
         var l_name = $('#l_name').val();
         var lat = $('#lat').val();
         var lng = $('#lng').val();
-        var always_list = $('#always_list').prop('checked');
 
         //var image_name = "image";
         var form_data = new FormData();
@@ -311,7 +289,6 @@ $(document).ready(function() {
         form_data.append('l_name',l_name);
         form_data.append('lat',lat);
         form_data.append('lng',lng);
-        form_data.append('always_list',always_list);
         
         var tags  = ($('#tags').val());
         form_data.append('tags', tags);
@@ -343,56 +320,60 @@ $(document).ready(function() {
                     fileDrop.options.url = "/upload_property_images/"+html['id']
                     fileDrop.processQueue();
                     var prop_id = html['id'];
-
-                    if(always_list == false) {
-                        var count = 1;
-                        swal({
-                            title:"Success!",
-                            text: "Property Created Successfully",
-                            type:"success",
-                        }).then(function(){
-                            $.each(listing_dates_arr, function(i) {
-                                $.ajax({
-                                    url: '/create_property_listing',
-                                    method: 'POST',
-                                    dataType: 'JSON',
-                                    data: 'property='+prop_id+'&price='+price+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
-                                    success: function(html) {
-                                        if(html['status'] == "success") {
-                                            $('<div class="alert alert-success" role="alert">Listing '+ count +': was created successfully' +
-                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                                        } else if(html['status'] == 'bad_input'){
-                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': Please check all fields are filled.' +
-                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                                        } else if(html['status'] == 'price_low') {
-                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': You must enter a price which is positive. You cannot charge negative amounts.' +
-                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                                        } else if(html['status'] == 'price_high'){
-                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': There\'s a price limit of $999999.99 . Please enter a lower price per night.' +
-                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                                        } else if(html['status'] == 'overlapping_date'){
-                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': A listing already exists within this time period.' +
-                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                                        } else {
-                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': There was an error with creating your listing!' +
-                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                                        }
-                                        count++;
-                                    },
-                                    error: function ( xhr, errorType, exception ) {
-                                        var errorMessage = exception || xhr.statusText;
-                                        Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+                    var count = 1;
+                    swal({
+                        title:"Success!",
+                        text: "Property Created Successfully",
+                        type:"success",
+                    }).then(function(){
+                        $.each(listing_dates_arr, function(i) {
+                            $.ajax({
+                                url: '/create_property_listing',
+                                method: 'POST',
+                                dataType: 'JSON',
+                                data: 'property='+prop_id+'&price='+price+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
+                                success: function(html) {
+                                    if(html['status'] == "success") {
+                                        $('<div class="alert alert-success" role="alert">Listing '+ count +': was created successfully' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                    } else if(html['status'] == 'bad_input'){
+                                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': Please check all fields are filled.' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                    } else if(html['status'] == 'price_low') {
+                                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': You must enter a price which is positive. You cannot charge negative amounts.' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                    } else if(html['status'] == 'price_high'){
+                                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': There\'s a price limit of $999999.99 . Please enter a lower price per night.' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                    } else if(html['status'] == 'overlapping_date'){
+                                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': A listing already exists within this time period.' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                    } else {
+                                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': There was an error with creating your listing!' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                                     }
-                                });
+                                    count++;
+                                },
+                                error: function ( xhr, errorType, exception ) {
+                                    var errorMessage = exception || xhr.statusText;
+                                    var response = JSON.parse(xhr.responseText);
+                                    Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+                                }
                             });
                         });
-                    }
+                        $('<div class="alert alert-danger" role="alert">There might have been errors in your listing creation. Please fix this before clicking the link below to your property.' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                        $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/' + html['id'] +
+                        '"class="alert-link"> property</a></div>').hide().appendTo("#top").fadeIn(1000);                            
+                    });
+ 
                 } else if(html['status'] == 'bad_input') {
                     Swal.fire("Warning", "Please double check all fields are filled!", "warning");
                 } else if(html['status'] == 'wrong_state') {
