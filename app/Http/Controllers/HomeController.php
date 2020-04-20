@@ -255,7 +255,7 @@ class HomeController extends Controller
         // Pull from the database.
         $results = DB::table('bookings AS c')
                     ->select('c.*')
-                    ->where([ 
+                    ->where([
                         ['c.booking_propertyID', '=', $propertyID],
                         ['c.booking_inactive', 0]
                     ])
@@ -1097,8 +1097,39 @@ class HomeController extends Controller
             $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($userEmail->email);
         });
+    }
+
+    public static function sendBookingStatusEmail($bookingID, $status)
+    {
+        $userEmail = DB::table('users AS u')
+                    ->select('email')
+                    ->where([ ['u.id', '=', Auth::id()], ])
+                    ->first();
+        $booking = DB::table('bookings AS b')
+                    ->where([ ['b.booking_id', '=', $bookingID], ])
+                    ->first();
+        $propName = DB::table('properties AS p')
+                    ->select('property_title')
+                    ->where([ ['p.property_id', '=', $booking->booking_propertyID], ])
+                    ->first();
+        $startDateStr = date("Y-m-d", $booking->booking_startDate);
+        $endDateStr = date("Y-m-d", $booking->booking_endDate);
+        $data = array('email' => $userEmail->email, 'propName' => $propName->property_title, 'startDate' => $startDateStr, 'endDate' => $endDateStr);
+        $emailForm = '';
+        if ($status == 'denied'){
+            $emailForm = 'emails.booking_denied';
+        } else if ($status == 'approved'){
+            $emailForm = 'emails.booking_approved';
+        }
+
+        Mail::send($emailForm, $data, function ($message) use ($userEmail)
+        {
+            $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
+            $message->to($userEmail->email);
+        });
 
     }
+
     /* Comparing 2 start and end dates to check if they overlap */
     public function checkValidDates($startDate1, $endDate1, $prop_id)
     {
@@ -1259,11 +1290,11 @@ class HomeController extends Controller
                         ])
                         ->update(['booking_denied' => 1]);
                     //TODO: email denial notification
-
+                    $this->sendBookingStatusEmail($bookingID, 'denied');
                     return json_encode(['status' => 'overlapping_bookings']);
 
                 } else {
-                    //approve booking 
+                    //approve booking
                     DB::table('bookings AS b')
                         ->where([
                             ['b.booking_id', $booking_id],
@@ -1272,7 +1303,7 @@ class HomeController extends Controller
                         ])
                         ->update(['booking_approved' => 1]);
                     //TODO: email approval notification
-
+                    $this->sendBookingStatusEmail($bookingID, 'approved');
                     return json_encode(['status' => 'success']);
 
                 }
@@ -1306,6 +1337,7 @@ class HomeController extends Controller
                     ])
                     ->update(['booking_denied' => 1]);
                     //TODO: email denial notification
+                    $this->sendBookingStatusEmail($bookingID, 'denied');
                 return json_encode(['status' => 'success']);
 
             }
