@@ -154,7 +154,7 @@
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
                                             <div style="margin-top:5px;"><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
-                                            <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Bookying</span></div>
+                                            <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Booking</span></div>
                                         </div>
                                     </div>
                                     <hr>
