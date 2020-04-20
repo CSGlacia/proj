@@ -392,7 +392,12 @@ $(document).ready(function() {
                                     },
                                     error: function ( xhr, errorType, exception ) {
                                         var errorMessage = exception || xhr.statusText;
-                                        Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+                                        if(xhr.statusText == "bad_input"){
+                                            $('<div class="alert alert-danger" role="alert">Listing '+ count +': Please check all fields are filled.' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
+                                            '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
+                                            errors = true;
+                                        }
                                     }
                                 });
                             });
