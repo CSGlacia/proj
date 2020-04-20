@@ -2,101 +2,112 @@
 
 @section('content')
 <div class="container">
-    <span class="label bg-primary">Name: {{$user->name}}</span>
-    <span class="label bg-warning">Email: {{$user->email}}</span>
-    <span class="label bg-secondary">Guest rating: </span>
-    <span>{{$guest_score}}</span>
-    <span name="score-star"><i class="fas fa-star gold-star"></i></span>
-
+    <div class="card" style="background:rgba(240,255,248,0.6)">
+        <span class="display-4" style="text-transform:uppercase; left:1vw;position:relative; font-family:'arial';"> {{$user->name}} </span>
+        <div style="left:1vw;position:relative;">
+            <a class="label" style="display:flex">Email: {{$user->email}}</a>
+            <a class="label" >Guest rating: </a>
+            <a>{{$guest_score}}</a>
+            <a name="score-star"><i class="fas fa-star gold-star"></i></a>
+        </div>
+    </div>
     @if($page_owner)
-    <div class="row card">
-        <b><h2>Your Unapproved Bookings:</h2></b>
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            @foreach($bookings as $b)
-                <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12 card-body">
-                        <div class="card-title">
-                            <h3>{{ $b->property_title }}</h3>
+    <div class="container row" style="position:relative;left:1vw;">
+        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(255,155,155,0.3)">
+            <b><h2>Your Unapproved Bookings:</h2></b>
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                @foreach($bookings as $b)
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 card-body card">
+                            <div class="card-title">
+                                <h3>{{ $b->property_title }}</h3>
+                            </div>
+                            <div>
+                                <div>Address: {{$b->property_address}}</div>
+                                <div>Persons: {{$b->booking_persons}}</div>
+                            </div>
+                            <span>Start Date: {{$b->booking_startDate}}</span>
+                            <span>End Date: {{$b->booking_endDate}}</span>
+                            <div>
+                                <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
+                                <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}" style="color:white"> Cancel booking</a>
+                            </div>
                         </div>
-                        <div>
-                            <div>Address: {{$b->property_address}}</div>
-                            <div>Persons: {{$b->booking_persons}}</div>
-                        </div>
-                        <span>Start Date: {{$b->booking_startDate}}</span>
-                        <span>End Date: {{$b->booking_endDate}}</span>
-                        <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
-                        <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}"> Cancel booking</a>
+                        <hr>
                     </div>
-                    <hr>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(135,255,155,0.3)">
+            <b><h2>Your Approved Bookings:</h2></b>
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                @foreach($abookings as $b)
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 card-body card">
+                            <div class="card-title">
+                                <h3>{{ $b->property_title }}</h3>
+                            </div>
+                            <div>
+                                <div>Address: {{$b->property_address}}</div>
+                                <div>Persons: {{$b->booking_persons}}</div>
+                            </div>
+                            <span>Start Date: {{$b->booking_startDate}}</span>
+                            <span>End Date: {{$b->booking_endDate}}</span>
+                            <div>
+                                <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
+                                <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}"style="color:white"> Cancel booking</a>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
-    <div class="row card">
-        <b><h2>Your Approved Bookings:</h2></b>
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            @foreach($abookings as $b)
-                <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12 card-body">
-                        <div class="card-title">
-                            <h3>{{ $b->property_title }}</h3>
+    <div class="container row" style="position:relative;left:1vw">
+        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(255,155,155,0.3)">
+            <b><h2>Your Past Bookings:</h2></b>
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                @foreach($pbookings as $b)
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                            <div class="card-title">
+                                <h3>{{ $b->property_title }}</h3>
+                            </div>
+                            <div>
+                                <div>Address: {{$b->property_address}}</div>
+                                <div>Persons: {{$b->booking_persons}}</div>
+                            </div>
+                            <span>Start Date: {{$b->booking_startDate}}</span>
+                            <span>End Date: {{$b->booking_endDate}}</span>
+                            <button class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</button>
                         </div>
-                        <div>
-                            <div>Address: {{$b->property_address}}</div>
-                            <div>Persons: {{$b->booking_persons}}</div>
-                        </div>
-                        <span>Start Date: {{$b->booking_startDate}}</span>
-                        <span>End Date: {{$b->booking_endDate}}</span>
-                        <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
-                        <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}"> Cancel booking</a>
+                        <hr>
                     </div>
-                    <hr>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <b><h2>Your Past Bookings:</h2></b>
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            @foreach($pbookings as $b)
-                <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12 card-body">
-                        <div class="card-title">
-                            <h3>{{ $b->property_title }}</h3>
+        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(135,255,155,0.3)">
+            <b><h2>Your Denied Bookings:</h2></b>
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                @foreach($dbookings as $b)
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                            <div class="card-title">
+                                <h3>{{ $b->property_title }}</h3>
+                            </div>
+                            <div>
+                                <div>Address: {{$b->property_address}}</div>
+                                <div>Persons: {{$b->booking_persons}}</div>
+                            </div>
+                            <span>Start Date: {{$b->booking_startDate}}</span>
+                            <span>End Date: {{$b->booking_endDate}}</span>
+                            <button class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</button>
                         </div>
-                        <div>
-                            <div>Address: {{$b->property_address}}</div>
-                            <div>Persons: {{$b->booking_persons}}</div>
-                        </div>
-                        <span>Start Date: {{$b->booking_startDate}}</span>
-                        <span>End Date: {{$b->booking_endDate}}</span>
-                        <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
+                        <hr>
                     </div>
-                    <hr>
-                </div>
-            @endforeach
-        </div>
-    </div>
-    <div class="row">
-        <b><h2>Your Denied Bookings:</h2></b>
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            @foreach($dbookings as $b)
-                <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12 card-body">
-                        <div class="card-title">
-                            <h3>{{ $b->property_title }}</h3>
-                        </div>
-                        <div>
-                            <div>Address: {{$b->property_address}}</div>
-                            <div>Persons: {{$b->booking_persons}}</div>
-                        </div>
-                        <span>Start Date: {{$b->booking_startDate}}</span>
-                        <span>End Date: {{$b->booking_endDate}}</span>
-                        <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
-                    </div>
-                    <hr>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     </div>
     @endif
