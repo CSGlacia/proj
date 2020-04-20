@@ -86,7 +86,8 @@ class GeneralController extends Controller
     public function view_one_property(Request $request, $id) {
 
         //TODO: insert into table:view_property_data
-        // $insert = ['vp_user_id' => Auth::id() (if it is set and not null and numeric, otherwise dont include vp_user_id), 'vp_property_id' => $id, 'vp_viewed_at' => time()]
+        // $insert = ['vp_user_id' => Auth::id() (if it is set and not null and numeric, otherwise dont include vp_user_id), 
+        // 'vp_property_id' => $id, 'vp_viewed_at' => time()]
 
         $bucket = 'turtle-database';
 
@@ -351,11 +352,15 @@ class GeneralController extends Controller
 
         
         */
+        $insert_arr = [];
+        $insert_arr['search_data_searched_at'] = time();
 
         //results that do not meet rating requirement are placed in this array
         $bad_ratings = [];
         if(isset($rating) && !empty($rating) && !is_null($rating) && isset($include_unrated) && !empty($include_unrated) && !is_null($include_unrated)) {
             $include_unrated = ($include_unrated == 'true');
+            $insert_arr['search_min_rating'] = $rating;
+            $insert_arr['search_unrated'] = $include_unrated;
 
             $rated_props = DB::table('properties AS p')
                             ->select('p.property_id',
@@ -378,22 +383,37 @@ class GeneralController extends Controller
                 }
             }
             $bad_ratings = array_unique($bad_ratings);
+            
+        }
+        
+        
+
+        // check if there is a user logged in
+        $user_id = Auth::id();
+
+        if (!is_null($user_id) && isset($user_id)) {
+            $insert_arr['search_data_user_id'] = $user_id;
         }
 
         if(isset($name) && !empty($name) && !is_null($name)) {
             $props->where('p.property_title', 'LIKE', '%'.$name.'%');
+            $insert_arr['search_name'] = $name;
         }
 
         if(isset($address) && !is_null($address) && !empty($address)) {
             $props->where('p.property_address', 'LIKE', '%'.$address.'%');
+            $insert_arr['search_address'] = $address;
         }
 
         if(isset($suburbs) && !empty($suburbs) && !is_null($suburbs)) {
+            $insert_arr['search_suburb'] = $suburbs;
             $suburbs = explode(',' ,$suburbs);
             $props->whereIn('p.property_suburb', $suburbs);
+            
         }
 
         if(isset($tags) && !empty($tags) && !is_null($tags)) {
+            $insert_arr['search_tags'] = $tags;                     // insert before explode to save as csv string
             $tags = explode(',', $tags);
 
             $props->join('property_tags AS pt', 'pt.pt_property_id', '=', 'p.property_id')
@@ -403,14 +423,17 @@ class GeneralController extends Controller
 
         if(isset($beds) && !empty($beds) && !is_null($beds)) {
             $props->where('p.property_beds', '>=', $beds);
+            $insert_arr['search_beds'] = $beds;
         }
 
         if(isset($baths) && !empty($baths) && !is_null($baths)) {
             $props->where('p.property_baths', '>=', $baths);
+            $insert_arr['search_baths'] = $baths;
         }
 
         if(isset($cars) && !empty($cars) && !is_null($cars)) {
             $props->where('p.property_cars', '>=', $cars);
+            $insert_arr['search_cars'] = $cars;
         }
 
 
@@ -434,6 +457,7 @@ class GeneralController extends Controller
             }
 
             $bad_start_dates = array_unique($bad_start_dates);
+            $insert_arr['search_start_date'] = $start_date;
         }
 
         $bad_end_dates = [];
@@ -456,6 +480,7 @@ class GeneralController extends Controller
             }
 
             $bad_end_dates = array_unique($bad_end_dates);
+            $insert_arr['search_end_date'] = $end_date;
         }
 
 
@@ -538,6 +563,8 @@ class GeneralController extends Controller
         if($ret_str == '') {
             $status = "no_results";
         }
+
+        DB::table('search_data')->insert($insert_arr);
 
         return json_encode(['status' => $status, 'data' => $ret_str]);
     }
