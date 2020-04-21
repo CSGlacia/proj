@@ -180,9 +180,11 @@ class AdminController extends Controller{
             $user = User::find($id);
             if($user->hasRole('advertiser')){
                 $user->removeRole('advertiser');
+                $user->assignRole('user');
             }
             else{
                 $user->assignRole('advertiser');
+                $user->removeRole('user');
             }
             return json_encode(['status' => 'success']);
         }
