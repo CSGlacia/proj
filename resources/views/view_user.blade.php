@@ -86,7 +86,7 @@
                             <span>Start Date: {{$b->booking_startDate}}</span>
                             <span>End Date: {{$b->booking_endDate}}</span>
                             <div>
-                                <button class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</button>
+                                <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
                             </div>
                         </div>
                     </div>
@@ -110,7 +110,7 @@
                             <span>Start Date: {{$b->booking_startDate}}</span>
                             <span>End Date: {{$b->booking_endDate}}</span>
                             <div>
-                                <button class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</button>
+                                <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
                             </div>
                         </div>
                     </div>
