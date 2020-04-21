@@ -177,7 +177,7 @@ class AdminController extends Controller{
         }
         else if($request->isMethod('POST')){
             $id = $request->input('user_id');
-            $user = User::find($user->id);
+            $user = User::find($id);
             if($user->hasRole('advertiser')){
                 $user->removeRole('advertiser');
             }
