@@ -149,6 +149,58 @@ class AdminController extends Controller{
         }
         return json_encode(['status' => 'error']);
     }
+<<<<<<< HEAD
+=======
+    public function create_advertiser(Request $request){
+        if($request->isMethod('GET')){
+            $id = Auth::id();
+            $users = DB::table('users as u')
+                        ->select('id','name')
+                        ->where('id','<>',$id)
+                        ->get();
+            $advertiser = [];
+            foreach($users as $user){
+                $user_ = User::find($user->id);
+                if($user_->hasRole('advertiser')){
+                    $advertiser[$user->id] = True;
+                }
+                else{
+                    $advertiser[$user->id] = False;
+                }
+            }
+
+            return view('admin_advertiser',
+            [
+                'users' => $users,
+                'advertisers' => $advertiser,
+            ]);
+        }
+        else if($request->isMethod('POST')){
+            $id = $request->input('user_id');
+            $user = User::find($id);
+            if($user->hasRole('advertiser')){
+                $user->removeRole('advertiser');
+                $user->assignRole('user');
+            }
+            else{
+                $user->assignRole('advertiser');
+                $user->removeRole('user');
+            }
+            return json_encode(['status' => 'success']);
+        }
+    }
+    public function creater(Request $request){
+        $ad_role = Role::findByName('admin');
+        $ad_role->givePermissionTo('can advertise');
+        
+        return $ad_role;
+    }
+    public function become_admin(Request $request){
+        $user = Auth::user();
+        $user->assignRole('admin');
+        return $user;
+    }
+>>>>>>> fedca5c8cfcc6cda8697d065719c81e50eeadc66
 }
 
 ?>
