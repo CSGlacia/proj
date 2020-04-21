@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Mail;
 use Auth;
 use DB;
 use App;
+use App\User;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class AdminController extends Controller{
         /**
@@ -148,6 +151,33 @@ class AdminController extends Controller{
         }
         return json_encode(['status' => 'error']);
     }
-}
+    public function create_advertiser(Request $request){
+        if($request->isMethod('GET')){
+            $id = Auth::id();
+            $users = DB::table('users as u')
+                        ->select('id','name')
+                        ->where('id','<>',$id)
+                        ->get();
+            $advertiser = [];
+            foreach($users as $user){
+                $user_ = User::find($user->id);
+                if($user_->hasRole('advertiser')){
+                    $advertiser[$user->id] = "True";
+                }
+                else{
+                    $advertiser[$user->id] = "False";
+                }
+            }
 
+            return view('admin_advertiser',
+            [
+                'users' => $users,
+                'advertisers' => $advertiser,
+            ]);
+        }
+        else if($request->isMethod('POST')){
+
+        }
+    }
+}
 ?>
