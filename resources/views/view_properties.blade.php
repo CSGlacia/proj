@@ -137,7 +137,7 @@
 
     <div id="prop_div">
       @foreach ($properties as $p)
-        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:0px; border:none; width:50vw;">
+        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:5px; border:none; width:50vw;">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
 
                 @if($p->property_image_name[0])
