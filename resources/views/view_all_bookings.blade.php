@@ -8,7 +8,7 @@
         @foreach ($results as $r)
           <hr>
           <div class="row" align="center">
-              <div class="col-sm-9 col-md-9 col-lg-9 card" style="margin:0px; width:25vw;">
+              <div class="col-sm-9 col-md-9 col-lg-9 card" style="margin:0px; width:20vw;">
                     <h4><b>Booking ID: {{ $r['booking_id'] }}</b></h4>
                     <h5>Username:</h5><span> {{$r['username']}}</span>
                     <h5> Property Name:</h5><span>{{ $r['property_title'] }}</span>
