@@ -11,7 +11,7 @@
               <div class="col-sm-9 col-md-9 col-lg-9 card" style="margin:0px; width:20vw;">
               <h5>Username: {{$u->name}}</h5>
                 <h6> ID: {{$u->id}}</h6>
-                @if ($advertisers[$u->id] == "True")
+                @if ($advertisers[$u->id] == False)
                     <a class="btn btn-primary"  style="margin:5px; color:white" name="change_user" data-id="{{$u->id}}"> Make Advertiser</a>
                 @else
                     <a class="btn btn-primary"  style="margin:5px; color:white" name="change_user" data-id="{{$u->id}}"> Remove Advertiser status</a>

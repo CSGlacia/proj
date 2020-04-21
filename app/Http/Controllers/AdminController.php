@@ -162,10 +162,10 @@ class AdminController extends Controller{
             foreach($users as $user){
                 $user_ = User::find($user->id);
                 if($user_->hasRole('advertiser')){
-                    $advertiser[$user->id] = "True";
+                    $advertiser[$user->id] = True;
                 }
                 else{
-                    $advertiser[$user->id] = "False";
+                    $advertiser[$user->id] = False;
                 }
             }
 
@@ -176,7 +176,15 @@ class AdminController extends Controller{
             ]);
         }
         else if($request->isMethod('POST')){
-
+            $id = $request->input('user_id');
+            $user = User::find($user->id);
+            if($user->hasRole('advertiser')){
+                $user->removeRole('advertiser');
+            }
+            else{
+                $user->assignRole('advertiser');
+            }
+            return json_encode(['status' => 'success']);
         }
     }
 }

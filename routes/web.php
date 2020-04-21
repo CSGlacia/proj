@@ -86,6 +86,7 @@ Route::post('/admin_delete_tennant_review','AdminController@admin_delete_tennant
 Route::post('/admin_delete_property_review','AdminController@admin_delete_property_review');
 
 Route::get('/admin_advertiser','AdminController@create_advertiser');
+Route::post('/admin_advertiser','AdminController@create_advertiser');
 // email
 Route::post('apply-two', ['uses'=>'NewsLetterController@autoMail', 'as'=>'apply-two']);
 
