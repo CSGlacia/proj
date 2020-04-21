@@ -63,7 +63,8 @@ class AdvertiserController extends Controller
 		}
 
 		$headers = [
-			'Content-Type' => 'text/csv'
+			'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'filename=search_data.csv'
 		];
 
 		$callback = function() use ($data_arr) {
@@ -91,7 +92,8 @@ class AdvertiserController extends Controller
     	}
 
 		$headers = [
-			'Content-Type' => 'text/csv'
+			'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'filename=geographical_search_data.csv'
 		];
 
 		$callback = function() use ($data_arr) {
@@ -142,7 +144,8 @@ class AdvertiserController extends Controller
     	}
 
 		$headers = [
-			'Content-Type' => 'text/csv'
+			'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'filename=booking_data.csv'
 		];
 
 		$callback = function() use ($data_arr) {
@@ -169,7 +172,8 @@ class AdvertiserController extends Controller
 		}
 
 		$headers = [
-			'Content-Type' => 'text/csv'
+			'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'personal_data=search_data.csv'
 		];
 
 		$callback = function() use ($data_arr) {
@@ -215,7 +219,8 @@ class AdvertiserController extends Controller
 		}
 
 		$headers = [
-			'Content-Type' => 'text/csv'
+			'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'filename=viewing_data.csv'
 		];
 
 		$callback = function() use ($data_arr) {
