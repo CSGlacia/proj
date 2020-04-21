@@ -1241,12 +1241,8 @@ class HomeController extends Controller
                         $past_check = $booking->booking_endDate;
                         $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
                         $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
-<<<<<<< HEAD
 
                         $booking->scores = array_sum(explode(',', $booking->scores));
-=======
-                        $count = $booking->scores;
->>>>>>> fedca5c8cfcc6cda8697d065719c81e50eeadc66
                         if(isset($booking->scores) && !empty($booking->scores) && !is_null($booking->scores) && isset($booking->review_count) && !empty($booking->review_count) && !is_null($booking->review_count)) {
                             $booking->scores = $booking->scores/$booking->review_count;
                         } else {
