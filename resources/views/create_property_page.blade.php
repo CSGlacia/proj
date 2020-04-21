@@ -68,7 +68,7 @@
                     </select>
                 </div>
             </div>
-            
+
             <!-- Animal Services -->
 
              <a class="btn btn-dark" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
@@ -78,7 +78,7 @@
 
             </div>
 
-            <div class="collapse" id="collapseOne">
+            <div class="collapse col-sm-6 col-md-6 col-lg-6" id="collapseOne" style="left:-1.5vw">
               <div class="card card-body">
 
                   <!-- TODO + TOASK: are there any properties that are EXCLUSIVELY animal based? -->
