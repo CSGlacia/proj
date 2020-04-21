@@ -148,6 +148,8 @@ $(document).ready(function() {
             data: 'score='+score+'&review='+review+'&booking_id='+{{$b->booking_id}}+'&tennant_id='+{{$b->booking_userID}},
             success: function(html) {
                 if(html['status'] == "success") {
+                    let timerInterval
+                    Swal.fire({
                     title: 'Review Submitted Successfully',
                             html: 'You will be redirected in <b></b> seconds.',
                             timer: 3000,
