@@ -260,7 +260,7 @@ class HomeController extends Controller
             $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
 
             $booking_id = DB::table('bookings')->insertGetId($insert);
-            //$this->sendBookingApplicationEmail($propertyID, $s, $e);
+            $this->sendBookingApplicationEmail($propertyID, $s, $e);
             return json_encode(['status' => 'success','id' => $booking_id]);
         }
 
@@ -1121,7 +1121,7 @@ class HomeController extends Controller
         $endDateStr = date("Y-m-d", $endDate);
         $data = array('email' => $userEmail->email, 'propName' => $propName->property_title, 'startDate' => $startDateStr, 'endDate' => $endDateStr);
         $hostData = array('email' => $hostEmail->email, 'propName' => $propName->property_title, 'startDate' => $startDateStr, 'endDate' => $endDateStr);
-        /*Mail::send('emails.booking_application', $data, function ($message) use ($userEmail)
+        Mail::send('emails.booking_application', $data, function ($message) use ($userEmail)
         {
             $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($userEmail->email);
@@ -1130,7 +1130,7 @@ class HomeController extends Controller
         {
             $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($hostEmail->email);
-        });*/
+        });
     }
 
     public static function sendBookingStatusEmail($bookingID, $status)
@@ -1157,11 +1157,11 @@ class HomeController extends Controller
             $emailForm = 'emails.booking_approved';
         }
 
-        /*Mail::send($emailForm, $data, function ($message) use ($userEmail)
+        Mail::send($emailForm, $data, function ($message) use ($userEmail)
         {
             $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($userEmail->email);
-        });*/
+        });
 
     }
 
@@ -1325,7 +1325,7 @@ class HomeController extends Controller
                             ['b.booking_inactive', 0]
                         ])
                         ->update(['booking_denied' => 1]);
-                    //$this->sendBookingStatusEmail($booking_id, 'denied');
+                    $this->sendBookingStatusEmail($booking_id, 'denied');
                     return json_encode(['status' => 'overlapping_bookings']);
 
                 } else {
@@ -1337,7 +1337,7 @@ class HomeController extends Controller
                             ['b.booking_inactive', 0]
                         ])
                         ->update(['booking_approved' => 1]);
-                    //$this->sendBookingStatusEmail($booking_id, 'approved');
+                    $this->sendBookingStatusEmail($booking_id, 'approved');
                     return json_encode(['status' => 'success']);
 
                 }
@@ -1370,7 +1370,7 @@ class HomeController extends Controller
                         ['b.booking_inactive', 0]
                     ])
                     ->update(['booking_denied' => 1]);
-                    //$this->sendBookingStatusEmail($booking_id, 'denied');
+                    $this->sendBookingStatusEmail($booking_id, 'denied');
                 return json_encode(['status' => 'success']);
 
             }
