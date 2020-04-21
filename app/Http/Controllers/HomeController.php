@@ -827,7 +827,9 @@ class HomeController extends Controller
         $property = $request->input('property'); //this is property id
         $price = $request->input('price');
         $data = $request->input('data');
-
+        if($data == "~~false"){
+            return json_encode(['status' => 'bad_input']);
+        }
         //set current property listings to inactive
         DB::table('property_listing')
             ->where([
@@ -876,7 +878,7 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
 
-            $insert[] = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
+            $insert = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
         }
         DB::table('property_listing')->insert($insert);
 
