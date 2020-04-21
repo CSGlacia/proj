@@ -48,7 +48,7 @@ Route::get('/approve_booking/{booking_id?}', 'HomeController@approve_booking')->
 Route::get('/deny_booking/{booking_id?}', 'HomeController@deny_booking')->where('booking_id', '[0-9]+');
 
 //user profile functions
-Route::get('/user_profile/{id?}', 'HomeController@view_user')->where('id', '[0-9]+');
+Route::get('/user_profile/{id?}', 'GeneralController@view_user')->where('id', '[0-9]+');
 Route::post('/cancel_booking', 'HomeController@cancel_booking');
 
 
