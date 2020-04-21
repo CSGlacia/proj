@@ -1,36 +1,39 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container" style="background:rgba(240,255,248,0.6)">
     <h1>Property Reviews</h1>
     <hr>
-    @foreach ($property_review as $r)
-      <hr>
-      <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-12">
-                <h3><b>Review ID: {{ $r['review_id'] }}</b></h3>
-                <h4>Reviewer Name: {{$r['reviewer_name']}}</h4>
-                <h4> Property Name:  {{ $r['property_name'] }}  </h4>
-                <h4>Booking ID: {{ $r['booking_id'] }}</h4>
-                <a class="btn btn-danger" name="delete_property_review" data-id="{{$r['review_id']}}"> Delete review</a>
+    <div class="container row" style="margin:auto">
+        @foreach ($property_review as $r)
+            <div class="row" align="center">
+                <div class="col-sm-9 col-md-9 col-lg-9 card" style="margin:0px; width:25vw;">
+                    <h4><b>Review ID: {{ $r['review_id'] }}</b></h4>
+                    <h5>Booking ID: </h5><span> {{ $r['booking_id'] }}</span>
+                    <h5>Reviewer Name: </h5><span>{{$r['reviewer_name']}}</span>
+                    <h5> Property Name:  </h5><span>{{ $r['property_name'] }}  </span>
+                    <a class="btn btn-danger" style="margin:5px; color:white" name="delete_property_review" data-id="{{$r['review_id']}}"> Delete review</a>
+              </div>
           </div>
-      </div>
-    @endforeach
-    <hr>
+          <hr>
+        @endforeach
+    </div>
     <h1>Tennant Reviews </h1>
     <hr>
-    @foreach ($tennant_review as $r)
-        <hr>
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-12">
-                <h3><b>Review ID: {{ $r['review_id'] }}</b></h3>
-                <h4>Reviewer Name: {{$r['reviewer_name']}}</h4>
-                <h4> Tennant Name:  {{ $r['property_name'] }}  </h4>
-                <h4>Booking ID: {{ $r['booking_id'] }}</h4>
-                <a class="btn btn-danger" name="delete_tennant_review" data-id="{{$r['review_id']}}"> Delete review</a>
+    <div class="container row" style="margin:auto">
+        @foreach ($tennant_review as $r)
+            <div class="row">
+                <div class="col-sm-9 col-md-9 col-lg-9 card" style="margin:0px; width:25vw;">
+                    <h4><b>Review ID: {{ $r['review_id'] }}</b></h4>
+                    <h5>Reviewer Name: </h5><span>{{$r['reviewer_name']}}</span>
+                    <h5> Tennant Name: </h5><span>{{ $r['property_name'] }}  </span>
+                    <h5>Booking ID: </h5><span>{{ $r['booking_id'] }}</span>
+                    <a class="btn btn-danger" style="margin:5px; color:white" name="delete_tennant_review" data-id="{{$r['review_id']}}"> Delete review</a>
+                </div>
             </div>
-        </div>
-    @endforeach
+            <hr>
+        @endforeach
+    </div>
 
 </div>
 @endsection
