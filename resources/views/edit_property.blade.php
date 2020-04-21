@@ -27,7 +27,7 @@
                     <span>Address:&nbsp;</span>
                     <input id="address" class="form-control" type="text" value="{{$p->property_address}}" required>
                     <input type="hidden" id="lat" name="lat" value="{{$p->property_lat}}"/>
-                    <input type="hidden" id="lng" name="lng" value="{{$p->property_lng}}"/>  
+                    <input type="hidden" id="lng" name="lng" value="{{$p->property_lng}}"/>
                 </div>
             </div>
             <hr>
@@ -56,7 +56,7 @@
                 <div class="col-sm-12 col-md-12 col-lg-12">
                     <textarea id="property_desc" class="form-control" rows="5" required>{!! $p->property_desc !!}</textarea>
                 </div>
-            </div>  
+            </div>
             <div class="row">
                 <div class="col-sm-4 col-md-4 col-lg-4">
                     <span>Tags:</span>
@@ -195,8 +195,8 @@
             </div>
             <hr>
             <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <a id="property_submit" class="btn btn-primary">Save</a>
+                <div class="col-sm-12 col-md-12 col-lg-12" align="center">
+                    <a id="property_submit" class="btn btn-primary"style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px">Save</a>
                 </div>
             </div>
         </div>
@@ -335,12 +335,12 @@ $(document).ready(function() {
                 format: 'dd/mm/yyyy',
                 autoclose: true
             });
-    });   
+    });
 
     $(document).on('click', '#add_dates', function(e) {
         if(count < 5) {
             $('#dates_start').append('<div class="row listing_dates" name="listing_dates"><div class="col-sm-3 col-md-3 col-lg-3"><span>Start Date:&nbsp;</span><input class="form-control" name="start_date" type="text" required></div><div class="col-sm-3 col-md-3 col-lg-3"><span>End Date:&nbsp;</span><input class="form-control" name="end_date" type="text" required></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;"><div class="pretty p-default p-round p-smooth p-bigger"><input name="reccur_dates" type="checkbox" /><div class="state p-primary"><label>Set as reccuring dates</label></div></div></div><div class="col-sm-1 col-md-1 col-lg-1" style="margin-left:100px;"><label class="btn btn-danger float-left" name="remove_dates" style="margin-top:22px;"><i class="fas fa-times"></i></label></div></div>');
-                
+
                 $('[name="start_date"]').each(function() {
                     $(this).datepicker({
                         format: 'dd/mm/yyyy',
@@ -405,7 +405,7 @@ $(document).ready(function() {
 
             add_arr.push(start_date+'~'+end_date+'~'+recur);
             listing_dates_arr.push(add_arr);
-        }); 
+        });
 
         $.ajax({
             url: '/update_property',

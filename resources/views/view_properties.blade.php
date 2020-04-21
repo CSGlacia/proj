@@ -79,7 +79,7 @@
 
             </div>
 
-            <div class="collapse" id="collapseOne">
+            <div class="collapse col-sm-6 col-md-6 col-lg-6" id="collapseOne">
               <div class="card card-body">
                   <div>Suitable For:&nbsp;</div>
                   <select id="animals" class="form-control" name="animals[]" multiple>
@@ -104,10 +104,9 @@
                 </div>
             </div>
             <hr>
-            <div class="row col-sm-12 col-md-12 col-lg-12" style="margin-bottom:0px;">
-                <div class="col-sm-6 col-md-6 float-right">
-                    <span class="btn btn-xs btn-primary" id="search_props">Search</span>
-                </div>
+
+            <div class="col-sm-6 col-md-6" align="center">
+                <span class="btn btn-xs btn-primary" style="text-align:center ;color:white;width:40vw;height:6vh;margin-top:20px" id="search_props">Search</span>
             </div>
             <hr>
             <h4 style="margin-left:15px;">Search by area</h4>
@@ -290,7 +289,7 @@ $(document).ready(function() {
             var dateStr = (parseInt(date.getYear())+1900)+'-'+(parseInt(date.getMonth())+1)+'-'+date.getDate();
             var epoch = moment(dateStr).unix();
             var bool = true;
-            
+
             if(epoch < {{time()}}) {
                 return false;
             }
@@ -306,7 +305,7 @@ $(document).ready(function() {
             var dateStr = (parseInt(date.getYear())+1900)+'-'+(parseInt(date.getMonth())+1)+'-'+date.getDate();
             var epoch = moment(dateStr).unix();
             var bool = true;
-            
+
             if(epoch < {{time()}}) {
                 return false;
             }
