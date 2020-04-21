@@ -995,6 +995,9 @@ class HomeController extends Controller
                         ->join('properties AS p', 'p.property_id', '=', 'b.booking_propertyID')
                         ->first();
 
+            $review->booking_startDate = date('d/m/Y', $review->booking_startDate);
+            $review->booking_endDate = date('d/m/Y', $review->booking_endDate);
+
                 return view('edit_tennant_review',
                     ['review' => $review]
                 );
@@ -1045,6 +1048,9 @@ class HomeController extends Controller
                         ->join('bookings AS b', 'b.booking_id', '=', 'r.prs_booking_id')
                         ->join('users AS u', 'u.id', '=', 'p.property_user_id')
                         ->first();
+
+            $review->booking_startDate = date('d/m/Y', $review->booking_startDate);
+            $review->booking_endDate = date('d/m/Y', $review->booking_endDate);
 
             return view('edit_property_review',
                 [

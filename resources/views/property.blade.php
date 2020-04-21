@@ -159,7 +159,7 @@ img {
                                 <i class="fas fa-star @if($r->prs_score >= 5) gold-star @endif"></i>
                             </div>
 
-                            <div>Submitted by <a href="/user_profile/{{$r->id}}">{{$r->name}} </a>on {{$r->prs_submitted_at}}</div>
+                            <div>Submitted by <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$r->id}}">{{$r->name}} </a>on {{$r->prs_submitted_at}}</div>
                             @if($r->prs_edited == 1)
                             <div>Edited on {{$r->prs_edited_at}}</div>
                             @endif
@@ -189,7 +189,7 @@ img {
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a>
+                                            <div> <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$b->id}}">{{$b->name}}</a>
                                                 @if($b->scores > 2.5)
                                                     <i class="fas fa-star gold-star"></i>&nbsp;{{$b->scores}}
                                                 @elseif($b->scores == 0)
@@ -226,7 +226,7 @@ img {
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
+                                            <div> <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
                                                 @if($b->scores > 2.5)
                                                     <i class="fas fa-star gold-star"></i>
                                                 @else
@@ -260,7 +260,7 @@ img {
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
+                                            <div> <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
                                                 @if($b->scores > 2.5)
                                                     <i class="fas fa-star gold-star"></i>
                                                 @else

@@ -7,8 +7,8 @@
     <div class="row">
         <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(240,255,248,0.6)">
             <h3><b>Property Details</b></h3>
-            <div>Property Name: {{$p->property_title}}</div>
-            <div>Address: {{$p->property_address}}</div>
+            <div><i class="fas fa-home"></i>&nbsp;<a href="/view_property/{{$p->property_id}}">{{$p->property_title}}</a></div>
+            <div>{{$p->property_address}}</div>
             <span><i class="fas fa-bed"></i> {{$p->property_beds}}</span>&nbsp;<span><i class="fas fa-bath"></i> {{$p->property_baths}}</span>&nbsp;<span><i class="fas fa-car"></i> {{$p->property_cars}}</span>
             <div>Description: {{$p->property_desc}}</div>
         </div>
@@ -17,7 +17,7 @@
             <div>Start Date: {{$b->booking_startDate}}</div>
             <div>End Date: {{$b->booking_endDate}}</div>
             <div>Persons Booked: {{$b->booking_persons}}</div>
-            <div>Tennant: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a></div>
+            <div><i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$b->id}}">{{$b->name}}</a></div>
         </div>
 
     </div>

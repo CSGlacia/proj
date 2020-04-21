@@ -7,11 +7,11 @@
     <div class="row">
         <div class="col-sm-6 col-md-6 col-lg-6">
             <h3><b>Property Details</b></h3>
-            <div>Property Name: {{$review->property_title}}</div>
-            <div>Address: {{$review->property_address}}</div>
+            <div><i class="fas fa-home"></i>&nbsp;<a href="/view_property/{{$review->property_id}}">{{$review->property_title}}</a></div>
+            <div>{{$review->property_address}}</div>
             <span><i class="fas fa-bed"></i> {{$review->property_beds}}</span>&nbsp;<span><i class="fas fa-bath"></i> {{$review->property_baths}}</span>&nbsp;<span><i class="fas fa-car"></i> {{$review->property_cars}}</span>
             <div>Description: {{$review->property_desc}}</div>
-            <div>Owner: <a href="/user_profile/{{$review->id}}">{{$review->name}}</a></div>
+            <div><i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$review->id}}">{{$review->name}}</a></div>
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6">
             <h3><b>Booking Details</b></h3>

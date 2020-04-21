@@ -9,7 +9,7 @@
             <div class="row card item-card cursor-pointer" name="review_tennant" data-prop-id="{{$b->property_id}}" data-booking-id="{{$b->booking_id}}" style="margin:5px; border:none;">
                 <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                     <div class="card-title">
-                        <a href="/user_profile/{{$b->booking_userID}}">{{$b->name}}</a>
+                        <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$b->booking_userID}}">{{$b->name}}</a>
                     </div>
                     <div class="card-text">
                         <div>{{$b->booking_persons}} Person(s) at {{$b->property_address}} from  {{$b->booking_startDate}} to {{$b->booking_endDate}}</div>
@@ -31,7 +31,7 @@
             <div class="row card item-card cursor-pointer" name="edit_review" data-review-id="{{$p->trs_id}}" style="margin:5px; border:none;">
                 <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                     <div class="card-title">
-                        <a href="/user_profile/{{$p->booking_userID}}">{{$p->name}}</a>
+                        <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$p->booking_userID}}">{{$p->name}}</a>
                     </div>
                     <div class="card-text">
                         <div>{{$p->booking_persons}} Person(s) at {{$p->property_address}} from  {{$p->booking_startDate}} to {{$p->booking_endDate}}</div>

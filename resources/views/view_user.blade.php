@@ -6,6 +6,7 @@
         <span class="display-4" style="text-transform:uppercase; font-family:'arial';"> {{$user->name}} </span>
         <div>
             <a class="label" >Email: {{$user->email}}</a>
+            
             <div>
                 <a class="label" >Guest rating: </a>
                 <a>{{$guest_score}}</a>
@@ -171,7 +172,7 @@
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a>
+                                            <div><i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$b->id}}">{{$b->name}}</a>
                                                 @if($b->scores > 2.5)
                                                     <i class="fas fa-star gold-star"></i>&nbsp;{{$b->scores}}
                                                 @elseif($b->scores == 0)
@@ -209,7 +210,7 @@
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
+                                            <div><i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
                                                 @if($b->scores > 2.5)
                                                     <i class="fas fa-star gold-star"></i>
                                                 @else
@@ -243,7 +244,7 @@
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                         <div>
-                                            <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
+                                            <div><i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$b->id}}">{{$b->name}}</a> {{$b->scores}}
                                                 @if($b->scores > 2.5)
                                                     <i class="fas fa-star gold-star"></i>
                                                 @else
@@ -275,10 +276,15 @@
                 @foreach($reviews as $r)
                 <div class="row card card-text" align="left">
                     <div class="col-sm-12 col-md-12 col-lg-12">
-                        <div>Score: {{$r->trs_score}}</div>
+                        <div>{{$r->trs_score}}                                                
+                            @if($r->trs_score > 2.5)
+                                <i class="fas fa-star gold-star"></i>
+                            @else
+                                <i class="fas fa-star"></i>
+                            @endif</div>
                         <div>Review: {{$r->trs_review}}</div>
                         <div>Submitted At: {{$r->trs_submitted_at}}</div>
-                        <div>Submitted by <a href="/user_profile/{{$r->id}}">{{$r->name}}</a></div>
+                        <div>Submitted by <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$r->id}}">{{$r->name}}</a></div>
                         @if($r->trs_edited == 1)<div>Edited at {{$r->trs_edited_at}}</div>@endif
                     </div>
                 </div>
