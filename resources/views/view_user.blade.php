@@ -190,6 +190,7 @@
                                     </div>
                                     <hr>
                                 </div>
+                                <hr>
                     @endforeach
                 @else
                     <div>You have no bookings to approve.</div>
@@ -224,6 +225,7 @@
                                     </div>
                                     <hr>
                                 </div>
+                                <hr>
                     @endforeach
                 @else
                     <div>You have no upcoming approved bookings.</div>
@@ -258,6 +260,7 @@
                                     </div>
                                     <hr>
                                 </div>
+                                <hr>
                     @endforeach
                 @else
                     <div>You have no past approved bookings.</div>
