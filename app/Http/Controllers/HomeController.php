@@ -233,7 +233,9 @@ class HomeController extends Controller
                     ->select('c.*')
                     ->where([
                         ['c.booking_propertyID', '=', $propertyID],
-                        ['c.booking_inactive', 0]
+                        ['c.booking_inactive', 0],
+                        ['c.booking_approved', 1],
+                        ['c.booking_denied', 0]
                     ])
                     ->get();
 
@@ -1273,14 +1275,16 @@ class HomeController extends Controller
                                     ->where([
                                         ['b.booking_approved', 1],
                                         ['b.booking_inactive', 0],
-                                        ['b.booking_propertyID', $booking->booking_propertyID]
+                                        ['b.booking_denied', 0],
+                                        ['b.booking_propertyID', $booking->booking_propertyID],
+                                        ['b.booking_startDate', '>', time()]
                                     ])
                                     ->get();
 
                 $booking_overlap = false;
 
                 foreach($check_bookings as $cb) {
-                    if($cb->booking_startDate <= $booking->booking_endDate || $cb->booking_endDate >= $cb->booking_startDate) {
+                    if($booking->booking_startDate <= $cb->booking_endDate && $booking->booking_endDate >= $cb->booking_startDate) {
                         $booking_overlap = true;
                     }
                 }
