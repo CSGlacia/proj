@@ -6,7 +6,7 @@
     <h1>Incomplete Property Reviews</h1>
     @if(count($bookings) > 0)
         @foreach($bookings as $b)
-        <div class="row card item-card cursor-pointer" name="review_property" data-prop-id="{{$b->property_id}}" data-booking-id="{{$b->booking_id}}" style="margin:0px; border:none;">
+        <div class="row card item-card cursor-pointer" name="review_property" data-prop-id="{{$b->property_id}}" data-booking-id="{{$b->booking_id}}" style="margin:5px; border:none;">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
                 <div class="card-title">
                   <h3>{{ $b->property_title }}</h3>
@@ -24,7 +24,9 @@
                   <span>{{$b->booking_persons}} Person(s) from {{$b->booking_startDate}} to {{$b->booking_endDate}}</span>
                 </div>
             </div>
-            <a class="btn btn-primary" name="review_property" href="/review_property?prop_id={{$b->property_id}}&booking_id={{$b->booking_id}}"> Review Property</a>
+            <div align="center">
+                <a class="btn btn-primary col-sm-10 col-md-10 col-lg-10" name="review_property" href="/review_property?prop_id={{$b->property_id}}&booking_id={{$b->booking_id}}"> Review Property</a>
+            </div>
         </div>
         @endforeach
     @else
@@ -36,7 +38,7 @@
     <h1>Submitted Property Reviews</h1>
     @if(count($reviews) > 0)
         @foreach($reviews as $r)
-        <div class="row card item-card cursor-pointer" name="edit_review" data-review-id="{{$r->prs_id}}" style="margin:0px; border:none;">
+        <div class="row card item-card cursor-pointer" name="edit_review" data-review-id="{{$r->prs_id}}" style="margin:5px; border:none;">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
                 <div class="card-title">
                   <h3>{{ $r->property_title }}</h3>
@@ -54,7 +56,9 @@
                   <span>{{$r->booking_persons}} Person(s) from {{$r->booking_startDate}} to {{$r->booking_endDate}}</span>
                 </div>
             </div>
-            <a class="btn btn-warning" name="edit_property_review" href="/edit_property_review/{{$r->prs_id}}">Edit Review</a>
+            <div align="center">
+                <a class="btn btn-warning col-sm-10 col-md-10 col-lg-10" name="edit_property_review" href="/edit_property_review/{{$r->prs_id}}">Edit Review</a>
+            </div>
         </div>
         @endforeach
     @else
