@@ -143,52 +143,6 @@
                   </select>
               </div>
             </div>
-
-
-
-
-            <hr>
-            <h5>Property Images:&nbsp;</h5>
-            <div class="row">
-                <div id="image_drop" class="dropzone"></div>
-            </div>
-            <hr>
-            <h5>Listing Dates:&nbsp;</h5>
-            <span id="dates_start">
-                <div class="row listing_dates" name="listing_dates">
-                    <div class="col-sm-3 col-md-3 col-lg-3">
-                        <span>Start Date:&nbsp;</span>
-                        <input class="form-control" id="first_start_date" name="start_date" type="text" required>
-                    </div>
-                    <div class="col-sm-3 col-md-3 col-lg-3">
-                        <span>End Date:&nbsp;</span>
-                        <input class="form-control" id="first_end_date" name="end_date" type="text" required>
-                    </div>
-                    <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
-                        <div class="pretty p-default p-round p-smooth p-bigger">
-                            <input name="reccur_dates" type="checkbox" />
-                            <div class="state p-primary">
-                                <label>Set as reccuring dates</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </span>
-            <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
-                <label class="btn btn-primary float-right" id="add_dates"><i class="fas fa-plus"></i>&nbsp;Add Dates</label>
-            </div>
-            <div class="pretty p-default p-round p-smooth p-bigger" style="margin-bottom:20px;">
-                <input id="always_list" type="checkbox" />
-                <div class="state p-primary">
-                    <label>List my property indefinitely</label>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-6 col-lg-6">
-                <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
-                <div class="col-sm-3 col-md-3 col-lg-3">
-                    <input id="price" class="form-control" type="number" placeholder="$0" required>
-                </div>
-            </div>
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
