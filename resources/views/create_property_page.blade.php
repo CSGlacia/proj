@@ -95,6 +95,7 @@
                           <option value="{{$a['id']}}">{{$a['text']}}</option>
                       @endforeach
                   </select>
+                  (ctrl-click to remove from selection)
               </div>
             </div>
             <!-- END ANIMAL SERVICES -->

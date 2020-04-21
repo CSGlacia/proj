@@ -81,12 +81,13 @@
 
             <div class="collapse col-sm-6 col-md-6 col-lg-6" id="collapseOne">
               <div class="card card-body">
-                  <div>Suitable For:&nbsp;</div>
+                  <div>Suitable For: &nbsp;</div>
                   <select id="animals" class="form-control" name="animals[]" multiple>
                       @foreach($animals as $a)
                           <option value="{{$a['id']}}">{{$a['text']}}</option>
                       @endforeach
                   </select>
+                  <div>(ctrl-click to remove from filter)</div>
               </div>
             </div>
 
