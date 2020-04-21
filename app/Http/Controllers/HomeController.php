@@ -1253,12 +1253,16 @@ class HomeController extends Controller
                             $status = "DENIED";
                         }
 
-
+                        $prop_owner_name = DB::table('users')
+                                        ->select('name')
+                                        ->where('id',$booking->property_user_id)
+                                        ->first();
 
                         return view('view_booking', [
                             'b' => $booking,
                             'status' => $status,
-                            'user_id' => $id
+                            'user_id' => $id,
+                            'prop_owner_name' => $prop_owner_name,
                         ]);
                     }
                 } else {

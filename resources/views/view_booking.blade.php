@@ -11,7 +11,7 @@
             <div>{{$b->property_address}}</div>
             <span><i class="fas fa-bed"></i> {{$b->property_beds}}</span>&nbsp;<span><i class="fas fa-bath"></i> {{$b->property_baths}}</span>&nbsp;<span><i class="fas fa-car"></i> {{$b->property_cars}}</span>
             <div>Description: {{$b->property_desc}}</div>
-            <div>Owner: <a href="/user_profile/{{$b->property_user_id}}">{{$b->name}}</a></div>
+            <div>Owner: <a href="/user_profile/{{$b->property_user_id}}">{{$prop_owner_name->name}}</a></div>
             @if($b->scores != -1)
             <div ><i class="fas fa-star @if($b->scores > 2.5) gold-star @endif"></i>{{$b->scores}}</div>
             @endif
