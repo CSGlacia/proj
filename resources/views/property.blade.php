@@ -111,13 +111,13 @@ img {
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>Number of People:&nbsp;</span>
-                        <input id="persons" class="form-control" type="number" placeholder="(int)" required>
+                        <input id="persons" class="form-control" type="number" required>
                     </div>
                 </div>
                 <hr>
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12">
-                        <a id="book_submit" style="color:white" class="btn btn-primary">Book</a>
+                        <a id="book_submit" style="color:white;text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px" class="btn btn-primary">Book</a>
                     </div>
                 </div>
             </div>
@@ -142,7 +142,7 @@ img {
         <div class="row card">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body">
                 <div class="card-title" style="text-align:center;">
-                    <h2>Reviews:</h2>
+                    <h2>Reviews</h2>
                 </div>
                 <hr>
                 <div class="card-text">
@@ -296,7 +296,7 @@ img {
                 Total page visits: {{$page_count}} <br>
                 Average age: {{$avg_age}} <br>
                 Average # tennants: {{$avg_persons}} <br>
-                
+
             </div>
         </div>
     </div>
