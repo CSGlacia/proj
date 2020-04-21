@@ -187,5 +187,11 @@ class AdminController extends Controller{
             return json_encode(['status' => 'success']);
         }
     }
+    public function creater(Request $request){
+        $ad_role = Role::findByName('admin');
+        $ad_role->givePermissionTo('can advertise');
+        
+        return $ad_role;
+    }
 }
 ?>

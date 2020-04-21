@@ -237,24 +237,20 @@
                         </div>
                     </li>
                     @endif
-                    <!--
-                    @if(auth()->user()->can('export'))
-                    -->
+                    @if(auth()->user()->can('can advertise'))
                     <li class="nav-item"><a href="/exports" class="nav-link">Exports</a></li>
-                    <!--
                     @endif
 
-                    @if(auth()->user()->cant('export')) 
-                        all normal stuff should go here
-                    @endif  
-                    -->
-                    <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
-                    <li class="nav-item"><a href="/create_property_listing" class="nav-link">Add Listing(s)</a></li>
-                    <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
-                    <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
+                    @if(auth()->user()->can('can view')) 
+                        <li class="nav-item"><a href="/create_property_page" class="nav-link">Add Property</a></li>
+                        <li class="nav-item"><a href="/create_property_listing" class="nav-link">Add Listing(s)</a></li>
+                        <li class="nav-item"><a href="/property_reviews" class="nav-link">Property Reviews</a></li>
+                        <li class="nav-item"><a href="/tennant_reviews" class="nav-link">Tennant Reviews</a></li>
 
-                    <li class="nav-item"><a href="" id="user_profile" class="nav-link">Profile</a></li>
-                    <li class="nav-item"><a href="/view_wishlist" class="nav-link">Wishlist</a></li>
+                        <li class="nav-item"><a href="" id="user_profile" class="nav-link">Profile</a></li>
+                        <li class="nav-item"><a href="/view_wishlist" class="nav-link">Wishlist</a></li>
+                    @endif  
+
                     <li class="nav-item"><a href="{{ url('/logout') }}" class="nav-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a></li>
                     <form class="btn btn-xs btn-primary" id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
