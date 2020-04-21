@@ -95,9 +95,12 @@
                     </div>
                 </div>
             </span>
-            <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
-                <label class="btn btn-primary float-right" id="add_dates"><i class="fas fa-plus"></i>Add Dates</label>
+            <div>
+                <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
+                    <label class="btn btn-primary" id="add_dates"><i class="fas fa-plus"></i> Add Dates</label>
+                </div>
             </div>
+            <br>
             <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
             <input id="price" style="width:10vw" class="form-control" type="number" placeholder="$0" required>
             <hr>
