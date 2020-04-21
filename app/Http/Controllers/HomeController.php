@@ -45,8 +45,20 @@ class HomeController extends Controller
             $ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name];
         }
 
+        $animals = DB::table('animals AS a')
+                    ->get();
+
+
+        $animalsArray = [];
+
+        foreach($animals as $r) {
+            $animalsArray[] = ['id' => $r->animals_id, 'text' => $r->animals_type];
+        }
+
+
         return view('create_property_page',
-            ['tags' => $ret_arr]
+            ['tags' => $ret_arr],
+            ['animals' => $animalsArray]
         );
     }
 
@@ -62,6 +74,7 @@ class HomeController extends Controller
         $lat = $request->input('lat');
         $lng = $request->input('lng');
         $tags = $request->input('tags');
+        $animals = $request->input('animals');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
@@ -83,15 +96,24 @@ class HomeController extends Controller
                     ->insertGetId($insert);
 
                 $tags = explode(',', $tags);
+                $animals = explode(',', $animals);
 
                 $tag_insert = [];
+                $ai = [];
 
                 foreach($tags as $t) {
                     $tag_insert[] = ['pt_property_id' => $property_id, 'pt_tag_id' => $t, 'pt_inactive' => 0];
                 }
 
+                foreach($animals as $a) {
+                    $ai[] = ['property_animals_propertyID' => $property_id, 'property_animals_animalID' => $a, 'property_animals_inactive' => 0];
+                }
+
                 DB::table('property_tags')
                     ->insert($tag_insert);
+
+                DB::table('property_animals')
+                    ->insert($ai);
 
                 return json_encode(['status' => 'success', 'id' => $property_id]);
 
@@ -102,7 +124,6 @@ class HomeController extends Controller
 
         return json_encode(['status' => 'error']);
     }
-
 
     public function upload_property_images(Request $request, $property_id) {
         $images = $request->file();
@@ -190,7 +211,7 @@ class HomeController extends Controller
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
         $persons = $request->input('persons');
-
+        // $animals = $request->input('animals');
 
         $startDate = explode('/', $startDate);
         $startDate = $startDate[2].'-'.$startDate[1].'-'.$startDate[0];
@@ -626,7 +647,8 @@ class HomeController extends Controller
 
             $prop = DB::table('properties AS p')
                         ->select('p.*',
-                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_id) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_id) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`'),
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(a.animals_type) SEPARATOR ",") FROM property_animals AS pa LEFT JOIN animals as a ON a.animals_type = pa.property_animals_animalID WHERE pa.property_animals_propertyID = p.property_id AND pa.property_animals_inactive = 0) AS `animals`')
                         )
                         ->where([
                             ['p.property_id', $id],
@@ -635,6 +657,7 @@ class HomeController extends Controller
                         ->first();
 
             $selected_tags = explode(',' , $prop->tags);
+            $selected_animals = explode(',', $prop->animals);
 
             if($user_id != $prop->property_user_id) {
                 return view('bad_permissions');
@@ -680,12 +703,31 @@ class HomeController extends Controller
                 $tag_ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name, 'selected' => $is_selected];
             }
 
+            $animals = DB::table('animals AS a')
+                        ->get();
+
+
+            $ai = [];
+
+            foreach($animals as $r) {
+
+                if(in_array($r->animals_type, $selected_animals)) {
+                    $is_selected = true;
+                } else {
+                    $is_selected = false;
+                }
+
+                $ai[] = ['id' => $r->animals_id, 'text' => $r->animals_type, 'selected' => $is_selected];
+            }
+
+
             return view('edit_property',
                             ['p' => $prop,
                             'images' => $prop_images,
                             'listings' => $listings,
                             'image_count' => count($prop_images),
-                            'tags' => $tag_ret_arr
+                            'tags' => $tag_ret_arr,
+                            'animals' => $ai
                             ]
                 );
         }
@@ -704,6 +746,7 @@ class HomeController extends Controller
         $lat = $request->input('lat');
         $lng = $request->input('lng');
         $tags = $request->input('tags');
+        $animals = $request->input('animals');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
@@ -743,6 +786,27 @@ class HomeController extends Controller
 
                 DB::table('property_tags')
                     ->insert($tag_insert);
+
+                // Handle animals.
+                $animals = explode(',', $animals);
+
+                DB::table('property_animals')
+                        ->where([
+                            ['property_animals_propertyID', $prop_id],
+                            ['property_animals_inactive', 0]
+                        ])
+                        ->delete();
+
+                $ai = [];
+
+                foreach($animals as $a) {
+                    $ai[] = ['property_animals_propertyID' => $prop_id, 'property_animals_animalID' => (int)$a, 'property_animals_inactive' => 0];
+                }
+
+                DB::table('property_animals')
+                    ->insert($ai);
+
+
 
                 return json_encode(['status' => 'success']);
 
@@ -1016,8 +1080,6 @@ class HomeController extends Controller
         }
         return json_encode(['status' => 'error']);
     }
-
-
 
     /* Email stuff when logged in*/
     public static function sendBookingApplicationEmail($propertyID, $startDate, $endDate)

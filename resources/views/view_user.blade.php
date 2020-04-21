@@ -173,7 +173,7 @@
                                         <div>
                                             <div>Guest: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a>
                                                 @if($b->scores > 2.5)
-                                                    <i class="fas fa-star gold-stpar"></i>&nbsp;{{$b->scores}}
+                                                    <i class="fas fa-star gold-star"></i>&nbsp;{{$b->scores}}
                                                 @elseif($b->scores == 0)
                                                     <i class="fas fa-star"></i>&nbsp;No reviews yet
                                                 @else

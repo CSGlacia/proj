@@ -104,6 +104,91 @@
                     <input id="price" class="form-control" type="number" placeholder="$0" required>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <span>Tags:</span>
+                    <select id="tags" class="form-control tag-select" name="tags[]" multiple>
+                        @foreach($tags as $t)
+                            <option value="{{$t['id']}}">{{$t['text']}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <!-- Animal Services -->
+
+             <a class="btn btn-dark" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
+                <i class="fas fa-paw"></i>
+             </a>
+
+
+            </div>
+
+            <div class="collapse" id="collapseOne">
+              <div class="card card-body">
+
+                  <!-- TODO + TOASK: are there any properties that are EXCLUSIVELY animal based? -->
+                  <!-- As of now this button is a placeholder. -->
+                  <div class="btn-group-toggle" data-toggle="buttons">
+                      <label class="btn btn-outline-primary inactive">
+                          <input type="checkbox" checked autocomplete="off"> Animal Exclusive
+                      </label>
+                 </div>
+
+                  <div>Suitable For:&nbsp;</div>
+                  <select id="animals" class="form-control" name="animals[]" multiple>
+                      @foreach($animals as $a)
+                          <option value="{{$a['id']}}">{{$a['text']}}</option>
+                      @endforeach
+                  </select>
+              </div>
+            </div>
+
+
+
+
+            <hr>
+            <h5>Property Images:&nbsp;</h5>
+            <div class="row">
+                <div id="image_drop" class="dropzone"></div>
+            </div>
+            <hr>
+            <h5>Listing Dates:&nbsp;</h5>
+            <span id="dates_start">
+                <div class="row listing_dates" name="listing_dates">
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <span>Start Date:&nbsp;</span>
+                        <input class="form-control" id="first_start_date" name="start_date" type="text" required>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <span>End Date:&nbsp;</span>
+                        <input class="form-control" id="first_end_date" name="end_date" type="text" required>
+                    </div>
+                    <div class="col-sm-1 col-md-1 col-lg-1" style="margin-top:27px;">
+                        <div class="pretty p-default p-round p-smooth p-bigger">
+                            <input name="reccur_dates" type="checkbox" />
+                            <div class="state p-primary">
+                                <label>Set as reccuring dates</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </span>
+            <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
+                <label class="btn btn-primary float-right" id="add_dates"><i class="fas fa-plus"></i>&nbsp;Add Dates</label>
+            </div>
+            <div class="pretty p-default p-round p-smooth p-bigger" style="margin-bottom:20px;">
+                <input id="always_list" type="checkbox" />
+                <div class="state p-primary">
+                    <label>List my property indefinitely</label>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-6 col-lg-6">
+                <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                    <input id="price" class="form-control" type="number" placeholder="$0" required>
+                </div>
+            </div>
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
@@ -271,7 +356,7 @@ $(document).ready(function() {
         var l_name = $('#l_name').val();
         var lat = $('#lat').val();
         var lng = $('#lng').val();
-
+        var animals = $('#animals').val();
         //var image_name = "image";
         var form_data = new FormData();
         /*
@@ -289,9 +374,11 @@ $(document).ready(function() {
         form_data.append('l_name',l_name);
         form_data.append('lat',lat);
         form_data.append('lng',lng);
-        
+
         var tags  = ($('#tags').val());
         form_data.append('tags', tags);
+        form_data.append('animals', animals);
+
         var listing_dates_arr = [];
         var price = $('#price').val();
         $('.listing_dates').each(function (i) {

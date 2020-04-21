@@ -69,7 +69,28 @@
                     <i class="fas fa-car input-icon"></i>
                     <input id="prop_cars" class="form-control input-field" min="1" type="number">
                 </div>
+
+
+                <p>
+                  <a class="btn btn-dark" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
+                    <i class="fas fa-paw"></i>
+                  </a>
+                </p>
+
             </div>
+
+            <div class="collapse" id="collapseOne">
+              <div class="card card-body">
+                  <div>Suitable For:&nbsp;</div>
+                  <select id="animals" class="form-control" name="animals[]" multiple>
+                      @foreach($animals as $a)
+                          <option value="{{$a['id']}}">{{$a['text']}}</option>
+                      @endforeach
+                  </select>
+              </div>
+            </div>
+
+
             <hr>
             <h4 style="margin-left:15px;">Booking Dates</h4>
             <div class="row col-sm-12 col-md-12 col-lg-12 listing_dates">
@@ -437,7 +458,7 @@ $(document).ready(function() {
         });
     });
 
-    $(document).on('click', '#search_props', function(e) {
+    /*$(document).on('click', '#search_props', function(e) {
         e.preventDefault();
 
         var rating = star_score;
@@ -472,7 +493,52 @@ $(document).ready(function() {
                 Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
             }
         });
+    });*/
+
+    $('#collapseOne').on('hidden.bs.collapse', function (e) {
+        e.preventDefault();
+        $('#collapseOne option').attr("selected",false);
+        $('#collapseOne').selectpicker('refresh');
+
     })
+
+    $(document).on('click', '#search_props', function(e) {
+        e.preventDefault();
+
+        var rating = star_score;
+        var name = $('#prop_name').val();
+        var address = $('#prop_address').val();
+        var suburbs = $('#prop_suburb').val();
+        var tags = $('#tags').val();
+        var animals = $('#animals').val();
+        var beds = $('#prop_beds').val();
+        var baths = $('#prop_baths').val();
+        var cars = $('#prop_cars').val();
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        var include_unrated = $('#include_unrated').prop('checked');
+        $.ajax({
+            url: '/property_search',
+            method: 'POST',
+            dataType: 'JSON',
+            data: 'rating='+rating+'&name='+name+'&address='+address+'&suburbs='+suburbs+'&tags='+tags+'&animals='+animals+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&start_date='+start_date+'&end_date='+end_date+'&include_unrated='+include_unrated,
+            success: function(html) {
+                if(html['status'] == 'success') {
+                    data = html['data'];
+                    $('#prop_div').empty();
+                    $('#prop_div').append(data);
+                } else {
+                    swal('No Results', 'No properties matched your search criteria', 'warning');
+                }
+
+            },
+            error: function ( xhr, errorType, exception ) {
+                var errorMessage = exception || xhr.statusText;
+                Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
+            }
+        });
+    })
+
 });
 </script>
 @endsection
