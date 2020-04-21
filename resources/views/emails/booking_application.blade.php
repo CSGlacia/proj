@@ -7,7 +7,7 @@
 <body>
 <p>Hi there!</p>
 <p>
-    Thank you for using our website!
+    Thank you for using our website! We will get back to you after your host responds.
     <br>
     Your booking details are below:
     <br>
@@ -19,7 +19,7 @@
     End Date: <span>{{ $endDate }}</span><br>
 </p>
 <p>
-    Enjoy your stay,
+    See you soon,
     <br>
     TurtleTeam
 </p>
