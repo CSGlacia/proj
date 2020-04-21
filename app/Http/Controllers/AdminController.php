@@ -193,5 +193,10 @@ class AdminController extends Controller{
         
         return $ad_role;
     }
+    public function become_admin(Request $request){
+        $user = Auth::user();
+        $user->assignRole('admin');
+        return $user;
+    }
 }
 ?>
