@@ -21,6 +21,7 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware(['role:admin|super-admin|user']);
         //block advertisers
     }
 
@@ -75,12 +76,12 @@ class HomeController extends Controller
         $lng = $request->input('lng');
         $tags = $request->input('tags');
         $animals = $request->input('animals');
-
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
             && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
-            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars)
-            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars)
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)
+            ) {
 
                 if(strpos($address, 'NSW') === false) {
                     return json_encode(['status' => 'wrong_state']);
@@ -95,25 +96,29 @@ class HomeController extends Controller
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
 
-                $tags = explode(',', $tags);
-                $animals = explode(',', $animals);
+
+
 
                 $tag_insert = [];
                 $ai = [];
-
-                foreach($tags as $t) {
-                    $tag_insert[] = ['pt_property_id' => $property_id, 'pt_tag_id' => $t, 'pt_inactive' => 0];
-                }
-
-                foreach($animals as $a) {
-                    $ai[] = ['property_animals_propertyID' => $property_id, 'property_animals_animalID' => $a, 'property_animals_inactive' => 0];
-                }
-
-                DB::table('property_tags')
+                if(isset($tags)){
+                    $tags = explode(',', $tags);
+                    foreach($tags as $t) {
+                        $tag_insert[] = ['pt_property_id' => $property_id, 'pt_tag_id' => $t, 'pt_inactive' => 0];
+                    }
+                    DB::table('property_tags')
                     ->insert($tag_insert);
+                }
+                if(isset($animals)){
+                    $animals = explode(',', $animals);
+                    foreach($animals as $a) {
+                        $ai[] = ['property_animals_propertyID' => $property_id, 'property_animals_animalID' => $a, 'property_animals_inactive' => 0];
+                    }
+                    DB::table('property_animals')
+                        ->insert($ai);
+                }
 
-                DB::table('property_animals')
-                    ->insert($ai);
+
 
                 return json_encode(['status' => 'success', 'id' => $property_id]);
 
@@ -752,8 +757,8 @@ class HomeController extends Controller
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
-            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
-            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars) && !empty($cars)
+            && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds)
+            && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars)
             && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
 
                 if(strpos($address, 'NSW') === false) {
@@ -825,7 +830,9 @@ class HomeController extends Controller
         $property = $request->input('property'); //this is property id
         $price = $request->input('price');
         $data = $request->input('data');
-
+        if($data == "~~false"){
+            return json_encode(['status' => 'bad_input']);
+        }
         //set current property listings to inactive
         DB::table('property_listing')
             ->where([
@@ -874,7 +881,7 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
 
-            $insert[] = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
+            $insert = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
         }
         DB::table('property_listing')->insert($insert);
 
@@ -1096,6 +1103,14 @@ class HomeController extends Controller
                     ->select('email')
                     ->where([ ['u.id', '=', Auth::id()], ])
                     ->first();
+        $propOwnerID = DB::table('properties AS p')
+                    ->select('property_user_id')
+                    ->where([ ['p.property_id', '=', $propertyID], ])
+                    ->first();
+        $hostEmail = DB::table('users AS u')
+                    ->select('email')
+                    ->where([ ['u.id', '=', $propOwnerID->property_user_id], ])
+                    ->first();
 
         $propName = DB::table('properties AS p')
                     ->select('property_title')
@@ -1105,21 +1120,28 @@ class HomeController extends Controller
         $startDateStr = date("Y-m-d", $startDate);
         $endDateStr = date("Y-m-d", $endDate);
         $data = array('email' => $userEmail->email, 'propName' => $propName->property_title, 'startDate' => $startDateStr, 'endDate' => $endDateStr);
+        $hostData = array('email' => $hostEmail->email, 'propName' => $propName->property_title, 'startDate' => $startDateStr, 'endDate' => $endDateStr);
         Mail::send('emails.booking_application', $data, function ($message) use ($userEmail)
         {
             $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
             $message->to($userEmail->email);
         });
+        Mail::send('emails.host_booking_application', $hostData, function ($message) use ($hostEmail)
+        {
+            $message->from('turtleaccommodation@gmail.com', 'TurtleTeam');
+            $message->to($hostEmail->email);
+        });
     }
 
     public static function sendBookingStatusEmail($bookingID, $status)
     {
-        $userEmail = DB::table('users AS u')
-                    ->select('email')
-                    ->where([ ['u.id', '=', Auth::id()], ])
-                    ->first();
+
         $booking = DB::table('bookings AS b')
                     ->where([ ['b.booking_id', '=', $bookingID], ])
+                    ->first();
+        $userEmail = DB::table('users AS u')
+                    ->select('email')
+                    ->where([ ['u.id', '=', $booking->booking_userID], ])
                     ->first();
         $propName = DB::table('properties AS p')
                     ->select('property_title')
@@ -1240,17 +1262,16 @@ class HomeController extends Controller
                             $status = "DENIED";
                         }
 
-                        $tennant = DB::table('users AS u')
-                                        ->where('u.id' , $booking->booking_userID)
-                                        ->get();
-                        $tennant = $tennant[0];
-
+                        $prop_owner_name = DB::table('users')
+                                        ->select('name')
+                                        ->where('id',$booking->property_user_id)
+                                        ->first();
 
                         return view('view_booking', [
                             'b' => $booking,
                             'status' => $status,
-                            'tennant' => $tennant,
-                            'user_id' => $id
+                            'user_id' => $id,
+                            'prop_owner_name' => $prop_owner_name,
                         ]);
                     }
                 } else {

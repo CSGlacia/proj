@@ -68,7 +68,7 @@
                     </select>
                 </div>
             </div>
-            
+
             <!-- Animal Services -->
 
              <a class="btn btn-dark" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
@@ -88,7 +88,7 @@
                           <input type="checkbox" checked autocomplete="off"> Animal Exclusive
                       </label>
                  </div>
-
+                 <br>
                   <div>Suitable For:&nbsp;</div>
                   <select id="animals" class="form-control" name="animals[]" multiple>
                       @foreach($animals as $a)
@@ -127,7 +127,7 @@
                 </div>
             </span>
             <div>
-                <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
+                <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates"  style="left:-1vw">
                     <label class="btn btn-primary" id="add_dates"><i class="fas fa-plus"></i> Add Dates</label>
                 </div>
             </div>
@@ -139,7 +139,7 @@
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12" align="center">
-                    <a id="property_submit" class="btn btn-primary" style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px">Submit</a>
+                    <a id="property_submit" class="btn btn-primary" style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px;font-size:20px">Submit</a>
                 </div>
             </div>
         </div>
@@ -313,6 +313,9 @@ $(document).ready(function() {
             form_data.append('files[]',images,image_name.concat(i.toString(10)));
         }
         */
+        if (cars < "0" || cars == ""){
+            cars = "0";
+        }
         form_data.append('address',address);
         form_data.append('beds',beds);
         form_data.append('baths',baths);
@@ -401,7 +404,7 @@ $(document).ready(function() {
                                 }
                             });
                         });
-                        $('<div class="alert alert-danger" role="alert">There might have been errors in your listing creation. Please fix this before clicking the link below to your property.' +
+                        $('<div class="alert alert-warning" role="alert">There might have been errors in your listing creation. Please fix this before clicking the link below to your property.' +
                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                             '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                         $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/' + html['id'] +

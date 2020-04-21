@@ -106,8 +106,8 @@
             </div>
             <hr>
 
-            <div class="col-sm-6 col-md-6" align="center">
-                <span class="btn btn-xs btn-primary" style="text-align:center ;color:white;width:40vw;height:6vh;margin-top:20px" id="search_props">Search</span>
+            <div class="col-sm-6 col-md-6" align="center" style="left:16.5vw;">
+                <span class="btn btn-xs btn-primary" style="text-align:center ;color:white;width:40vw;height:6vh;margin-top:20px;font-size:20px" id="search_props">Search</span>
             </div>
             <hr>
             <h4 style="margin-left:15px;">Search by area</h4>
@@ -126,8 +126,8 @@
                         <option value="10000">10 km</option>
                         <option value="15000">15 km</option>
                     </select>
-                    <div style="margin-top:15px;text-align:center;">
-                        <span class="btn btn-xs btn-primary" id="map_search">Search via map</span>
+                    <div class ="col-sm-6 col-md-6" style="margin-top:15px; left:-15vw">
+                        <span class="btn btn-xs btn-primary" style="text-align:center ;color:white;width:40vw;height:6vh;margin-top:20px;font-size:20px;" id="map_search">Search via map</span>
                     </div>
                 </div>
                 <div class="col-sm-5 col-md-5 col-lg-5"></div>
@@ -137,7 +137,7 @@
 
     <div id="prop_div">
       @foreach ($properties as $p)
-        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:0px; border:none; width:50vw;">
+        <div class="row card item-card cursor-pointer" name="view_property" data-id="{{$p->property_id}}" style="margin:5px; border:none; width:50vw;">
             <div class="col-sm-12 col-md-12 col-lg-12 card-body" >
 
                 @if($p->property_image_name[0])

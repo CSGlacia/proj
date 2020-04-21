@@ -16,7 +16,8 @@ class AdvertiserController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+		$this->middleware('auth');
+		$this->middleware(['role:admin|super-admin|advertiser']);
         //need to only allow advertisers, admins and super admins
     }
 

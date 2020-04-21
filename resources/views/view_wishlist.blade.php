@@ -5,17 +5,17 @@
     <h1>Your Wishlist</h1>
     <hr>
     @foreach ($wishlist as $w)
-      <div class="row card card-text" style="margin:5px">
-          <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="row card card-text" style="margin-bottom:5px">
+          <div class="col-sm-12 col-md-12 col-lg-12"  style="margin-bottom:10px">
               <h3><b> {{ $w->wishlist_propertyTitle }}</b></h3>
               <div> {{ $w->wishlist_propertyAddress }}  </div>
               <a class="btn btn-primary" name="view_property" href="/view_property/{{$w->wishlist_propertyID}}"> View property </a>
             <!--  <a id="delete_wishlist <?php echo $w->wishlist_propertyID ?>" class="btn btn-primary">✖</a> -->
-              <input class ="delete_wishlist btn btn-danger" type="" id="<?php echo $w->wishlist_propertyID?>", value = "Remove from wishlist" </input>
+              <a class ="delete_wishlist btn btn-danger" style="color:white"type="" id="<?php echo $w->wishlist_propertyID?>", <>Remove from wishlist</a>
           </div>
       </div>
     @endforeach
-
+    <br>
 </div>
 @endsection
 

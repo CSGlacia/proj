@@ -151,7 +151,9 @@
                     <div><i class="fas fa-star @if($p->scores > 2.5 && $p->scores != 'No Reviews Yet') gold-star @endif"></i>&nbsp;{{$p->scores}}@if($p->scores != "No Reviews Yet")({{$p->review_count}} Review(s))@endif</div>
                 </div>
                 <a class="btn btn-primary" name="view_property" href="/view_property/{{$p->property_id}}"> View property </a>
+                @if($page_owner)
                 <a class="btn btn-info" name="edit_property" href="/edit_property/{{$p->property_id}}" style="color:white"> Edit property </a>
+                @endif
             </div>
         </div>
       @endforeach
@@ -191,6 +193,7 @@
                                     </div>
                                     <hr>
                                 </div>
+                                <hr>
                     @endforeach
                 @else
                     <div>You have no bookings to approve.</div>
@@ -225,6 +228,7 @@
                                     </div>
                                     <hr>
                                 </div>
+                                <hr>
                     @endforeach
                 @else
                     <div>You have no upcoming approved bookings.</div>
@@ -259,6 +263,7 @@
                                     </div>
                                     <hr>
                                 </div>
+                                <hr>
                     @endforeach
                 @else
                     <div>You have no past approved bookings.</div>

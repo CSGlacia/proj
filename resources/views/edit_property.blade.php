@@ -196,7 +196,7 @@
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12" align="center">
-                    <a id="property_submit" class="btn btn-primary"style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px">Save</a>
+                    <a id="property_submit" class="btn btn-primary"style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px;font-size:20px">Save</a>
                 </div>
             </div>
         </div>
@@ -380,6 +380,9 @@ $(document).ready(function() {
         var lng = $('#lng').val();
 
         var form_data = new FormData();
+        if(cars < "0" || cars == ""){
+            cars = "0";
+        }
 
         form_data.append('prop_id',{{$p->property_id}});
         form_data.append('address',address);
