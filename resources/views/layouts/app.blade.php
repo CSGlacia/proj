@@ -233,6 +233,7 @@
                             @can('delete reviews')
                             <a class="dropdown-item " href="/list_reviews">View All Reviews</a>
                             @endcan
+                            <a class="dropdown-item" href="/admin_advertiser"> View Advertisers</a>
                         </div>
                     </li>
                     @endif
