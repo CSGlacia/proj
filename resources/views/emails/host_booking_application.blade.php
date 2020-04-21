@@ -7,9 +7,9 @@
 <body>
 <p>Hi there!</p>
 <p>
-    Thank you for using our website! We will get back to you after your host responds.
+    A recent guest has applied to book one of your properties.
     <br>
-    Your booking details are below:
+    The booking details are below:
     <br>
     <br>
     Property: <span>{{ $propName }}</span><br>
@@ -19,7 +19,7 @@
     End Date: <span>{{ $endDate }}</span><br>
 </p>
 <p>
-    See you soon,
+    Please log in to review the booking,
     <br>
     TurtleTeam
 </p>

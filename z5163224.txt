@@ -33,3 +33,8 @@ Week 7:
 Week 8:
 - Implemented email functionality on registration and booking
 - Prevented listings from overlapping
+
+Week 9:
+- Fixed UI on some old forms, implemented UI on new forms
+- Fixed some email, added more emailing functions
+- Fixed minor bugs in logic

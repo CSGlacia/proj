@@ -380,6 +380,9 @@ $(document).ready(function() {
         var lng = $('#lng').val();
 
         var form_data = new FormData();
+        if(cars < "0" || cars == ""){
+            cars = "0";
+        }
 
         form_data.append('prop_id',{{$p->property_id}});
         form_data.append('address',address);

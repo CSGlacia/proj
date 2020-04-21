@@ -68,7 +68,7 @@
                     </select>
                 </div>
             </div>
-            
+
             <!-- Animal Services -->
 
              <a class="btn btn-dark" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
@@ -88,7 +88,7 @@
                           <input type="checkbox" checked autocomplete="off"> Animal Exclusive
                       </label>
                  </div>
-
+                 <br>
                   <div>Suitable For:&nbsp;</div>
                   <select id="animals" class="form-control" name="animals[]" multiple>
                       @foreach($animals as $a)
@@ -127,7 +127,7 @@
                 </div>
             </span>
             <div>
-                <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates">
+                <div class="col-sm-6 col-md-6 col-lg-6" name="listing_dates"  style="left:-1vw">
                     <label class="btn btn-primary" id="add_dates"><i class="fas fa-plus"></i> Add Dates</label>
                 </div>
             </div>
@@ -313,6 +313,9 @@ $(document).ready(function() {
             form_data.append('files[]',images,image_name.concat(i.toString(10)));
         }
         */
+        if (cars < "0" || cars == ""){
+            cars = "0";
+        }
         form_data.append('address',address);
         form_data.append('beds',beds);
         form_data.append('baths',baths);
