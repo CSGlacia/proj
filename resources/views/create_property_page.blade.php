@@ -100,6 +100,45 @@
             </div>
             <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
             <input id="price" style="width:10vw" class="form-control" type="number" placeholder="$0" required>
+            <div class="row">
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <span>Tags:</span>
+                    <select id="tags" class="form-control tag-select" name="tags[]" multiple>
+                        @foreach($tags as $t)
+                            <option value="{{$t['id']}}">{{$t['text']}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <!-- Animal Services -->
+
+             <a class="btn btn-dark" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
+                <i class="fas fa-paw"></i>
+             </a>
+
+
+            </div>
+
+            <div class="collapse" id="collapseOne">
+              <div class="card card-body">
+
+                  <!-- TODO + TOASK: are there any properties that are EXCLUSIVELY animal based? -->
+                  <!-- As of now this button is a placeholder. -->
+                  <div class="btn-group-toggle" data-toggle="buttons">
+                      <label class="btn btn-outline-primary inactive">
+                          <input type="checkbox" checked autocomplete="off"> Animal Exclusive
+                      </label>
+                 </div>
+
+                  <div>Suitable For:&nbsp;</div>
+                  <select id="animals" class="form-control" name="animals[]" multiple>
+                      @foreach($animals as $a)
+                          <option value="{{$a['id']}}">{{$a['text']}}</option>
+                      @endforeach
+                  </select>
+              </div>
+            </div>
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12" align="center">
@@ -267,7 +306,7 @@ $(document).ready(function() {
         var l_name = $('#l_name').val();
         var lat = $('#lat').val();
         var lng = $('#lng').val();
-
+        var animals = $('#animals').val();
         //var image_name = "image";
         var form_data = new FormData();
         /*
@@ -288,6 +327,8 @@ $(document).ready(function() {
 
         var tags  = ($('#tags').val());
         form_data.append('tags', tags);
+        form_data.append('animals', animals);
+
         var listing_dates_arr = [];
         var price = $('#price').val();
         $('.listing_dates').each(function (i) {

@@ -24,6 +24,7 @@ class GeneralController extends Controller
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`'),
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`'),
+                            DB::raw('(SELECT GROUP_CONCAT(CONCAT(a.animals_type) SEPARATOR ",") FROM property_animals AS pa LEFT JOIN animals as a ON a.animals_id = pa.property_animals_animalID WHERE pa.property_animals_propertyID = p.property_id AND pa.property_animals_inactive = 0) AS `animals`'),
                             DB::raw('(SELECT GROUP_CONCAT(CONCAT(pi.property_image_name) SEPARATOR ",") FROM property_images AS pi WHERE pi.property_id = p.property_id) AS `property_image_name`')
                         )
                         ->where([
@@ -47,9 +48,6 @@ class GeneralController extends Controller
                         ->distinct()
                         ->get();
 
-
-
-
         $tags = DB::table('tags')
                 ->get();
 
@@ -60,10 +58,21 @@ class GeneralController extends Controller
             $tag_ret_arr[] = ['id' => $r->tag_id, 'text' => $r->tag_name];
         }
 
+        $animals = DB::table('animals')
+                ->get();
+
+        $animals_ret_arr = [];
+
+        foreach($animals as $r) {
+            $animals_ret_arr[] = ['id' => $r->animals_id, 'text' => $r->animals_type];
+        }
+
+
         return view('view_properties',
                     [
                         'properties' => $results,
                         'tags' => $tag_ret_arr,
+                        'animals' => $animals_ret_arr,
                         'suburbs' => $suburbs
 
                     ]
@@ -112,12 +121,53 @@ class GeneralController extends Controller
                     ])
                     ->first();
 
+        $prop_view_count = DB::table('view_property_data AS p')
+        ->select('p.*'
+        )
+        ->where([
+            ['p.vp_property_id', $id],
+        ])
+        ->get();
+        $view_count = 0;
+        foreach($prop_view_count as $p) {
+            $view_count = $view_count + 1;
+        }
+
+        $prop_data = DB::table('bookings AS b')
+        ->select('b.*', 'u.*'
+        )
+        ->where([
+            ['b.booking_propertyID', $id],
+        ])
+        ->join('users AS u', 'u.id', '=', 'b.booking_userID')
+        ->get();
+
+        $total_age = 0;
+        $total_persons = 0;
+        $row_count = 0;
+        foreach($prop_data as $d) {
+            // calc avg age
+            $total_age += $d->age;
+
+            // average tennant count
+            $total_persons += $d->booking_persons;
+            $row_count++;
+        }
+
+        if ($row_count != 0) {
+            $average_age = $total_age/$row_count;
+            $average_persons = $total_persons/$row_count;
+        } else {
+            $average_age = 'No age data available';
+            $average_persons = 'No tennant count data available';
+        }
+
+
         if(isset($prop->ratings) && !is_null($prop->ratings) && !empty($prop->ratings) && $prop->num_ratings > 0) {
             $avg_score = $prop->ratings/$prop->num_ratings;
         } else {
             $avg_score = 0;
         }
-            
         $prop_images = DB::table('property_images AS p')
                     ->select('p.property_image_name')
                     ->where([['p.property_id',$id]])
@@ -136,7 +186,6 @@ class GeneralController extends Controller
             catch (S3Exception $e) {
                 return json_encode(['status' => 'image_fail']);
             }
-
         }*/
 
 
@@ -291,7 +340,10 @@ class GeneralController extends Controller
                             'tags' => $tag_ret_arr,
                             'abookings' => $abookings,
                             'avg_score' => $avg_score,
-                            'pa_bookings' => $pa_bookings
+                            'pa_bookings' => $pa_bookings,
+                            'page_count' => $view_count,
+                            'avg_age' => $average_age,
+                            'avg_persons' => $average_persons,
                         ]
                 );
         }
@@ -332,30 +384,24 @@ class GeneralController extends Controller
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
         $include_unrated = $request->input('include_unrated');
+        $animals = $request->input('animals');
         $props = DB::table('properties AS p')
                     ->select('p.property_id');
 
 
         /*
         TODO: We want to record the search terms and insert into table: search_data
-
             Hint: set $insert_arr = [];
-
             Then to add a column e.g. search_name do: $insert_arr['search_name'] = $name
-
             Also for search_data_searched_at use time();
-
             IMPORTANT: For tags and suburbs we want to insert as a csv string so insert into $insert_arr before we do the explode();
             i.e. $insert_arr['search_tags'] => $tags;
                 $tags = explode(',', $tags);
-
             You can check the data types for the column using sql workbench
-
             1. check if user id exists using $user_id = Auth::id(); and validate that  $user_id exists, isnt null and is numeric (if it doesnt exists dont insert the user_id into table (it will just show as null))
             2. For each of the above search terms you will see where we validate if they exist. In each if() statement below, youll need to add the search term to our insert array (these terms are guarenteed to exist inside the if statements)
             3. After all of the if (~line 677) statements do DB::table('search_data')->insert($insert_arr);
 
-        
         */
         $insert_arr = [];
         $insert_arr['search_data_searched_at'] = time();
@@ -388,10 +434,10 @@ class GeneralController extends Controller
                 }
             }
             $bad_ratings = array_unique($bad_ratings);
-            
+
         }
-        
-        
+
+
 
         // check if there is a user logged in
         $user_id = Auth::id();
@@ -411,20 +457,49 @@ class GeneralController extends Controller
         }
 
         if(isset($suburbs) && !empty($suburbs) && !is_null($suburbs)) {
-            $insert_arr['search_suburb'] = $suburbs;
             $suburbs = explode(',' ,$suburbs);
             $props->whereIn('p.property_suburb', $suburbs);
+
+            $suburbs = implode('~', $suburbs);
+            $insert_arr['search_suburb'] = $suburbs;
+
             
         }
 
         if(isset($tags) && !empty($tags) && !is_null($tags)) {
-            $insert_arr['search_tags'] = $tags;                     // insert before explode to save as csv string
             $tags = explode(',', $tags);
 
             $props->join('property_tags AS pt', 'pt.pt_property_id', '=', 'p.property_id')
                     ->whereIn('pt.pt_tag_id', $tags)
                     ->groupBy('p.property_id');
+
+            $selected_tags = DB::table('tags')
+                                ->whereIn('tag_id', $tags)
+                                ->get();
+
+            $tag_arr = [];
+
+            foreach($selected_tags as $t) {
+                $tag_arr[] = $t->tag_name;
+            }
+
+            $tag_str = implode('~', $tag_arr);
+
+            $insert_arr['search_tags'] = $tag_str;
         }
+
+        // TODO: Add to analytics that this particular user has these particular pet(s).
+        // Animals.
+
+        if(isset($animals) && !empty($animals) && !is_null($animals)) {
+            $insert_arr['search_animals'] = $animals;
+            $animals = explode(',', $animals);
+
+            $props->join('property_animals AS pa', 'pa.property_animals_propertyID', '=', 'p.property_id')
+                    ->whereIn('pa.property_animals_animalID', $animals)
+                    ->groupBy('p.property_id');
+        }
+
 
         if(isset($beds) && !empty($beds) && !is_null($beds)) {
             $props->where('p.property_beds', '>=', $beds);
@@ -488,7 +563,6 @@ class GeneralController extends Controller
             $insert_arr['search_end_date'] = $end_date;
         }
 
-
         $props = $props->whereNotIn('p.property_id', $bad_ratings)
                         ->whereNotIn('p.property_id', $bad_start_dates)
                         ->whereNotIn('p.property_id', $bad_end_dates)
@@ -499,12 +573,12 @@ class GeneralController extends Controller
         foreach($props as $p) {
             $grab_ids[] = $p->property_id;
         }
-
         $results = DB::table('properties AS p')
                 ->select('p.*',
                     DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `scores`'),
                     DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `review_count`'),
-                    DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`')
+                    DB::raw('(SELECT GROUP_CONCAT(CONCAT(t.tag_name) SEPARATOR ",") FROM property_tags AS pt LEFT JOIN tags as t ON t.tag_id = pt.pt_tag_id WHERE pt.pt_property_id = p.property_id AND pt.pt_inactive = 0) AS `tags`'),
+                    DB::raw('(SELECT GROUP_CONCAT(CONCAT(a.animals_type) SEPARATOR ",") FROM property_animals AS pa LEFT JOIN animals as a ON a.animals_id = pa.property_animals_animalID WHERE pa.property_animals_propertyID = p.property_id AND pa.property_animals_inactive = 0) AS `animals`')
                 )
                 ->where([
                     ['property_inactive', '=', '0']
@@ -548,7 +622,6 @@ class GeneralController extends Controller
                             <div>'.$r->property_address.'</div>
                             <div style="margin:5px;">'.$r->property_desc.'</div>
                         <div>';
-                          
           foreach($r->tags as $t) {
              $ret_str .= '<span class="badge badge-secondary">'.$t.'</span>';
           }
@@ -680,12 +753,11 @@ class GeneralController extends Controller
               foreach($r->tags as $t) {
                  $ret_str .= '<span class="badge badge-secondary">'.$t.'</span>';
               }
-                            
                  $ret_str .= '</div>
                           <div><i class="fas fa-star';
                           if($r->scores > 2.5 && $r->scores != 'No Reviews Yet') {
                                 $ret_str .= 'gold-star';
-                            } 
+                            }
 
                             $ret_str .= '"></i>&nbsp;'.$r->scores;
 

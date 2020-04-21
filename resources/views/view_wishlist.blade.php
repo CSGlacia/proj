@@ -62,7 +62,7 @@ $(document).ready(function() {
                 Swal.fire("Error", "There was a connectivity problem. Please try again.", "error");
             }
         });
-
+      location.reload(true);
     });
 });
 </script>

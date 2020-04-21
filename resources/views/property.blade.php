@@ -285,6 +285,23 @@ img {
     </div>
     @endif
 
+    @if($page_owner == true)
+    <div class="col-sm-4 col-md-4 col-lg-4 pull-right">
+        <div class="row card">
+            <div class="col-sm-12 col-md-12 col-lg-12 card-body">
+                <div class="card-title" style="text-align:center;">
+                    <h2>Property Statistics:</h2>
+                </div>
+                <hr>
+                Total page visits: {{$page_count}} <br>
+                Average age: {{$avg_age}} <br>
+                Average # tennants: {{$avg_persons}} <br>
+                
+            </div>
+        </div>
+    </div>
+    @endif
+
 </div>
 @endsection
 
