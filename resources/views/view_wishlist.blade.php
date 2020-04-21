@@ -5,8 +5,8 @@
     <h1>Your Wishlist</h1>
     <hr>
     @foreach ($wishlist as $w)
-      <div class="row card card-text" style="margin:5px">
-          <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="row card card-text" style="margin-bottom:5px">
+          <div class="col-sm-12 col-md-12 col-lg-12"  style="margin-bottom:10px">
               <h3><b> {{ $w->wishlist_propertyTitle }}</b></h3>
               <div> {{ $w->wishlist_propertyAddress }}  </div>
               <a class="btn btn-primary" name="view_property" href="/view_property/{{$w->wishlist_propertyID}}"> View property </a>
@@ -15,7 +15,7 @@
           </div>
       </div>
     @endforeach
-
+    <br>
 </div>
 @endsection
 
