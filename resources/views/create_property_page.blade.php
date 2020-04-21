@@ -401,7 +401,7 @@ $(document).ready(function() {
                                 }
                             });
                         });
-                        $('<div class="alert alert-danger" role="alert">There might have been errors in your listing creation. Please fix this before clicking the link below to your property.' +
+                        $('<div class="alert alert-warning" role="alert">There might have been errors in your listing creation. Please fix this before clicking the link below to your property.' +
                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                             '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                         $('<div class="alert alert-primary" role="alert"> Link to your <a href="/view_property/' + html['id'] +
