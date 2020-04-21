@@ -50,7 +50,7 @@
                 </div>
                 <div class="col-sm-4 col-md-4 col-lg-4">
                     <span># of Car Spaces:&nbsp;</span>
-                    <input id="cars" class="form-control" type="number" placeholder="0" required>
+                    <input id="cars" class="form-control" type="number" placeholder="0">
                 </div>
             </div>
             <div class="row">
@@ -68,6 +68,36 @@
                     </select>
                 </div>
             </div>
+            
+            <!-- Animal Services -->
+
+             <a class="btn btn-dark" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
+                <i class="fas fa-paw"></i>
+             </a>
+
+
+            </div>
+
+            <div class="collapse" id="collapseOne">
+              <div class="card card-body">
+
+                  <!-- TODO + TOASK: are there any properties that are EXCLUSIVELY animal based? -->
+                  <!-- As of now this button is a placeholder. -->
+                  <div class="btn-group-toggle" data-toggle="buttons">
+                      <label class="btn btn-outline-primary inactive">
+                          <input type="checkbox" checked autocomplete="off"> Animal Exclusive
+                      </label>
+                 </div>
+
+                  <div>Suitable For:&nbsp;</div>
+                  <select id="animals" class="form-control" name="animals[]" multiple>
+                      @foreach($animals as $a)
+                          <option value="{{$a['id']}}">{{$a['text']}}</option>
+                      @endforeach
+                  </select>
+              </div>
+            </div>
+            <!-- END ANIMAL SERVICES -->
             <hr>
             <h5>Property Images:&nbsp;</h5>
             <div class="row">
@@ -103,45 +133,8 @@
             <br>
             <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
             <input id="price" style="width:10vw" class="form-control" type="number" placeholder="$0" required>
-            <div class="row">
-                <div class="col-sm-4 col-md-4 col-lg-4">
-                    <span>Tags:</span>
-                    <select id="tags" class="form-control tag-select" name="tags[]" multiple>
-                        @foreach($tags as $t)
-                            <option value="{{$t['id']}}">{{$t['text']}}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-
-            <!-- Animal Services -->
-
-             <a class="btn btn-dark" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
-                <i class="fas fa-paw"></i>
-             </a>
 
 
-            </div>
-
-            <div class="collapse" id="collapseOne">
-              <div class="card card-body">
-
-                  <!-- TODO + TOASK: are there any properties that are EXCLUSIVELY animal based? -->
-                  <!-- As of now this button is a placeholder. -->
-                  <div class="btn-group-toggle" data-toggle="buttons">
-                      <label class="btn btn-outline-primary inactive">
-                          <input type="checkbox" checked autocomplete="off"> Animal Exclusive
-                      </label>
-                 </div>
-
-                  <div>Suitable For:&nbsp;</div>
-                  <select id="animals" class="form-control" name="animals[]" multiple>
-                      @foreach($animals as $a)
-                          <option value="{{$a['id']}}">{{$a['text']}}</option>
-                      @endforeach
-                  </select>
-              </div>
-            </div>
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12" align="center">
