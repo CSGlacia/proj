@@ -1253,16 +1253,11 @@ class HomeController extends Controller
                             $status = "DENIED";
                         }
 
-                        $tennant = DB::table('users AS u')
-                                        ->where('u.id' , $booking->booking_userID)
-                                        ->get();
-                        $tennant = $tennant[0];
 
 
                         return view('view_booking', [
                             'b' => $booking,
                             'status' => $status,
-                            'tennant' => $tennant,
                             'user_id' => $id
                         ]);
                     }

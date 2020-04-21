@@ -11,21 +11,21 @@
             <div>{{$b->property_address}}</div>
             <span><i class="fas fa-bed"></i> {{$b->property_beds}}</span>&nbsp;<span><i class="fas fa-bath"></i> {{$b->property_baths}}</span>&nbsp;<span><i class="fas fa-car"></i> {{$b->property_cars}}</span>
             <div>Description: {{$b->property_desc}}</div>
-            <div>Owner: <a href="/user_profile/{{$b->id}}">{{$b->name}}</a></div>
+            <div>Owner: <a href="/user_profile/{{$b->property_user_id}}">{{$b->name}}</a></div>
             @if($b->scores != -1)
             <div ><i class="fas fa-star @if($b->scores > 2.5) gold-star @endif"></i>{{$b->scores}}</div>
             @endif
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6">
             <h3><b>Booking Details</b></h3>
-            <div>Tennant:&nbsp;<a href="/user_profile/{{$tennant->id}}">{{$tennant->name}}</a></div>
+            <div>Tennant:&nbsp;<a href="/user_profile/{{$b->id}}">{{$b->name}}</a></div>
             <div>Start Date: {{$b->booking_startDate}}</div>
             <div>End Date: {{$b->booking_endDate}}</div>
             <div>Persons Booked: {{$b->booking_persons}}</div>
             <div>Status: {{$status}}</div>
         </div>
     </div>
-    @if($user_id == $tennant->id && $status == 'NOT APPROVED')
+    @if($user_id == $b->id && $status == 'NOT APPROVED')
         <div class="row" style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Booking</span></div>
     @endif
 </div>
