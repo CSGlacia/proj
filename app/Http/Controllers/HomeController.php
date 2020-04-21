@@ -79,7 +79,8 @@ class HomeController extends Controller
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
             && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
             && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars)
-            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)
+            ) {
 
                 if(strpos($address, 'NSW') === false) {
                     return json_encode(['status' => 'wrong_state']);
@@ -94,25 +95,29 @@ class HomeController extends Controller
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
 
-                $tags = explode(',', $tags);
-                $animals = explode(',', $animals);
+
+
 
                 $tag_insert = [];
                 $ai = [];
-
-                foreach($tags as $t) {
-                    $tag_insert[] = ['pt_property_id' => $property_id, 'pt_tag_id' => $t, 'pt_inactive' => 0];
-                }
-
-                foreach($animals as $a) {
-                    $ai[] = ['property_animals_propertyID' => $property_id, 'property_animals_animalID' => $a, 'property_animals_inactive' => 0];
-                }
-
-                DB::table('property_tags')
+                if(isset($tags)){
+                    $tags = explode(',', $tags);
+                    foreach($tags as $t) {
+                        $tag_insert[] = ['pt_property_id' => $property_id, 'pt_tag_id' => $t, 'pt_inactive' => 0];
+                    }
+                    DB::table('property_tags')
                     ->insert($tag_insert);
+                }
+                if(isset($animals)){
+                    $animals = explode(',', $animals);
+                    foreach($animals as $a) {
+                        $ai[] = ['property_animals_propertyID' => $property_id, 'property_animals_animalID' => $a, 'property_animals_inactive' => 0];
+                    }
+                    DB::table('property_animals')
+                        ->insert($ai);
+                }
 
-                DB::table('property_animals')
-                    ->insert($ai);
+
 
                 return json_encode(['status' => 'success', 'id' => $property_id]);
 
