@@ -77,7 +77,7 @@ class RegisterController extends Controller
             'gender' => $data['gender'],
             'age' => $data['age']
         ]);
-        $user->assign_role('user');
+        $user->assignRole('user');
         return $user;
     }
 }
