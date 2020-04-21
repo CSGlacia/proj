@@ -111,7 +111,7 @@ class GeneralController extends Controller
         ]);
 
         $prop = DB::table('properties AS p')
-                    ->select('p.*',
+                    ->select('p.*', 'u.*',
                         DB::raw('(SELECT SUM(r.prs_score) FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `ratings`'),
                         DB::raw('(SELECT COUNT(r.prs_score) FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = p.property_id) AS `num_ratings`')
                     )
@@ -119,6 +119,7 @@ class GeneralController extends Controller
                         ['p.property_id', $id],
                         ['p.property_inactive', 0]
                     ])
+                    ->join('users AS u', 'u.id', '=', 'p.property_user_id')
                     ->first();
 
         $prop_view_count = DB::table('view_property_data AS p')

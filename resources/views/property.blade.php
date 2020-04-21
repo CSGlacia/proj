@@ -60,6 +60,9 @@ img {
                             <i class="fas fa-star"></i>&nbsp;{{$avg_score}} ({{$p->num_ratings}} Review(s))
                         @endif
                     </div>
+                    <div>
+                        Owned by <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$p->property_user_id}}">{{$p->name}}</a>
+                    </div>
                 </div>
             </div>
         </div>
