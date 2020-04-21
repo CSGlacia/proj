@@ -85,6 +85,7 @@ Route::post('/admin_delete_bookings','AdminController@admin_delete_bookings');
 Route::post('/admin_delete_tennant_review','AdminController@admin_delete_tennant_review');
 Route::post('/admin_delete_property_review','AdminController@admin_delete_property_review');
 
+Route::get('/admin_advertiser','AdminController@create_advertiser');
 // email
 Route::post('apply-two', ['uses'=>'NewsLetterController@autoMail', 'as'=>'apply-two']);
 
@@ -96,3 +97,4 @@ Route::get('/download_georgraphical_search_data', 'AdvertiserController@download
 Route::get('/download_booking_data', 'AdvertiserController@download_booking_data');
 Route::get('/download_personal_data', 'AdvertiserController@download_personal_data');
 Route::get('/download_viewing_data', 'AdvertiserController@download_viewing_data');
+

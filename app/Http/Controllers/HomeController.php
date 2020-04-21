@@ -75,7 +75,6 @@ class HomeController extends Controller
         $lng = $request->input('lng');
         $tags = $request->input('tags');
         $animals = $request->input('animals');
-
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
             && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
