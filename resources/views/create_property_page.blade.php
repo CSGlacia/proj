@@ -139,7 +139,7 @@
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12" align="center">
-                    <a id="property_submit" class="btn btn-primary" style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px">Submit</a>
+                    <a id="property_submit" class="btn btn-primary" style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px;font-size:20px">Submit</a>
                 </div>
             </div>
         </div>

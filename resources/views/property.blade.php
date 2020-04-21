@@ -117,7 +117,7 @@ img {
                 <hr>
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12">
-                        <a id="book_submit" style="color:white;text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px" class="btn btn-primary">Book</a>
+                        <a id="book_submit" style="color:white;text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px;font-size:20px" class="btn btn-primary">Book</a>
                     </div>
                 </div>
             </div>
