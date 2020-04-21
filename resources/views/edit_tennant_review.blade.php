@@ -41,8 +41,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            <span class="btn btn-xs btn-primary" style="margin-bottom:5px"id="submit_review">Save Review</span>
+        <div class="col-sm-12 col-md-12 col-lg-12" align="center">
+            <span class="btn btn-xs btn-primary" style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:10px; margin-bottom:20px"id="submit_review">Save Review</span>
         </div>
     </div>
 </div>
