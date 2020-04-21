@@ -1223,7 +1223,7 @@ class HomeController extends Controller
         if(isset($booking_id) && !empty($booking_id) && !is_null($booking_id)) {
             $booking = DB::table('bookings AS b')
                             ->select('b.*', 'p.*', 'u.*',
-                                DB::raw('(SELECT GROUP_CONCAT(CONCAT(r.prs_score) SEPARATOR ",") FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = b.booking_propertyID) AS `scores`'),
+                                DB::raw('(SELECT SUM(r.prs_score) FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = b.booking_propertyID) AS `scores`'),
                                 DB::raw('(SELECT COUNT(r.prs_score) FROM property_reviews AS r WHERE r.prs_inactive = 0 AND r.prs_property_id = b.booking_propertyID) AS `review_count`')
                             )
                             ->where('b.booking_id', $booking_id)
@@ -1241,7 +1241,7 @@ class HomeController extends Controller
                         $past_check = $booking->booking_endDate;
                         $booking->booking_startDate = date('d/m/Y', $booking->booking_startDate);
                         $booking->booking_endDate = date('d/m/Y', $booking->booking_endDate);
-
+                        $count = $booking->scores;
                         if(isset($booking->scores) && !empty($booking->scores) && !is_null($booking->scores) && isset($booking->review_count) && !empty($booking->review_count) && !is_null($booking->review_count)) {
                             $booking->scores = $booking->scores/$booking->review_count;
                         } else {
