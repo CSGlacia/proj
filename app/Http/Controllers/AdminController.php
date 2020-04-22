@@ -149,8 +149,6 @@ class AdminController extends Controller{
         }
         return json_encode(['status' => 'error']);
     }
-<<<<<<< HEAD
-=======
     public function create_advertiser(Request $request){
         if($request->isMethod('GET')){
             $id = Auth::id();
@@ -200,7 +198,6 @@ class AdminController extends Controller{
         $user->assignRole('admin');
         return $user;
     }
->>>>>>> fedca5c8cfcc6cda8697d065719c81e50eeadc66
 }
 
 ?>
