@@ -76,12 +76,22 @@ class HomeController extends Controller
         $lng = $request->input('lng');
         $tags = $request->input('tags');
         $animals = $request->input('animals');
+        $price = $request->input('price');
+        $min_stay = $request->input('min_stay');
+        $auto_approve = $request->input('auto_approve');
+
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
             && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds) && !empty($beds)
             && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars)
-            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)
-            ) {
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name) && isset($price) && !empty($price) && !is_null($price) && is_numeric($price)
+            && isset($min_stay) && !empty($min_stay) && !is_null($min_stay) && is_numeric($min_stay) && isset($auto_approve) && !is_null($auto_approve)) {
+
+                if($auto_approve == 'false') {
+                    $auto_approve = 0;
+                } else {
+                    $auto_approve = 1;
+                }
 
                 if(strpos($address, 'NSW') === false) {
                     return json_encode(['status' => 'wrong_state']);
@@ -91,7 +101,7 @@ class HomeController extends Controller
                 $suburb = explode(' ', $suburb);
                 $suburb = $suburb[1];
 
-                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_suburb' => $suburb];
+                $insert = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_suburb' => $suburb, 'property_price' => $price, 'property_minimum_stay' => $min_stay, 'property_auto_approve' => $auto_approve];
 
                 $property_id = DB::table('properties')
                     ->insertGetId($insert);
@@ -216,6 +226,7 @@ class HomeController extends Controller
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
         $persons = $request->input('persons');
+        $price = $request->input('price');
         // $animals = $request->input('animals');
 
         $startDate = explode('/', $startDate);
@@ -247,6 +258,16 @@ class HomeController extends Controller
         $resultArr = [];
 
 
+        $auto_approve = DB::table('properties AS p')
+                        ->select('p.*')
+                        ->where([
+                            ['p.property_inactive', 0],
+                            ['p.property_id', $propertyID]
+                        ])
+                        ->first();
+
+
+
         // If for some propertys' bookings, the END time is STRICTLY GREATER
         // than the start of the booking time.
         foreach ($results as $r) {
@@ -257,7 +278,7 @@ class HomeController extends Controller
 
         if(isset($userID) && is_numeric($userID) && isset($propertyID) && is_numeric($propertyID) && isset($startDate) && isset($endDate) && isset($persons) && is_numeric($persons)) {
 
-            $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0];
+            $insert = ['booking_userID' => $userID, 'booking_propertyID' => $propertyID, 'booking_startDate' => $s, 'booking_endDate' => $e, 'booking_persons' => $persons, 'booking_paid' => 0, 'booking_inactive' => 0, 'booking_price' => $price, 'booking_approved' => $auto_approve->property_auto_approve];
 
             $booking_id = DB::table('bookings')->insertGetId($insert);
             $this->sendBookingApplicationEmail($propertyID, $s, $e);
@@ -387,20 +408,14 @@ class HomeController extends Controller
         else if($request->isMethod('POST')){
             $user = Auth::id();
             $property = $request->input('property'); //this is property id
-            $price = $request->input('price');
             $start_date = $request->input('start_date');
             $end_date = $request->input('end_date');
             $reccurring = $request->input('recurr');
 
-            if(!isset($price) || !isset($property) || !isset($start_date) || !isset($end_date)){
+            if(!isset($property) || !isset($start_date) || !isset($end_date)){
                 return json_encode(['status' => 'bad_input']);
             }
 
-            if($price <=  0){
-                return json_encode(['status' => 'price_low']);
-            } else if($price >= 1000000){
-                return json_encode(['status' => 'price_high']);
-            }
             if(isset($reccurring)){
                 if($reccurring != "false" && $reccurring != "true") {
                     return json_encode(['status' => 'error']);
@@ -435,7 +450,7 @@ class HomeController extends Controller
                 return json_encode(['status' => 'overlapping_date']);
             }
 
-            $data = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
+            $data = ['start_date' => $start, 'end_date' => $end, 'property_id' => $property, 'reccurring' => $reccurring];
 
             DB::table('property_listing')->insert($data);
 
@@ -754,12 +769,21 @@ class HomeController extends Controller
         $lng = $request->input('lng');
         $tags = $request->input('tags');
         $animals = $request->input('animals');
+        $price = $request->input('price');
+        $min_stay = $request->input('min_stay');
+        $auto_approve = $request->input('auto_approve');
 
         if(isset($user) && !is_null($user) && is_numeric($user)) {
             if(isset($address) && !is_null($address) && !empty($address) && isset($lat) && !is_null($lat) && is_numeric($lat) && !empty($lat)
             && isset($lng) && !is_null($lng) && !empty($lng) && is_numeric($lng) && isset($beds) && !is_null($beds)
             && is_numeric($beds) && isset($baths) && !is_null($baths) && !empty($baths) && is_numeric($baths) && isset($cars) && !is_null($cars)
-            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name)) {
+            && is_numeric($cars) && isset($desc) && !is_null($desc) && !empty($desc) && isset($l_name) && !empty($l_name) && !is_null($l_name) && isset($price) && !empty($price) && !is_null($price) && is_numeric($price) && isset($min_stay) && !empty($min_stay) && !is_null($min_stay) && is_numeric($min_stay) && isset($auto_approve) && !is_null($auto_approve)) {
+
+                if($auto_approve == 'false') {
+                    $auto_approve = 0;
+                } else {
+                    $auto_approve = 1;
+                }
 
                 if(strpos($address, 'NSW') === false) {
                     return json_encode(['status' => 'wrong_state']);
@@ -770,7 +794,7 @@ class HomeController extends Controller
                 $suburb = explode(' ', $suburb);
                 $suburb = $suburb[1];
 
-                $update = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_suburb' => $suburb];
+                $update = ['property_user_id' => $user, 'property_address' => htmlspecialchars($address), 'property_lat' => $lat, 'property_lng' => $lng, 'property_beds' => $beds, 'property_baths' => $baths, 'property_cars' => $cars, 'property_desc' => htmlspecialchars($desc), 'property_title' => $l_name, 'property_suburb' => $suburb, 'property_price' => $price, 'property_minimum_stay' => $min_stay, 'property_auto_approve' => $auto_approve];
 
                 DB::table('properties')
                     ->where('property_id', $prop_id)
@@ -828,7 +852,6 @@ class HomeController extends Controller
     public function update_property_listing(Request $request) {
         $user = Auth::id();
         $property = $request->input('property'); //this is property id
-        $price = $request->input('price');
         $data = $request->input('data');
         if($data == "~~false"){
             return json_encode(['status' => 'bad_input']);
@@ -848,14 +871,8 @@ class HomeController extends Controller
             $listings[] = explode('~', $d);
         }
 
-        if(!isset($price) || !isset($property)){
+        if(!isset($property)){
             return json_encode(['status' => 'bad_input']);
-        }
-
-        if($price <=  0){
-            return json_encode(['status' => 'price_low']);
-        } else if($price >= 1000000){
-            return json_encode(['status' => 'price_high']);
         }
 
         $insert = [];
@@ -881,7 +898,7 @@ class HomeController extends Controller
                 return json_encode(['status' => 'date_invalid']);
             }
 
-            $insert = ['start_date' => $start, 'end_date' => $end, 'price' => $price, 'property_id' => $property, 'reccurring' => $reccurring];
+            $insert = ['start_date' => $start, 'end_date' => $end, 'property_id' => $property, 'reccurring' => $reccurring];
         }
         DB::table('property_listing')->insert($insert);
 

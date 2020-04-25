@@ -79,6 +79,22 @@
 
             </div>
 
+            <div class="row col-sm-12 col-md-12 col-lg-12" style="margin-bottom:5px">
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <span>Minimum Stay (Days):&nbsp;</span>
+                    <input id="min_stay" class="form-control" type="number" min="1" max="150" placeholder="E.g. 3">
+                </div>
+            </div>
+
+            <div class="row col-sm-12 col-md-12 col-lg-12" style="margin-bottom:5px">
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <br>
+                    <span>Price Range ($ per night):</span>
+                    <div id="slider" style="margin:10px;"></div>
+                    <div id="price_display">$0 - $1000</div>
+                </div>
+            </div>
+
             <div class="collapse col-sm-6 col-md-6 col-lg-6" id="collapseOne">
               <div class="card card-body">
                   <div>Suitable For: &nbsp;</div>
@@ -160,6 +176,9 @@
                       @endforeach
                   </div>
                   <div><i class="fas fa-star @if($p->scores > 2.5 && $p->scores != 'No Reviews Yet') gold-star @endif"></i>&nbsp;{{$p->scores}}@if($p->scores != "No Reviews Yet")({{$p->review_count}} Review(s))@endif</div>
+                  <div style="margin-top:5px;">
+                        <span><b><h3>${{$p->property_price}} per night</h3></b></span>
+                  </div>
                 </div>
             </div>
         </div>
@@ -204,6 +223,27 @@ hero_s.owlCarousel({
     autoplay: true
 });
 $(document).ready(function() {
+
+    var price_min = 0;
+    var price_max = 1;
+
+    var slider = document.getElementById('slider');
+
+    noUiSlider.create(slider, {
+        start: [0, 1000],
+        connect: true,
+        range: {
+            'min': 0,
+            'max': 1000
+        }
+    });
+
+    slider.noUiSlider.on('update', function(values, handle) {
+        price_min = values[0];
+        price_max = values[1];
+        $('#price_display').html('$'+price_min+' - $'+price_max);
+    });
+
     $('#circle_radius').select2();
     var map = new google.maps.Map(document.getElementById('map_canvas'), {
         zoom: 11,
@@ -517,11 +557,12 @@ $(document).ready(function() {
         var start_date = $('#start_date').val();
         var end_date = $('#end_date').val();
         var include_unrated = $('#include_unrated').prop('checked');
+        var min_stay = $('#min_stay').val();
         $.ajax({
             url: '/property_search',
             method: 'POST',
             dataType: 'JSON',
-            data: 'rating='+rating+'&name='+name+'&address='+address+'&suburbs='+suburbs+'&tags='+tags+'&animals='+animals+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&start_date='+start_date+'&end_date='+end_date+'&include_unrated='+include_unrated,
+            data: 'rating='+rating+'&name='+name+'&address='+address+'&suburbs='+suburbs+'&tags='+tags+'&animals='+animals+'&beds='+beds+'&baths='+baths+'&cars='+cars+'&start_date='+start_date+'&end_date='+end_date+'&include_unrated='+include_unrated+"&min_stay="+min_stay+"&price_min="+price_min+"&price_max="+price_max,
             success: function(html) {
                 if(html['status'] == 'success') {
                     data = html['data'];

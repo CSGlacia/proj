@@ -17,12 +17,6 @@
                         @endforeach
                         </select>
                 </div>
-                <div class="col-sm-6 col-md-6 col-lg-6">
-                    <label for="form_property_price_per_night">How much would you like the property to cost per night?</label>
-                    <div class="col-sm-3 col-md-3 col-lg-3">
-                        <input id="price" class="form-control" type="number" placeholder="0" required>
-                    </div>
-                </div>
             </div>
             <h5>Listing Dates:&nbsp;</h5>
             <span id="dates_start">
@@ -143,14 +137,13 @@ $(document).ready(function() {
                 listing_dates_arr.push(add_arr);
         });
         var property = $('#form_select_property').val();
-        var price = $('#price').val();
         var count = 1;
         $.each(listing_dates_arr, function(i) {
             $.ajax({
                 url: '/create_property_listing',
                 method: 'POST',
                 dataType: 'JSON',
-                data: 'property='+property+'&price='+price+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
+                data: 'property='+property+'&start_date='+listing_dates_arr[i][0]+'&end_date='+listing_dates_arr[i][1]+'&recurr='+listing_dates_arr[i][2],
                 success: function(html) {
                     if(html['status'] == "success") {
                         $('<div class="alert alert-success" role="alert">Listing '+ count +': was created successfully' +
@@ -158,14 +151,6 @@ $(document).ready(function() {
                         '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                     } else if(html['status'] == 'bad_input'){
                         $('<div class="alert alert-danger" role="alert">Listing '+ count +': Please check all fields are filled.' +
-                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                    } else if(html['status'] == 'price_low') {
-                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': You must enter a price which is positive. You cannot charge negative amounts.' +
-                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                        '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                    } else if(html['status'] == 'price_high'){
-                        $('<div class="alert alert-danger" role="alert">Listing '+ count +': There\'s a price limit of $999999.99 . Please enter a lower price per night.' +
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                         '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                     } else if(html['status'] == 'overlapping_date'){

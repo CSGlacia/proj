@@ -32,6 +32,7 @@
                             </div>
                             <span>Start Date: {{$b->booking_startDate}}</span>
                             <span>End Date: {{$b->booking_endDate}}</span>
+                            <span>Price: ${{$b->booking_price}}</span>
                             <div>
                                 <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
                                 <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}" style="color:white"> Cancel booking</a>
@@ -58,6 +59,7 @@
                             </div>
                             <span>Start Date: {{$b->booking_startDate}}</span>
                             <span>End Date: {{$b->booking_endDate}}</span>
+                            <div>Price: ${{$b->booking_price}}</div>
                             <div>
                                 <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
                                 <a class="btn btn-danger" name="delete_booking" data-id="{{$b->booking_id}}"style="color:white"> Cancel booking</a>
@@ -86,6 +88,7 @@
                             </div>
                             <span>Start Date: {{$b->booking_startDate}}</span>
                             <span>End Date: {{$b->booking_endDate}}</span>
+                            <div>Price: ${{$b->booking_price}}</div>
                             <div>
                                 <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
                             </div>
@@ -110,6 +113,7 @@
                             </div>
                             <span>Start Date: {{$b->booking_startDate}}</span>
                             <span>End Date: {{$b->booking_endDate}}</span>
+                            <div>Price: ${{$b->booking_price}}</div>
                             <div>
                                 <a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View booking</a>
                             </div>
@@ -150,10 +154,14 @@
                 </div>
                     <div><i class="fas fa-star @if($p->scores > 2.5 && $p->scores != 'No Reviews Yet') gold-star @endif"></i>&nbsp;{{$p->scores}}@if($p->scores != "No Reviews Yet")({{$p->review_count}} Review(s))@endif</div>
                 </div>
+                <div style="margin-top:5px;">
+                        <span><b><h3>${{$p->property_price}} per night</h3></b></span>
+                </div>
                 <a class="btn btn-primary" name="view_property" href="/view_property/{{$p->property_id}}"> View property </a>
                 @if($page_owner)
                 <a class="btn btn-info" name="edit_property" href="/edit_property/{{$p->property_id}}" style="color:white"> Edit property </a>
                 @endif
+                
             </div>
         </div>
       @endforeach
@@ -186,6 +194,7 @@
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <span>Price: ${{$b->booking_price}}</span>
                                             <div style="margin-top:5px;"><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
                                             <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span></div>
                                             <div style="margin-top:5px;"><span class="btn btn-danger" name="deny_booking" data-id="{{$b->booking_id}}" style="color:white">Deny Booking</span></div>
@@ -223,6 +232,7 @@
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <span>Price: ${{$b->booking_price}}</span>
                                             <div><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
                                         </div>
                                     </div>
@@ -258,6 +268,7 @@
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <span>Price: ${{$b->booking_price}}</span>
                                             <div><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
                                         </div>
                                     </div>

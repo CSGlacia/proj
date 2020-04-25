@@ -56,10 +56,12 @@
                   <span>{{$r->booking_persons}} Person(s) from {{$r->booking_startDate}} to {{$r->booking_endDate}}</span>
                 </div>
             </div>
-            <div align="center">
-                <a class="btn btn-warning col-sm-10 col-md-10 col-lg-10" name="edit_property_review" href="/edit_property_review/{{$r->prs_id}}">Edit Review</a>
-            </div>
         </div>
+        <!--
+        <div align="center">
+                    <a class="btn btn-warning col-sm-10 col-md-10 col-lg-10" href="/edit_property_review/{{$r->prs_id}}">Edit Review</a>
+        </div>
+      -->
         @endforeach
     @else
         <div>You have no past bookings to review</div>
@@ -74,10 +76,11 @@ $(document).ready(function() {
     $(document).on('click', '[name="review_property"]', function() {
         window.location.href = '/review_property?prop_id='+$(this).data('prop-id')+'&booking_id='+$(this).data('booking-id');
     });
+/*
     $(document).on('click', '[name="edit_review"]', function() {
         window.location.href = '/edit_property_review/'+$(this).data('review-id');
     });
-
+*/
 });
 </script>
 @endsection

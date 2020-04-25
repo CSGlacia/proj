@@ -40,9 +40,11 @@
                         <div>{{$p->trs_review}}</div>
                     </div>
                 </div>
+                <!--
                 <div align="center">
                     <a class="btn btn-warning col-sm-10 col-md-10 col-lg-10" href="/edit_tennant_review/{{$p->trs_id}}">Edit Review</a>
                 </div>
+            -->
             </div>
             @endforeach
         @else
@@ -58,10 +60,11 @@ $(document).ready(function() {
     $(document).on('click', '[name="review_property"]', function() {
         window.location.href = '/review_tennant?'+'booking_id='+$(this).data('booking-id')+'&prop_id='+$(this).data('prop-id');
     });
-
+/*
     $(document).on('click', '[name="edit_review"]', function() {
         window.location.href = '/edit_tennant_review/'+$(this).data('review-id');
     });
+*/
 });
 </script>
 @endsection

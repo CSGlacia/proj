@@ -291,8 +291,9 @@ class GeneralController extends Controller
                                     ['b.booking_propertyID', $id],
                                     ['b.booking_inactive', 0],
                                     ['b.booking_startDate', '>', time()],
-                                    ['b.booking_approved', 1]
+                                    ['b.booking_denied', 0]
                                 ])
+                                ->whereRaw('(b.booking_approved = 1 OR b.booking_approved = 0)')
                                 ->get();
 
             $cal_booking_arr = [];
@@ -386,6 +387,10 @@ class GeneralController extends Controller
         $end_date = $request->input('end_date');
         $include_unrated = $request->input('include_unrated');
         $animals = $request->input('animals');
+        $min_stay = $request->input('min_stay');
+        $price_min = $request->input('price_min');
+        $price_max = $request->input('price_max');
+
         $props = DB::table('properties AS p')
                     ->select('p.property_id');
 
@@ -438,6 +443,15 @@ class GeneralController extends Controller
 
         }
 
+        if(isset($min_stay) && !empty($min_stay) && !is_null($min_stay)) {
+            $props->where('p.property_minimum_stay', '>=', $min_stay);
+            //TODO: log min stay data
+        }
+
+        if(isset($price_min) && !is_null($price_min) && isset($price_max) && !is_null($price_max)) {
+            $props->whereRaw('(p.property_price >= '.$price_min.' AND p.property_price <= '.$price_max.')');
+            //TODO: log price data
+        }
 
 
         // check if there is a user logged in
@@ -640,6 +654,9 @@ class GeneralController extends Controller
                         }
                 $ret_str .= '</div>
                     </div>
+                    <div style="margin-top:5px;">
+                        <span><b><h3>$'.$r->property_price.' per night</h3></b></span>
+                  </div>
                 </div>
             </div>';
         }

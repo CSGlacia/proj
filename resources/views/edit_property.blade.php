@@ -194,6 +194,22 @@
                 <label class="btn btn-primary float-right" id="add_dates"><i class="fas fa-plus"></i>&nbsp;Add Dates</label>
             </div>
             <hr>
+            <br>
+            <label for="form_property_price_per_night">How much would you like the property to cost per night? (</label>
+            <input id="price" style="width:10vw" class="form-control" type="number" min="0" max="1000" value="{{$p->property_price}}" required>
+            <br>
+            <label for="form_property_minimum_stay">What is the minimum amount of days you would like tennants to stay at your property</label>
+            <input id="min_stay" style="width:10vw" class="form-control" type="number" min="1" max="150" value="{{$p->property_minimum_stay}}" required>
+            <br>
+            <hr>
+            <h5>Booking Approval</h5>
+            <div class="pretty p-default p-round p-smooth p-bigger">
+                <input id="auto_approve" type="checkbox" @if($p->property_auto_approve == 1) checked @endif/>
+                <div class="state p-primary">
+                    <label>Automatically approve bookings for this property?</label>
+                </div>
+            </div>
+            <hr>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12" align="center">
                     <a id="property_submit" class="btn btn-primary"style="text-align:center ;color:white;width:20vw;height:6vh;margin-top:20px;font-size:20px">Save</a>
@@ -393,10 +409,15 @@ $(document).ready(function() {
         form_data.append('l_name',l_name);
         form_data.append('lat',lat);
         form_data.append('lng',lng);
-
+        var price = $('#price').val();
+        var min_stay = $('#min_stay').val();
+        form_data.append('price', price);
+        form_data.append('min_stay', min_stay);
         var tags = $('#tags').val();
         form_data.append('tags', tags);
+        var auto_approve = $('#auto_approve').prop('checked');
 
+        form_data.append('auto_approve', auto_approve);
         var listing_dates_arr = [];
 
         $('.listing_dates').each(function (i) {
@@ -442,7 +463,7 @@ $(document).ready(function() {
                         url: '/update_property_listing',
                         method: 'POST',
                         dataType: 'JSON',
-                        data: 'property='+prop_id+'&price='+1+'&data='+encodeURIComponent(listing_dates_arr),
+                        data: 'property='+prop_id+'&data='+encodeURIComponent(listing_dates_arr),
                         success: function(html) {
                             if(html['status'] == "success") {
                                 $('<div class="alert alert-success" role="alert">Listing: was created successfully' +
@@ -450,14 +471,6 @@ $(document).ready(function() {
                                 '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                             } else if(html['status'] == 'bad_input'){
                                 $('<div class="alert alert-danger" role="alert">Listing: Please check all fields are filled.' +
-                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                            } else if(html['status'] == 'price_low') {
-                                $('<div class="alert alert-danger" role="alert">Listing: You must enter a price which is positive. You cannot charge negative amounts.' +
-                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
-                                '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
-                            } else if(html['status'] == 'price_high'){
-                                $('<div class="alert alert-danger" role="alert">Listing: There\'s a price limit of $999999.99 . Please enter a lower price per night.' +
                                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">' +
                                 '&times; </span></button></div>').hide().appendTo('#top').fadeIn(1000);
                             } else if(html['status'] == 'overlapping_date'){

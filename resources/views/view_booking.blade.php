@@ -25,6 +25,17 @@
             <div>Status: {{$status}}</div>
         </div>
     </div>
+    <div class="row" style="text-align:center; margin:10px;">
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">        
+            <span><h3><b>Cost of Stay: ${{$b->booking_price}}</b></h3></span>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            
+        </div>
+    </div>
     @if($user_id == $b->property_user_id && $status == 'NOT APPROVED')
         <div class="row" style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Booking</span></div>
     @endif

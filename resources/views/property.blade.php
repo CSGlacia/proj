@@ -63,6 +63,13 @@ img {
                     <div>
                         Owned by <i class="fas fa-user"></i>&nbsp;<a href="/user_profile/{{$p->property_user_id}}">{{$p->name}}</a>
                     </div>
+                    <div style="margin-top:5px;">
+                        <span>Minimum Stay: {{$p->property_minimum_stay}} Days</span>
+                    </div>
+                    <div style="margin-top:5px;">
+                        <span><b><h3>${{$p->property_price}} per night</h3></b></span>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -115,6 +122,12 @@ img {
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <span>Number of People:&nbsp;</span>
                         <input id="persons" class="form-control" type="number" required>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div id="total_price">Total Price ($): </div>
                     </div>
                 </div>
                 <hr>
@@ -204,6 +217,7 @@ img {
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <div><span>Price: ${{$b->booking_price}}</span></div>
                                             <div style="margin-top:5px;"><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
                                             <div style="margin-top:5px;"><span class="btn btn-success" name="approve_booking" data-id="{{$b->booking_id}}">Approve Booking</span>&nbsp;<span class="btn btn-warning" name="deny_booking" data-id="{{$b->booking_id}}">Deny Booking</span></div>
                                         </div>
@@ -239,6 +253,7 @@ img {
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <div><span>Price: ${{$b->booking_price}}</span></div>
                                             <div><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
                                         </div>
                                     </div>
@@ -273,6 +288,7 @@ img {
                                             <div>Persons: {{$b->booking_persons}}</div>
                                             <span>Start Date: {{$b->booking_startDate}}</span>
                                             <div><span>End Date: {{$b->booking_endDate}}</span></div>
+                                            <div><span>Price: ${{$b->booking_price}}</span></div>
                                             <div><a class="btn btn-primary" name="view_booking" href="/view_booking/{{$b->booking_id}}" data-id="{{$b->booking_id}}"> View Booking</a></div>
                                         </div>
                                     </div>
@@ -329,6 +345,10 @@ function initMap() {
 
 $(document).ready(function() {
 
+    var minimum_stay = {{$p->property_minimum_stay}};
+
+    var price_per_night = {{$p->property_price}};
+    var total_price = 0;
     var modal = $('#img_modal')
 
     $(document).on('click', '[name="approve_booking"]', function(e) {
@@ -532,8 +552,28 @@ $(document).ready(function() {
         var newStartDate = startDate.val();
         newStartDate = newStartDate.split('/');
         newStartDate = newStartDate[2]+'-'+newStartDate[1]+'-'+newStartDate[0];
-        newStartDate = new Date(newStartDate);
+        newStartDate = new Date(newStartDate);  
+        newStartDate.setTime(newStartDate.getTime() + minimum_stay * 86400000);
+
+        var start_date_create = startDate.val();
+        start_date_create = start_date_create.split('/');
+        start_date_create = start_date_create[1]+'/'+start_date_create[0]+'/'+start_date_create[2];
+        var date1 = new Date(start_date_create);
+
+        var end_date_create = endDate.val();
+        end_date_create = end_date_create.split('/');
+        end_date_create = end_date_create[1]+'/'+end_date_create[0]+'/'+end_date_create[2];
+        var date2 = new Date(end_date_create);
+
+        var time_diff = date2.getTime() - date1.getTime();
+        time_diff = time_diff/(1000 * 3600 *24);
+
+        if(!isNaN(time_diff)) {
+            $('#total_price').html('Total Price: $'+(time_diff*price_per_night));
+            total_price = time_diff * price_per_night;
+        }
         endDate.datepicker("setStartDate",  newStartDate);
+
     });
 
     $('#endDate').change(function() {
@@ -541,6 +581,24 @@ $(document).ready(function() {
         newEndDate = newEndDate.split('/');
         newEndDate = newEndDate[2]+'-'+newEndDate[1]+'-'+newEndDate[0];
         newEndDate = new Date(newEndDate);
+        newEndDate.setTime(newEndDate.getTime() - minimum_stay * 86400000);
+        var start_date_create = startDate.val();
+        start_date_create = start_date_create.split('/');
+        start_date_create = start_date_create[1]+'/'+start_date_create[0]+'/'+start_date_create[2];
+        var date1 = new Date(start_date_create);
+
+        var end_date_create = endDate.val();
+        end_date_create = end_date_create.split('/');
+        end_date_create = end_date_create[1]+'/'+end_date_create[0]+'/'+end_date_create[2];
+        var date2 = new Date(end_date_create);
+
+        var time_diff = date2.getTime() - date1.getTime();
+        time_diff = time_diff/(1000 * 3600 *24);
+
+        if(!isNaN(time_diff)) {
+            $('#total_price').html('Total Price: $'+(time_diff*price_per_night));
+            total_price = time_diff * price_per_night;
+        }
 
         startDate.datepicker("setEndDate",  newEndDate);
     });
@@ -568,7 +626,7 @@ $(document).ready(function() {
                 url: '/create_booking',
                 method: 'POST',
                 dataType: 'JSON',
-                data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons,
+                data: 'propertyID='+propertyID+'&startDate='+startDate+'&endDate='+endDate+'&persons='+persons+'&price='+total_price,
                 success: function(html) {
                     if(html['status'] == "success") {
                         let timerInterval
