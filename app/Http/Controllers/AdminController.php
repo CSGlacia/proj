@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Mail;
 use Auth;
 use DB;
 use App;
+use App\User;
 
 class AdminController extends Controller{
         /**
