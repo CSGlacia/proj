@@ -1,5 +1,4 @@
 Week 1:
-
 Formed groups and did chose to do project 3.
 
 Week 2:
@@ -10,3 +9,15 @@ Did a few experiments to familiarise myself with PHP/Laravel.
 
 Week 4/5:
 Working on account and booking procedures
+
+Week 6:
+Had a look at the wishlist, favorites and implemented some bug fixes. Added database definitions for the wishlist as well as added additional (albeit broken!) booking functionality
+
+Week 7:
+Finished wishlist and adding to favorites. Currently no way to access, but the funcionality exists.
+
+Week 8:
+Added some db defintions for animal functionality and added links to coded functionality
+
+Week 9:
+Finished animal functionality, fixed bugs with the search as a result, edited pages for modifying property, creation and search to accomodate for this. Fixed a tiny bug with tags
