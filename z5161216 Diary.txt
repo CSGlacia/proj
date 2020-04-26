@@ -15,3 +15,5 @@ Week 7 Diary
 Had some trouble doing AWS S3 link. Had to change form format. Worked with Jun on UI improvements. Finished navbar
 Week 8 Diary
 Working on bug fixing and improving the UI right now.
+Week 9 Diary
+Adding Admin functionality and other features into the UI, plus the admin backend
