@@ -20,3 +20,16 @@ Had to help some teammates with their tasks (as their tasks blocked my tasks). H
 
 Week 6:
 After Andy merged the others work into a single branch i checked everyones work. Also helped solve some merge conflicts with my own work. Built review pages for tennants and owners. Built a place where users can submit reviews. Built database structures to hold reviews. Built places where reviews would be displayed on user and property pages. Tidied up the UI abit. Integrated booking into the property page.
+
+Week 7:
+Helped nathan over discord to code in google autocomplete and google maps into our website to provide accurate geographical information
+for our properties. Completed work on edit forms for properties and also helped to finalize image uploads on property creation. 
+
+Week 8:
+Cleaned up ui, providing links for user and property pages. Reworked bookings to have approval and denial process. Reworked search such that we are able to search on a variety of options in combination. Additionally added a geographical search tool.
+
+Week 9:
+Helped nathan with logging user data for our analytics exports. Created exports page and built .csv downloads for the export page. Communicated with andy to defined the permissions an advertiser account should have.
+
+Week 10:
+Fixed some bugs and did some changes post-presentation to finalize our product. These changes were mainly feedback from our instructor.
