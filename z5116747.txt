@@ -21,3 +21,6 @@ Added some db defintions for animal functionality and added links to coded funct
 
 Week 9:
 Finished animal functionality, fixed bugs with the search as a result, edited pages for modifying property, creation and search to accomodate for this. Fixed a tiny bug with tags
+
+Week 10:
+Helped write report, as well as push one tiny fix for something I noticed during the wk10 demo
