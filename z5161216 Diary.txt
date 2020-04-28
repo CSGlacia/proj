@@ -17,3 +17,5 @@ Week 8 Diary
 Working on bug fixing and improving the UI right now.
 Week 9 Diary
 Adding Admin functionality and other features into the UI, plus the admin backend
+Week 10 Diary
+Final UI fixes and mainly working on the final project report
