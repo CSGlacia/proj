@@ -647,10 +647,10 @@ class GeneralController extends Controller
                             $ret_str .= 'gold-star';
                         }
 
-                        $ret_str .= '"></i>&nbsp;'.$r->scores."(";
+                        $ret_str .= '"></i>&nbsp;'.$r->scores;
 
                         if($r->scores != "No Reviews Yet") {
-                           $ret_str .= $r->review_count.' Review(s))';
+                           $ret_str .= "(".$r->review_count.' Review(s))';
                         }
                 $ret_str .= '</div>
                     </div>
