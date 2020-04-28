@@ -38,3 +38,8 @@ Week 9:
 - Fixed UI on some old forms, implemented UI on new forms
 - Fixed some email, added more emailing functions
 - Fixed minor bugs in logic
+- Created sample data for demo/final project
+
+Week 10:
+- Ran additional use cases to find and fix minor graphical bugs
+- Worked on the final project report
