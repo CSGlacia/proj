@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container" style="background:rgba(240,255,248,0.6)">
     <div><h2><b>Tennant Review</b></h2>
     <hr>
     <div class="row">
-        <div class="col-sm-6 col-md-6 col-lg-6" style="background:rgba(240,255,248,0.6)">
+        <div class="col-sm-6 col-md-6 col-lg-6">
             <h3><b>Property Details</b></h3>
             <div><i class="fas fa-home"></i>&nbsp;<a href="/view_property/{{$p->property_id}}">{{$p->property_title}}</a></div>
             <div>{{$p->property_address}}</div>
