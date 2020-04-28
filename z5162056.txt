@@ -1,0 +1,42 @@
+Week 1
+	- Formed groups 
+	- Decide on web booking application as our project
+	- Work on epic stories and started on the project proposal
+
+Week 2
+	- Set up environment
+	- Learning Laraval/PHP to be used in project
+	- Writing 2 epic stories for proposal 
+
+Week 3
+	- Continue familiarising myself with the environment and PHP
+	- Finished project plan
+	
+Week 4:
+	- Started coding for viewing all properties
+
+Week 5:
+	- Finished coding for viewing all properties with Chris
+	- Working on viewing particular property to display information
+
+Week 6:
+	- Finished viewing particular property 
+
+Week 7:
+	- Researching how to use google maps API
+	- Started working on google maps autofill when creating property
+	- Started working on display map and location using google API
+	- Added acceptance criteria for cancel booking
+
+Week 8:
+	- Finished google maps autofill
+	- Finished displaying map
+	- Enabled ability to cancel booking
+  
+Week 9:
+  - Finished tags with Chris
+  - Started working on analytics data
+  
+Week 10:
+  - Finished analytics data for owners
+  - Finished work on tracking search data for all users
