@@ -1,1 +1,1 @@
-README.md
+Please follow the build instructions given in the project report
